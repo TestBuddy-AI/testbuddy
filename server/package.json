@@ -1,11 +1,33 @@
 {
-  "name": "server",
+  "name": "testbuddy",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rembrandtsx/testbuddy.git"
+  },
+  "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rembrandtsx/testbuddy/issues"
+  },
+  "homepage": "https://github.com/Rembrandtsx/testbuddy#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.5.0",
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.1",
+    "typescript": "^5.1.6"
+  }
 }
