@@ -3,6 +3,11 @@
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 (function () {
+    fetch('https://jsonplaceholder.typicode.com/todos/1').then(response => {
+    return response.json()}).then(json => { 
+        document.getElementById("result").innerText = JSON.stringify(json); 
+    });
+
     const vscode = acquireVsCodeApi();
 
     const oldState = vscode.getState() || { colors: [] };

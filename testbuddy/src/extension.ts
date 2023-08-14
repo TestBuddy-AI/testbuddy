@@ -92,7 +92,7 @@ class TestBuddyWebViewViewProvider implements vscode.WebviewViewProvider {
 					and only allow scripts that have a specific nonce.
 					(See the 'webview-sample' extension sample for img-src content security policy examples)
 				-->
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+				
 
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -105,7 +105,7 @@ class TestBuddyWebViewViewProvider implements vscode.WebviewViewProvider {
 			<body>
 				<ul class="color-list">
 				</ul>
-
+				<div id="result"></div>
 				<button class="add-color-button">Send Request</button>
 
 				<script nonce="${nonce}" src="${scriptUri}"></script>
