@@ -1,22 +1,15 @@
 import { Request, Response } from 'express';
-import { OpenAIService } from '../models/openaiService';
-import dotenv from 'dotenv';
+import * as openaiService from '../services/openaiService';
 
-dotenv.config();
-
-const apiKey = process.env.OPENAI_API_KEY;
+export const helloWorld = async (req: Request, res: Response) => {
+  res.send('Hello World!');
+};
 
 export const generateUnitTests = async (req: Request, res: Response) => {
   try {
-    const userMessage = req.body.userMessage; 
-
-    if (!apiKey) {
-        throw new Error('OpenAI API key is not defined.');
-    }
-
-    const openaiService = new OpenAIService(apiKey);
+    // TODO: read from file
+    const userMessage = req.body.userMessage;
     const response = await openaiService.generateUnitTests(userMessage);
-
 
     res.json(response);
   } catch (error) {
@@ -26,6 +19,3 @@ export const generateUnitTests = async (req: Request, res: Response) => {
 };
 
 
-export const helloWorld = async (req: Request, res: Response) => {
-    res.send('Hello World!');
-  };
