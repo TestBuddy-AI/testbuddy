@@ -24,6 +24,10 @@ jobs:
         working-directory: server
         run: npm ci
 
+      - name: Lint
+        working-directory: server
+        run: npm run lint --if-present
+
       - name: Build
         working-directory: server
         run: npm run build --if-present
