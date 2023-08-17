@@ -12,16 +12,48 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "icons": {
+      "testbuddy-js": {
+        "description": "Javascript icon",
+        "default": {
+          "fontPath": "./theme/vscode-10.woff",
+          "fontCharacter": "\\E000"
+        }
+      },
+      "testbuddy-ts": {
+        "description": "Typescript icon",
+        "default": {
+          "fontPath": "./theme/vscode-10.woff",
+          "fontCharacter": "\\E001"
+        }
+      },
+      "testbuddy-python": {
+        "description": "Python icon",
+        "default": {
+          "fontPath": "./theme/vscode-10.woff",
+          "fontCharacter": "\\E002"
+        }
+      }
+    },
     "views": {
       "testbuddy": [
         {
-          "id": "testBuddyTreeProvider",
-          "name": "TestBuddy - Unit tests"
+          "type": "webview",
+          "id": "testBuddy.testListWebViewView",
+          "name": "TestBuddy - Unit tests",
+          "when": "testBuddy.loadEditorView == true"
         },
         {
           "type": "webview",
-          "id": "testBuddy.testBuddyWebViewView",
-          "name": "TestBuddy - Editor"
+          "id": "testBuddy.editorWebViewView",
+          "name": "TestBuddy - Editor",
+          "when": "testBuddy.loadEditorView == true"
+        },
+        {
+          "type": "webview",
+          "id": "testBuddy.welcomeWebViewView",
+          "name": "TestBuddy - Selecciona tu ambiente",
+          "when": "testBuddy.loadEditorView == false"
         }
       ]
     },
@@ -36,6 +68,11 @@
         "category": "Calico Colors",
         "title": "Clear Colors",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "testBuddy.selectLanguage",
+        "category": "TestBuddy",
+        "title": "Select Project Language"
       }
     ],
     "viewsContainers": {
@@ -73,22 +110,28 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "updateFont": "node ./build/updateFont.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.81.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "20.2.5",
+    "@types/vscode": "^1.81.0",
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "@typescript-eslint/parser": "^5.59.8",
+    "@vscode/test-electron": "^2.3.2",
     "eslint": "^8.41.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
-    "typescript": "^5.1.3",
     "ts-loader": "^9.4.3",
+    "typescript": "^5.1.3",
     "webpack": "^5.85.0",
-    "webpack-cli": "^5.1.1",
-    "@vscode/test-electron": "^2.3.2"
+    "webpack-cli": "^5.1.1"
+  },
+  "dependencies": {
+    "@bendera/vscode-webview-elements": "^0.15.0",
+    "@vscode/codicons": "^0.0.33",
+    "webfont": "^11.2.26"
   }
 }

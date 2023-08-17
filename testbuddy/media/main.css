@@ -38,3 +38,19 @@ body {
 	border: none;
 	margin: 0 auto;
 }
+
+.collapsible ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .collapsible li {
+    align-items: center;
+    display: flex;
+    height: 22px;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    width: 28px;
+  }
