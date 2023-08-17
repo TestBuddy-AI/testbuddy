@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="{{cssSource1}}" rel="stylesheet" />
+    <link href="{{cssSource2}}" rel="stylesheet" />
+    <link href="{{cssSource3}}" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="{{cssSource4}}"
+      id="vscode-codicon-stylesheet"
+    />
+
+    <title>TestBuddy</title>
+  </head>
+  <body>
+    <vscode-tree id="actions-example"></vscode-tree>
+
+    <script src="{{jsSource2}}" type="module"></script>
+    <script>
+      const tree = document.getElementById("actions-example");
+
+      const icons = true;
+
+      const actions = [
+        {
+          icon: "run",
+          actionId: "run",
+          tooltip: "Run all",
+        },
+        {
+          icon: "refresh",
+          actionId: "regenerate",
+          tooltip: "Regenerate tests",
+        },
+      ];
+
+      const data = [
+        {
+          label: "vscode-tree",
+          icons,
+          actions,
+          value: "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree",
+          subItems: [
+            {
+              icons,
+              actions,
+              label: "index.ts",
+              value:
+                "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\index.ts",
+            },
+            {
+              icons,
+              actions,
+              label: "vscode-tree.styles.ts",
+              value:
+                "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\vscode-tree.styles.ts",
+            },
+            {
+              icons,
+              actions,
+              label: "vscode-tree.test.ts",
+              value:
+                "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\vscode-tree.test.ts",
+            },
+            {
+              icons,
+              actions,
+              label: "vscode-tree.ts",
+              value:
+                "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\vscode-tree.ts",
+            },
+          ],
+        },
+      ];
+
+      tree.data = data;
+
+      tree.addEventListener("vsc-run-action", (ev) => {
+        console.log(ev.detail);
+      });
+    </script>
+    <script src="{{jsSource}}"></script>
+  </body>
+</html>
