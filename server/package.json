@@ -4,9 +4,9 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npx tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node-dev dist/index.js",
+    "build": "npx tsc --build",
+    "start": "tsc && node dist/index.js",
+    "dev": "ts-node-dev --respawn -- index.ts",
     "lint": "eslint . --ext .ts"
   },
   "repository": {
