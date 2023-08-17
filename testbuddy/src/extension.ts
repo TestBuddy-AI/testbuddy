@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("testBuddy.selectLanguage", () => {
-      selectTestingLanguage().then(() => {
+      selectTestingLanguage(context).then(() => {
         initializeApp(context);
       });
     })
@@ -51,22 +51,40 @@ const initializeApp = (context: vscode.ExtensionContext) => {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("calicoColors.addColor", () => {
-      provider.addColor();
+      editorProvider.addColor();
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("calicoColors.clearColors", () => {
-      provider.clearColors();
+      editorProvider.clearColors();
     })
   );
 };
 
-const selectTestingLanguage = async () => {
-  const input = await vscode.window.showQuickPick([
-    "Javascript",
-    "Typescript",
-    "Python",
-  ]);
-  vscode.window.showInformationMessage("Holaaa", input || "Adios");
+const selectTestingLanguage = async (_context: vscode.ExtensionContext) => {
+  //ICONS NOT WORKING (Figure out whats happening)
+  let list: vscode.QuickPickItem[] = [
+    {
+      label: "$(testbuddy-js) Javascript",
+    },
+    {
+      label: "$(testbuddy-ts) Typescript",
+      //   iconPath: vscode.Uri.joinPath(
+      //     _context.extensionUri,
+      //     "assets/languages/ts.svg"
+      //   ),
+    },
+    {
+      label: "$(testbuddy-python) Python",
+      //   iconPath: vscode.Uri.joinPath(
+      //     _context.extensionUri,
+      //     "assets/languages/python.svg"
+      //   ),
+    },
+  ];
+
+  const input = await vscode.window.showQuickPick(list);
+
+  vscode.window.showInformationMessage("Holaaa", input?.label || "Adios");
 };

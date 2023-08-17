@@ -12,6 +12,29 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "icons": {
+      "testbuddy-js": {
+        "description": "Javascript icon",
+        "default": {
+          "fontPath": "./theme/vscode-10.woff",
+          "fontCharacter": "\\E000"
+        }
+      },
+      "testbuddy-ts": {
+        "description": "Typescript icon",
+        "default": {
+          "fontPath": "./theme/vscode-10.woff",
+          "fontCharacter": "\\E001"
+        }
+      },
+      "testbuddy-python": {
+        "description": "Python icon",
+        "default": {
+          "fontPath": "./theme/vscode-10.woff",
+          "fontCharacter": "\\E002"
+        }
+      }
+    },
     "views": {
       "testbuddy": [
         {
@@ -87,7 +110,8 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "updateFont": "node ./build/updateFont.js"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
@@ -107,6 +131,7 @@
   },
   "dependencies": {
     "@bendera/vscode-webview-elements": "^0.15.0",
-    "@vscode/codicons": "^0.0.33"
+    "@vscode/codicons": "^0.0.33",
+    "webfont": "^11.2.26"
   }
 }
