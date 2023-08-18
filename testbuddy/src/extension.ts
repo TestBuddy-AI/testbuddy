@@ -2,8 +2,11 @@ import * as vscode from "vscode";
 import { EditorWebViewViewProvider } from "./providers/editor/editorProvider";
 import { TestListWebViewViewProvider } from "./providers/testlist/testListProvider";
 import { WelcomeWebViewViewProvider } from "./providers/welcomeView/welcomeProvider";
+import { error } from "console";
+import { checkNpm } from "./utils/checkEnv";
 
 export function activate(context: vscode.ExtensionContext) {
+  console.log("Debug1");
   vscode.commands.executeCommand(
     "setContext",
     "testBuddy.loadEditorView",
@@ -16,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
       welcomeProvider
     )
   );
-
+  console.log("Debug2");
   context.subscriptions.push(
     vscode.commands.registerCommand("testBuddy.selectLanguage", () => {
       selectTestingLanguage(context).then(() => {
@@ -24,6 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
     })
   );
+  console.log("Debug3");
 }
 
 const initializeApp = (context: vscode.ExtensionContext) => {
@@ -67,6 +71,8 @@ const selectTestingLanguage = async (_context: vscode.ExtensionContext) => {
   let list: vscode.QuickPickItem[] = [
     {
       label: "$(testbuddy-js) Javascript",
+      detail: "Hoalaaaa",
+      description: "haasdasdas",
     },
     {
       label: "$(testbuddy-ts) Typescript",
@@ -85,6 +91,28 @@ const selectTestingLanguage = async (_context: vscode.ExtensionContext) => {
   ];
 
   const input = await vscode.window.showQuickPick(list);
+  if (!input) {
+    throw error("Selecciona una opcion");
+  }
+  switch (input.label) {
+    case "$(testbuddy-js) Javascript": {
+    }
+  }
+  let npmExists = await checkNpm();
+  if (!npmExists) {
+    vscode.window
+      .showErrorMessage(
+        "Please install Node & NPM to use this test suite",
+        "Change test environment",
+        "Cancel"
+      )
+      .then((el) => {
+        if (el === "Change test environment") {
+          vscode.commands.executeCommand("testBuddy.selectLanguage");
+        }
+      });
+    throw error("Instala lo apropiado");
+  }
 
   vscode.window.showInformationMessage("Holaaa", input?.label || "Adios");
 };

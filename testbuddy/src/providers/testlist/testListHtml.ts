@@ -18,7 +18,7 @@ export const getTestListHtml = (
   let html = fs.readFileSync(filePath.fsPath, "utf8");
   // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
   const scriptUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(_context.extensionUri, "media", "main.js")
+    vscode.Uri.joinPath(_context.extensionUri, "media/testList", "index.js")
   );
   html = html.replace("{{jsSource}}", scriptUri);
 

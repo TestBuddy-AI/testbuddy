@@ -21,6 +21,7 @@ export const getEditorHtml = (
     vscode.Uri.joinPath(_context.extensionUri, "media", "main.js")
   );
   html = html.replace("{{jsSource}}", scriptUri);
+
   const scriptUri2 = webview.asWebviewUri(
     vscode.Uri.joinPath(
       _context.extensionUri,
@@ -42,6 +43,7 @@ export const getEditorHtml = (
     vscode.Uri.joinPath(_context.extensionUri, "media", "main.css")
   );
   html = html.replace("{{cssSource3}}", styleMainUri);
+
   const codiconsUri = webview.asWebviewUri(
     vscode.Uri.joinPath(
       _context.extensionUri,
@@ -52,6 +54,5 @@ export const getEditorHtml = (
     )
   );
   html = html.replace("{{cssSource4}}", codiconsUri);
-
   return html;
 };
