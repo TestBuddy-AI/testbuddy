@@ -24,9 +24,9 @@ export class EditorWebViewViewProvider implements vscode.WebviewViewProvider {
 
       localResourceRoots: [
         vscode.Uri.joinPath(this._context.extensionUri, "media"),
+        vscode.Uri.joinPath(this._context.extensionUri, "node_modules"),
       ],
     };
-    console.log(vscode.Uri.joinPath(this._context.extensionUri, "media"));
 
     webviewView.webview.html = getEditorHtml(this._view.webview, this._context);
 
@@ -49,10 +49,14 @@ export class EditorWebViewViewProvider implements vscode.WebviewViewProvider {
         }
         case "test": {
           console.log("Llegue");
-          //execute shell command for testing
           execShell(
-            `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
-          ).then(console.log);
+            `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm pkg set 'scripts.testbuddy'='jest'`
+          );
+          //execute shell command for testing
+
+          // execShell(
+          //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
+          // ).then(console.log);
           break;
         }
       }

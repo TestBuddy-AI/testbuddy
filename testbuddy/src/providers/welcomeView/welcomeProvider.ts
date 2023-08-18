@@ -37,7 +37,6 @@ export class WelcomeWebViewViewProvider implements vscode.WebviewViewProvider {
       switch (data.type) {
         case "welcome": {
           vscode.commands.executeCommand("testBuddy.selectLanguage");
-
           break;
         }
       }

@@ -3,14 +3,6 @@
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 (function () {
-  fetch("https://jsonplaceholder.typicode.com/todos/1")
-    .then((response) => {
-      return response.json();
-    })
-    .then((json) => {
-      document.getElementById("result").innerText = JSON.stringify(json);
-    });
-
   const vscode = acquireVsCodeApi();
 
   const oldState = vscode.getState() || { colors: [] };
@@ -18,15 +10,7 @@
   /** @type {Array<{ value: string }>} */
   let colors = oldState.colors;
 
-  updateColorList(colors);
-
-  document.querySelector(".add-color-button").addEventListener("click", () => {
-    addColor();
-  });
-  document.getElementById("jest").addEventListener("click", () => {
-    console.log("Ejecute");
-    vscode.postMessage({ type: "test", value: "all" });
-  });
+  //updateColorList(colors);
 
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
@@ -38,7 +22,7 @@
       }
       case "clearColors": {
         colors = [];
-        updateColorList(colors);
+        //updateColorList(colors);
         break;
       }
     }
