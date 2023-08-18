@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as ts from "typescript";
-import { IParsedFunction } from "../types";
+import { IParsedFunction } from "../types/index";
 
 
 export const readTypescriptFile = (): IParsedFunction[] => {
