@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as codeFileService from "../services/codeFileService";
 import * as openaiService from "../services/openaiService";
+import { ICodeLanguage } from "../types";
 
 export const helloWorld = async (req: Request, res: Response) => {
   res.send("Hello World!");
@@ -10,7 +11,7 @@ export const generateUnitTests = async (req: Request, res: Response) => {
   try {
     // TODO: read from file
     const userMessage = req.body.userMessage;
-    const response = await openaiService.generateUnitTests(userMessage);
+    const response = await openaiService.generateUnitTests(userMessage, ICodeLanguage.javascipt);
 
     res.json(response);
   } catch (error) {
