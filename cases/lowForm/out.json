@@ -1,0 +1,2037 @@
+{
+    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+    "root": {
+        "type": "root",
+        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+        "children": [
+            {
+                "type": "describe",
+                "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                "start": {
+                    "line": 12,
+                    "column": 1,
+                    "index": 264
+                },
+                "end": {
+                    "line": 148,
+                    "column": 3,
+                    "index": 4806
+                },
+                "name": "LowForm Component",
+                "nameType": "StringLiteral",
+                "nameRange": {
+                    "start": {
+                        "column": 11,
+                        "line": 12
+                    },
+                    "end": {
+                        "column": 27,
+                        "line": 12
+                    }
+                },
+                "children": [
+                    {
+                        "type": "describe",
+                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                        "start": {
+                            "line": 58,
+                            "column": 3,
+                            "index": 1511
+                        },
+                        "end": {
+                            "line": 82,
+                            "column": 5,
+                            "index": 2428
+                        },
+                        "name": "handles children",
+                        "nameType": "StringLiteral",
+                        "nameRange": {
+                            "start": {
+                                "column": 13,
+                                "line": 58
+                            },
+                            "end": {
+                                "column": 28,
+                                "line": 58
+                            }
+                        },
+                        "children": [
+                            {
+                                "type": "it",
+                                "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                "start": {
+                                    "line": 59,
+                                    "column": 5,
+                                    "index": 1552
+                                },
+                                "end": {
+                                    "line": 63,
+                                    "column": 7,
+                                    "index": 1773
+                                },
+                                "name": "renders its children",
+                                "nameType": "StringLiteral",
+                                "nameRange": {
+                                    "start": {
+                                        "column": 9,
+                                        "line": 59
+                                    },
+                                    "end": {
+                                        "column": 28,
+                                        "line": 59
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "type": "expect",
+                                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                        "start": {
+                                            "line": 62,
+                                            "column": 7,
+                                            "index": 1707
+                                        },
+                                        "end": {
+                                            "line": 62,
+                                            "column": 64,
+                                            "index": 1765
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "it",
+                                "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                "start": {
+                                    "line": 65,
+                                    "column": 5,
+                                    "index": 1779
+                                },
+                                "end": {
+                                    "line": 81,
+                                    "column": 7,
+                                    "index": 2422
+                                },
+                                "name": "registers inputs with IDs",
+                                "nameType": "StringLiteral",
+                                "nameRange": {
+                                    "start": {
+                                        "column": 9,
+                                        "line": 65
+                                    },
+                                    "end": {
+                                        "column": 33,
+                                        "line": 65
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "describe",
+                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                        "start": {
+                            "line": 84,
+                            "column": 3,
+                            "index": 2432
+                        },
+                        "end": {
+                            "line": 95,
+                            "column": 5,
+                            "index": 2845
+                        },
+                        "name": "disables elements",
+                        "nameType": "StringLiteral",
+                        "nameRange": {
+                            "start": {
+                                "column": 13,
+                                "line": 84
+                            },
+                            "end": {
+                                "column": 29,
+                                "line": 84
+                            }
+                        },
+                        "children": [
+                            {
+                                "type": "it",
+                                "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                "start": {
+                                    "line": 85,
+                                    "column": 5,
+                                    "index": 2474
+                                },
+                                "end": {
+                                    "line": 89,
+                                    "column": 7,
+                                    "index": 2656
+                                },
+                                "name": "disables all inputs if isDisabled is true",
+                                "nameType": "StringLiteral",
+                                "nameRange": {
+                                    "start": {
+                                        "column": 9,
+                                        "line": 85
+                                    },
+                                    "end": {
+                                        "column": 49,
+                                        "line": 85
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "type": "expect",
+                                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                        "start": {
+                                            "line": 88,
+                                            "column": 7,
+                                            "index": 2619
+                                        },
+                                        "end": {
+                                            "line": 88,
+                                            "column": 35,
+                                            "index": 2648
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "it",
+                                "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                "start": {
+                                    "line": 91,
+                                    "column": 5,
+                                    "index": 2662
+                                },
+                                "end": {
+                                    "line": 94,
+                                    "column": 7,
+                                    "index": 2839
+                                },
+                                "name": "disables buttons if isDisabled is true",
+                                "nameType": "StringLiteral",
+                                "nameRange": {
+                                    "start": {
+                                        "column": 9,
+                                        "line": 91
+                                    },
+                                    "end": {
+                                        "column": 46,
+                                        "line": 91
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "type": "expect",
+                                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                        "start": {
+                                            "line": 93,
+                                            "column": 7,
+                                            "index": 2777
+                                        },
+                                        "end": {
+                                            "line": 93,
+                                            "column": 60,
+                                            "index": 2831
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "describe",
+                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                        "start": {
+                            "line": 97,
+                            "column": 3,
+                            "index": 2849
+                        },
+                        "end": {
+                            "line": 135,
+                            "column": 5,
+                            "index": 4353
+                        },
+                        "name": "runs validation",
+                        "nameType": "StringLiteral",
+                        "nameRange": {
+                            "start": {
+                                "column": 13,
+                                "line": 97
+                            },
+                            "end": {
+                                "column": 27,
+                                "line": 97
+                            }
+                        },
+                        "children": [
+                            {
+                                "type": "it",
+                                "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                "start": {
+                                    "line": 106,
+                                    "column": 5,
+                                    "index": 3288
+                                },
+                                "end": {
+                                    "line": 112,
+                                    "column": 7,
+                                    "index": 3515
+                                },
+                                "name": "does not submit if the inputs do not pass the schema",
+                                "nameType": "StringLiteral",
+                                "nameRange": {
+                                    "start": {
+                                        "column": 9,
+                                        "line": 106
+                                    },
+                                    "end": {
+                                        "column": 60,
+                                        "line": 106
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "type": "expect",
+                                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                        "start": {
+                                            "line": 111,
+                                            "column": 7,
+                                            "index": 3467
+                                        },
+                                        "end": {
+                                            "line": 111,
+                                            "column": 46,
+                                            "index": 3507
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "it",
+                                "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                "start": {
+                                    "line": 114,
+                                    "column": 5,
+                                    "index": 3521
+                                },
+                                "end": {
+                                    "line": 121,
+                                    "column": 7,
+                                    "index": 3808
+                                },
+                                "name": "still fires the stateHandler even if submission is not successful",
+                                "nameType": "StringLiteral",
+                                "nameRange": {
+                                    "start": {
+                                        "column": 9,
+                                        "line": 114
+                                    },
+                                    "end": {
+                                        "column": 73,
+                                        "line": 114
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "type": "expect",
+                                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                        "start": {
+                                            "line": 119,
+                                            "column": 7,
+                                            "index": 3713
+                                        },
+                                        "end": {
+                                            "line": 119,
+                                            "column": 46,
+                                            "index": 3753
+                                        }
+                                    },
+                                    {
+                                        "type": "expect",
+                                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                        "start": {
+                                            "line": 120,
+                                            "column": 7,
+                                            "index": 3760
+                                        },
+                                        "end": {
+                                            "line": 120,
+                                            "column": 46,
+                                            "index": 3800
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "it",
+                                "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                "start": {
+                                    "line": 123,
+                                    "column": 5,
+                                    "index": 3814
+                                },
+                                "end": {
+                                    "line": 134,
+                                    "column": 7,
+                                    "index": 4347
+                                },
+                                "name": "renders the Error component with the correct message if an input is invalid",
+                                "nameType": "StringLiteral",
+                                "nameRange": {
+                                    "start": {
+                                        "column": 9,
+                                        "line": 123
+                                    },
+                                    "end": {
+                                        "column": 83,
+                                        "line": 123
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "type": "expect",
+                                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                        "start": {
+                                            "line": 133,
+                                            "column": 7,
+                                            "index": 4278
+                                        },
+                                        "end": {
+                                            "line": 133,
+                                            "column": 67,
+                                            "index": 4339
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "describe",
+                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                        "start": {
+                            "line": 137,
+                            "column": 3,
+                            "index": 4357
+                        },
+                        "end": {
+                            "line": 147,
+                            "column": 5,
+                            "index": 4802
+                        },
+                        "name": "generates labels",
+                        "nameType": "StringLiteral",
+                        "nameRange": {
+                            "start": {
+                                "column": 13,
+                                "line": 137
+                            },
+                            "end": {
+                                "column": 28,
+                                "line": 137
+                            }
+                        },
+                        "children": [
+                            {
+                                "type": "it",
+                                "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                "start": {
+                                    "line": 138,
+                                    "column": 5,
+                                    "index": 4398
+                                },
+                                "end": {
+                                    "line": 141,
+                                    "column": 7,
+                                    "index": 4581
+                                },
+                                "name": "generates and maps labels for inputs with aria-labelledby",
+                                "nameType": "StringLiteral",
+                                "nameRange": {
+                                    "start": {
+                                        "column": 9,
+                                        "line": 138
+                                    },
+                                    "end": {
+                                        "column": 65,
+                                        "line": 138
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "type": "expect",
+                                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                        "start": {
+                                            "line": 140,
+                                            "column": 7,
+                                            "index": 4508
+                                        },
+                                        "end": {
+                                            "line": 140,
+                                            "column": 71,
+                                            "index": 4573
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "it",
+                                "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                "start": {
+                                    "line": 143,
+                                    "column": 5,
+                                    "index": 4587
+                                },
+                                "end": {
+                                    "line": 146,
+                                    "column": 7,
+                                    "index": 4796
+                                },
+                                "name": "does not generate labels if the skip prop is passed",
+                                "nameType": "StringLiteral",
+                                "nameRange": {
+                                    "start": {
+                                        "column": 9,
+                                        "line": 143
+                                    },
+                                    "end": {
+                                        "column": 59,
+                                        "line": 143
+                                    }
+                                },
+                                "children": [
+                                    {
+                                        "type": "expect",
+                                        "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                        "start": {
+                                            "line": 145,
+                                            "column": 7,
+                                            "index": 4720
+                                        },
+                                        "end": {
+                                            "line": 145,
+                                            "column": 74,
+                                            "index": 4788
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "describeBlocks": [
+        {
+            "type": "describe",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 12,
+                "column": 1,
+                "index": 264
+            },
+            "end": {
+                "line": 148,
+                "column": 3,
+                "index": 4806
+            },
+            "name": "LowForm Component",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 11,
+                    "line": 12
+                },
+                "end": {
+                    "column": 27,
+                    "line": 12
+                }
+            },
+            "children": [
+                {
+                    "type": "describe",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 58,
+                        "column": 3,
+                        "index": 1511
+                    },
+                    "end": {
+                        "line": 82,
+                        "column": 5,
+                        "index": 2428
+                    },
+                    "name": "handles children",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 13,
+                            "line": 58
+                        },
+                        "end": {
+                            "column": 28,
+                            "line": 58
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "it",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 59,
+                                "column": 5,
+                                "index": 1552
+                            },
+                            "end": {
+                                "line": 63,
+                                "column": 7,
+                                "index": 1773
+                            },
+                            "name": "renders its children",
+                            "nameType": "StringLiteral",
+                            "nameRange": {
+                                "start": {
+                                    "column": 9,
+                                    "line": 59
+                                },
+                                "end": {
+                                    "column": 28,
+                                    "line": 59
+                                }
+                            },
+                            "children": [
+                                {
+                                    "type": "expect",
+                                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                    "start": {
+                                        "line": 62,
+                                        "column": 7,
+                                        "index": 1707
+                                    },
+                                    "end": {
+                                        "line": 62,
+                                        "column": 64,
+                                        "index": 1765
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "it",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 65,
+                                "column": 5,
+                                "index": 1779
+                            },
+                            "end": {
+                                "line": 81,
+                                "column": 7,
+                                "index": 2422
+                            },
+                            "name": "registers inputs with IDs",
+                            "nameType": "StringLiteral",
+                            "nameRange": {
+                                "start": {
+                                    "column": 9,
+                                    "line": 65
+                                },
+                                "end": {
+                                    "column": 33,
+                                    "line": 65
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "describe",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 84,
+                        "column": 3,
+                        "index": 2432
+                    },
+                    "end": {
+                        "line": 95,
+                        "column": 5,
+                        "index": 2845
+                    },
+                    "name": "disables elements",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 13,
+                            "line": 84
+                        },
+                        "end": {
+                            "column": 29,
+                            "line": 84
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "it",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 85,
+                                "column": 5,
+                                "index": 2474
+                            },
+                            "end": {
+                                "line": 89,
+                                "column": 7,
+                                "index": 2656
+                            },
+                            "name": "disables all inputs if isDisabled is true",
+                            "nameType": "StringLiteral",
+                            "nameRange": {
+                                "start": {
+                                    "column": 9,
+                                    "line": 85
+                                },
+                                "end": {
+                                    "column": 49,
+                                    "line": 85
+                                }
+                            },
+                            "children": [
+                                {
+                                    "type": "expect",
+                                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                    "start": {
+                                        "line": 88,
+                                        "column": 7,
+                                        "index": 2619
+                                    },
+                                    "end": {
+                                        "line": 88,
+                                        "column": 35,
+                                        "index": 2648
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "it",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 91,
+                                "column": 5,
+                                "index": 2662
+                            },
+                            "end": {
+                                "line": 94,
+                                "column": 7,
+                                "index": 2839
+                            },
+                            "name": "disables buttons if isDisabled is true",
+                            "nameType": "StringLiteral",
+                            "nameRange": {
+                                "start": {
+                                    "column": 9,
+                                    "line": 91
+                                },
+                                "end": {
+                                    "column": 46,
+                                    "line": 91
+                                }
+                            },
+                            "children": [
+                                {
+                                    "type": "expect",
+                                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                    "start": {
+                                        "line": 93,
+                                        "column": 7,
+                                        "index": 2777
+                                    },
+                                    "end": {
+                                        "line": 93,
+                                        "column": 60,
+                                        "index": 2831
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "describe",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 97,
+                        "column": 3,
+                        "index": 2849
+                    },
+                    "end": {
+                        "line": 135,
+                        "column": 5,
+                        "index": 4353
+                    },
+                    "name": "runs validation",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 13,
+                            "line": 97
+                        },
+                        "end": {
+                            "column": 27,
+                            "line": 97
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "it",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 106,
+                                "column": 5,
+                                "index": 3288
+                            },
+                            "end": {
+                                "line": 112,
+                                "column": 7,
+                                "index": 3515
+                            },
+                            "name": "does not submit if the inputs do not pass the schema",
+                            "nameType": "StringLiteral",
+                            "nameRange": {
+                                "start": {
+                                    "column": 9,
+                                    "line": 106
+                                },
+                                "end": {
+                                    "column": 60,
+                                    "line": 106
+                                }
+                            },
+                            "children": [
+                                {
+                                    "type": "expect",
+                                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                    "start": {
+                                        "line": 111,
+                                        "column": 7,
+                                        "index": 3467
+                                    },
+                                    "end": {
+                                        "line": 111,
+                                        "column": 46,
+                                        "index": 3507
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "it",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 114,
+                                "column": 5,
+                                "index": 3521
+                            },
+                            "end": {
+                                "line": 121,
+                                "column": 7,
+                                "index": 3808
+                            },
+                            "name": "still fires the stateHandler even if submission is not successful",
+                            "nameType": "StringLiteral",
+                            "nameRange": {
+                                "start": {
+                                    "column": 9,
+                                    "line": 114
+                                },
+                                "end": {
+                                    "column": 73,
+                                    "line": 114
+                                }
+                            },
+                            "children": [
+                                {
+                                    "type": "expect",
+                                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                    "start": {
+                                        "line": 119,
+                                        "column": 7,
+                                        "index": 3713
+                                    },
+                                    "end": {
+                                        "line": 119,
+                                        "column": 46,
+                                        "index": 3753
+                                    }
+                                },
+                                {
+                                    "type": "expect",
+                                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                    "start": {
+                                        "line": 120,
+                                        "column": 7,
+                                        "index": 3760
+                                    },
+                                    "end": {
+                                        "line": 120,
+                                        "column": 46,
+                                        "index": 3800
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "it",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 123,
+                                "column": 5,
+                                "index": 3814
+                            },
+                            "end": {
+                                "line": 134,
+                                "column": 7,
+                                "index": 4347
+                            },
+                            "name": "renders the Error component with the correct message if an input is invalid",
+                            "nameType": "StringLiteral",
+                            "nameRange": {
+                                "start": {
+                                    "column": 9,
+                                    "line": 123
+                                },
+                                "end": {
+                                    "column": 83,
+                                    "line": 123
+                                }
+                            },
+                            "children": [
+                                {
+                                    "type": "expect",
+                                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                    "start": {
+                                        "line": 133,
+                                        "column": 7,
+                                        "index": 4278
+                                    },
+                                    "end": {
+                                        "line": 133,
+                                        "column": 67,
+                                        "index": 4339
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "describe",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 137,
+                        "column": 3,
+                        "index": 4357
+                    },
+                    "end": {
+                        "line": 147,
+                        "column": 5,
+                        "index": 4802
+                    },
+                    "name": "generates labels",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 13,
+                            "line": 137
+                        },
+                        "end": {
+                            "column": 28,
+                            "line": 137
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "it",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 138,
+                                "column": 5,
+                                "index": 4398
+                            },
+                            "end": {
+                                "line": 141,
+                                "column": 7,
+                                "index": 4581
+                            },
+                            "name": "generates and maps labels for inputs with aria-labelledby",
+                            "nameType": "StringLiteral",
+                            "nameRange": {
+                                "start": {
+                                    "column": 9,
+                                    "line": 138
+                                },
+                                "end": {
+                                    "column": 65,
+                                    "line": 138
+                                }
+                            },
+                            "children": [
+                                {
+                                    "type": "expect",
+                                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                    "start": {
+                                        "line": 140,
+                                        "column": 7,
+                                        "index": 4508
+                                    },
+                                    "end": {
+                                        "line": 140,
+                                        "column": 71,
+                                        "index": 4573
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "it",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 143,
+                                "column": 5,
+                                "index": 4587
+                            },
+                            "end": {
+                                "line": 146,
+                                "column": 7,
+                                "index": 4796
+                            },
+                            "name": "does not generate labels if the skip prop is passed",
+                            "nameType": "StringLiteral",
+                            "nameRange": {
+                                "start": {
+                                    "column": 9,
+                                    "line": 143
+                                },
+                                "end": {
+                                    "column": 59,
+                                    "line": 143
+                                }
+                            },
+                            "children": [
+                                {
+                                    "type": "expect",
+                                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                                    "start": {
+                                        "line": 145,
+                                        "column": 7,
+                                        "index": 4720
+                                    },
+                                    "end": {
+                                        "line": 145,
+                                        "column": 74,
+                                        "index": 4788
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "describe",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 58,
+                "column": 3,
+                "index": 1511
+            },
+            "end": {
+                "line": 82,
+                "column": 5,
+                "index": 2428
+            },
+            "name": "handles children",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 13,
+                    "line": 58
+                },
+                "end": {
+                    "column": 28,
+                    "line": 58
+                }
+            },
+            "children": [
+                {
+                    "type": "it",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 59,
+                        "column": 5,
+                        "index": 1552
+                    },
+                    "end": {
+                        "line": 63,
+                        "column": 7,
+                        "index": 1773
+                    },
+                    "name": "renders its children",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 9,
+                            "line": 59
+                        },
+                        "end": {
+                            "column": 28,
+                            "line": 59
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "expect",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 62,
+                                "column": 7,
+                                "index": 1707
+                            },
+                            "end": {
+                                "line": 62,
+                                "column": 64,
+                                "index": 1765
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "it",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 65,
+                        "column": 5,
+                        "index": 1779
+                    },
+                    "end": {
+                        "line": 81,
+                        "column": 7,
+                        "index": 2422
+                    },
+                    "name": "registers inputs with IDs",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 9,
+                            "line": 65
+                        },
+                        "end": {
+                            "column": 33,
+                            "line": 65
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "type": "describe",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 84,
+                "column": 3,
+                "index": 2432
+            },
+            "end": {
+                "line": 95,
+                "column": 5,
+                "index": 2845
+            },
+            "name": "disables elements",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 13,
+                    "line": 84
+                },
+                "end": {
+                    "column": 29,
+                    "line": 84
+                }
+            },
+            "children": [
+                {
+                    "type": "it",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 85,
+                        "column": 5,
+                        "index": 2474
+                    },
+                    "end": {
+                        "line": 89,
+                        "column": 7,
+                        "index": 2656
+                    },
+                    "name": "disables all inputs if isDisabled is true",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 9,
+                            "line": 85
+                        },
+                        "end": {
+                            "column": 49,
+                            "line": 85
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "expect",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 88,
+                                "column": 7,
+                                "index": 2619
+                            },
+                            "end": {
+                                "line": 88,
+                                "column": 35,
+                                "index": 2648
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "it",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 91,
+                        "column": 5,
+                        "index": 2662
+                    },
+                    "end": {
+                        "line": 94,
+                        "column": 7,
+                        "index": 2839
+                    },
+                    "name": "disables buttons if isDisabled is true",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 9,
+                            "line": 91
+                        },
+                        "end": {
+                            "column": 46,
+                            "line": 91
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "expect",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 93,
+                                "column": 7,
+                                "index": 2777
+                            },
+                            "end": {
+                                "line": 93,
+                                "column": 60,
+                                "index": 2831
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "describe",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 97,
+                "column": 3,
+                "index": 2849
+            },
+            "end": {
+                "line": 135,
+                "column": 5,
+                "index": 4353
+            },
+            "name": "runs validation",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 13,
+                    "line": 97
+                },
+                "end": {
+                    "column": 27,
+                    "line": 97
+                }
+            },
+            "children": [
+                {
+                    "type": "it",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 106,
+                        "column": 5,
+                        "index": 3288
+                    },
+                    "end": {
+                        "line": 112,
+                        "column": 7,
+                        "index": 3515
+                    },
+                    "name": "does not submit if the inputs do not pass the schema",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 9,
+                            "line": 106
+                        },
+                        "end": {
+                            "column": 60,
+                            "line": 106
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "expect",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 111,
+                                "column": 7,
+                                "index": 3467
+                            },
+                            "end": {
+                                "line": 111,
+                                "column": 46,
+                                "index": 3507
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "it",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 114,
+                        "column": 5,
+                        "index": 3521
+                    },
+                    "end": {
+                        "line": 121,
+                        "column": 7,
+                        "index": 3808
+                    },
+                    "name": "still fires the stateHandler even if submission is not successful",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 9,
+                            "line": 114
+                        },
+                        "end": {
+                            "column": 73,
+                            "line": 114
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "expect",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 119,
+                                "column": 7,
+                                "index": 3713
+                            },
+                            "end": {
+                                "line": 119,
+                                "column": 46,
+                                "index": 3753
+                            }
+                        },
+                        {
+                            "type": "expect",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 120,
+                                "column": 7,
+                                "index": 3760
+                            },
+                            "end": {
+                                "line": 120,
+                                "column": 46,
+                                "index": 3800
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "it",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 123,
+                        "column": 5,
+                        "index": 3814
+                    },
+                    "end": {
+                        "line": 134,
+                        "column": 7,
+                        "index": 4347
+                    },
+                    "name": "renders the Error component with the correct message if an input is invalid",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 9,
+                            "line": 123
+                        },
+                        "end": {
+                            "column": 83,
+                            "line": 123
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "expect",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 133,
+                                "column": 7,
+                                "index": 4278
+                            },
+                            "end": {
+                                "line": 133,
+                                "column": 67,
+                                "index": 4339
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "describe",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 137,
+                "column": 3,
+                "index": 4357
+            },
+            "end": {
+                "line": 147,
+                "column": 5,
+                "index": 4802
+            },
+            "name": "generates labels",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 13,
+                    "line": 137
+                },
+                "end": {
+                    "column": 28,
+                    "line": 137
+                }
+            },
+            "children": [
+                {
+                    "type": "it",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 138,
+                        "column": 5,
+                        "index": 4398
+                    },
+                    "end": {
+                        "line": 141,
+                        "column": 7,
+                        "index": 4581
+                    },
+                    "name": "generates and maps labels for inputs with aria-labelledby",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 9,
+                            "line": 138
+                        },
+                        "end": {
+                            "column": 65,
+                            "line": 138
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "expect",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 140,
+                                "column": 7,
+                                "index": 4508
+                            },
+                            "end": {
+                                "line": 140,
+                                "column": 71,
+                                "index": 4573
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "it",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 143,
+                        "column": 5,
+                        "index": 4587
+                    },
+                    "end": {
+                        "line": 146,
+                        "column": 7,
+                        "index": 4796
+                    },
+                    "name": "does not generate labels if the skip prop is passed",
+                    "nameType": "StringLiteral",
+                    "nameRange": {
+                        "start": {
+                            "column": 9,
+                            "line": 143
+                        },
+                        "end": {
+                            "column": 59,
+                            "line": 143
+                        }
+                    },
+                    "children": [
+                        {
+                            "type": "expect",
+                            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                            "start": {
+                                "line": 145,
+                                "column": 7,
+                                "index": 4720
+                            },
+                            "end": {
+                                "line": 145,
+                                "column": 74,
+                                "index": 4788
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "expects": [
+        {
+            "type": "expect",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 62,
+                "column": 7,
+                "index": 1707
+            },
+            "end": {
+                "line": 62,
+                "column": 64,
+                "index": 1765
+            }
+        },
+        {
+            "type": "expect",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 88,
+                "column": 7,
+                "index": 2619
+            },
+            "end": {
+                "line": 88,
+                "column": 35,
+                "index": 2648
+            }
+        },
+        {
+            "type": "expect",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 93,
+                "column": 7,
+                "index": 2777
+            },
+            "end": {
+                "line": 93,
+                "column": 60,
+                "index": 2831
+            }
+        },
+        {
+            "type": "expect",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 111,
+                "column": 7,
+                "index": 3467
+            },
+            "end": {
+                "line": 111,
+                "column": 46,
+                "index": 3507
+            }
+        },
+        {
+            "type": "expect",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 119,
+                "column": 7,
+                "index": 3713
+            },
+            "end": {
+                "line": 119,
+                "column": 46,
+                "index": 3753
+            }
+        },
+        {
+            "type": "expect",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 120,
+                "column": 7,
+                "index": 3760
+            },
+            "end": {
+                "line": 120,
+                "column": 46,
+                "index": 3800
+            }
+        },
+        {
+            "type": "expect",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 133,
+                "column": 7,
+                "index": 4278
+            },
+            "end": {
+                "line": 133,
+                "column": 67,
+                "index": 4339
+            }
+        },
+        {
+            "type": "expect",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 140,
+                "column": 7,
+                "index": 4508
+            },
+            "end": {
+                "line": 140,
+                "column": 71,
+                "index": 4573
+            }
+        },
+        {
+            "type": "expect",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 145,
+                "column": 7,
+                "index": 4720
+            },
+            "end": {
+                "line": 145,
+                "column": 74,
+                "index": 4788
+            }
+        }
+    ],
+    "itBlocks": [
+        {
+            "type": "it",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 59,
+                "column": 5,
+                "index": 1552
+            },
+            "end": {
+                "line": 63,
+                "column": 7,
+                "index": 1773
+            },
+            "name": "renders its children",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 9,
+                    "line": 59
+                },
+                "end": {
+                    "column": 28,
+                    "line": 59
+                }
+            },
+            "children": [
+                {
+                    "type": "expect",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 62,
+                        "column": 7,
+                        "index": 1707
+                    },
+                    "end": {
+                        "line": 62,
+                        "column": 64,
+                        "index": 1765
+                    }
+                }
+            ]
+        },
+        {
+            "type": "it",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 65,
+                "column": 5,
+                "index": 1779
+            },
+            "end": {
+                "line": 81,
+                "column": 7,
+                "index": 2422
+            },
+            "name": "registers inputs with IDs",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 9,
+                    "line": 65
+                },
+                "end": {
+                    "column": 33,
+                    "line": 65
+                }
+            }
+        },
+        {
+            "type": "it",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 85,
+                "column": 5,
+                "index": 2474
+            },
+            "end": {
+                "line": 89,
+                "column": 7,
+                "index": 2656
+            },
+            "name": "disables all inputs if isDisabled is true",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 9,
+                    "line": 85
+                },
+                "end": {
+                    "column": 49,
+                    "line": 85
+                }
+            },
+            "children": [
+                {
+                    "type": "expect",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 88,
+                        "column": 7,
+                        "index": 2619
+                    },
+                    "end": {
+                        "line": 88,
+                        "column": 35,
+                        "index": 2648
+                    }
+                }
+            ]
+        },
+        {
+            "type": "it",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 91,
+                "column": 5,
+                "index": 2662
+            },
+            "end": {
+                "line": 94,
+                "column": 7,
+                "index": 2839
+            },
+            "name": "disables buttons if isDisabled is true",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 9,
+                    "line": 91
+                },
+                "end": {
+                    "column": 46,
+                    "line": 91
+                }
+            },
+            "children": [
+                {
+                    "type": "expect",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 93,
+                        "column": 7,
+                        "index": 2777
+                    },
+                    "end": {
+                        "line": 93,
+                        "column": 60,
+                        "index": 2831
+                    }
+                }
+            ]
+        },
+        {
+            "type": "it",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 106,
+                "column": 5,
+                "index": 3288
+            },
+            "end": {
+                "line": 112,
+                "column": 7,
+                "index": 3515
+            },
+            "name": "does not submit if the inputs do not pass the schema",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 9,
+                    "line": 106
+                },
+                "end": {
+                    "column": 60,
+                    "line": 106
+                }
+            },
+            "children": [
+                {
+                    "type": "expect",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 111,
+                        "column": 7,
+                        "index": 3467
+                    },
+                    "end": {
+                        "line": 111,
+                        "column": 46,
+                        "index": 3507
+                    }
+                }
+            ]
+        },
+        {
+            "type": "it",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 114,
+                "column": 5,
+                "index": 3521
+            },
+            "end": {
+                "line": 121,
+                "column": 7,
+                "index": 3808
+            },
+            "name": "still fires the stateHandler even if submission is not successful",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 9,
+                    "line": 114
+                },
+                "end": {
+                    "column": 73,
+                    "line": 114
+                }
+            },
+            "children": [
+                {
+                    "type": "expect",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 119,
+                        "column": 7,
+                        "index": 3713
+                    },
+                    "end": {
+                        "line": 119,
+                        "column": 46,
+                        "index": 3753
+                    }
+                },
+                {
+                    "type": "expect",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 120,
+                        "column": 7,
+                        "index": 3760
+                    },
+                    "end": {
+                        "line": 120,
+                        "column": 46,
+                        "index": 3800
+                    }
+                }
+            ]
+        },
+        {
+            "type": "it",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 123,
+                "column": 5,
+                "index": 3814
+            },
+            "end": {
+                "line": 134,
+                "column": 7,
+                "index": 4347
+            },
+            "name": "renders the Error component with the correct message if an input is invalid",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 9,
+                    "line": 123
+                },
+                "end": {
+                    "column": 83,
+                    "line": 123
+                }
+            },
+            "children": [
+                {
+                    "type": "expect",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 133,
+                        "column": 7,
+                        "index": 4278
+                    },
+                    "end": {
+                        "line": 133,
+                        "column": 67,
+                        "index": 4339
+                    }
+                }
+            ]
+        },
+        {
+            "type": "it",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 138,
+                "column": 5,
+                "index": 4398
+            },
+            "end": {
+                "line": 141,
+                "column": 7,
+                "index": 4581
+            },
+            "name": "generates and maps labels for inputs with aria-labelledby",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 9,
+                    "line": 138
+                },
+                "end": {
+                    "column": 65,
+                    "line": 138
+                }
+            },
+            "children": [
+                {
+                    "type": "expect",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 140,
+                        "column": 7,
+                        "index": 4508
+                    },
+                    "end": {
+                        "line": 140,
+                        "column": 71,
+                        "index": 4573
+                    }
+                }
+            ]
+        },
+        {
+            "type": "it",
+            "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+            "start": {
+                "line": 143,
+                "column": 5,
+                "index": 4587
+            },
+            "end": {
+                "line": 146,
+                "column": 7,
+                "index": 4796
+            },
+            "name": "does not generate labels if the skip prop is passed",
+            "nameType": "StringLiteral",
+            "nameRange": {
+                "start": {
+                    "column": 9,
+                    "line": 143
+                },
+                "end": {
+                    "column": 59,
+                    "line": 143
+                }
+            },
+            "children": [
+                {
+                    "type": "expect",
+                    "file": "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx",
+                    "start": {
+                        "line": 145,
+                        "column": 7,
+                        "index": 4720
+                    },
+                    "end": {
+                        "line": 145,
+                        "column": 74,
+                        "index": 4788
+                    }
+                }
+            ]
+        }
+    ]
+}
