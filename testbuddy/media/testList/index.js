@@ -9,7 +9,22 @@
 
   /** @type {Array<{ value: string }>} */
   let tests = oldState.tests;
-  updateTests(tests);
+  const setTreeListener = (tree) => {
+    if (tree?.getAttribute("listener") !== "true") {
+      tree.addEventListener("vsc-run-action", (ev) => {
+        console.log(ev.detail);
+        vscode.postMessage({
+          type: ev.detail.actionId,
+          value: ev.detail.value,
+        });
+      });
+      tree?.setAttribute("listener", "true");
+    }
+  };
+
+  if (tests) {
+    updateTests(tests);
+  }
   //   document.getElementById("jest").addEventListener("click", () => {
   //     console.log("Ejecute");
   //     vscode.postMessage({ type: "test", value: "all" });
@@ -33,9 +48,7 @@
 
     tree.data = testList;
 
-    tree.addEventListener("vsc-run-action", (ev) => {
-      console.log(ev.detail);
-    });
+    setTreeListener(tree);
   }
   function addTests(testList) {
     console.log(testList, "---");
@@ -46,12 +59,12 @@
     const actions = [
       {
         icon: "run",
-        actionId: "run",
+        actionId: "runTest",
         tooltip: "Run all",
       },
       {
         icon: "refresh",
-        actionId: "regenerate",
+        actionId: "regenerateTest",
         tooltip: "Regenerate tests",
       },
     ];
@@ -92,12 +105,15 @@
       root.label = getPath(root.file);
       root.icons = icons;
       root.actions = actions;
-      root.value = root.file;
+      root.value = { file: root.file, test: "all" };
       root.subItems = root.children.map((test) => {
         test.label = test.name;
         test.icons = icons;
         test.actions = actions;
-        test.value = test.file;
+        test.value = {
+          file: root.file,
+          test: test.name,
+        };
         return test;
       });
       return root;
@@ -142,10 +158,8 @@
     // ];
 
     tree.data = data;
+    setTreeListener(tree);
 
-    tree.addEventListener("vsc-run-action", (ev) => {
-      console.log(ev.detail);
-    });
     vscode.setState({ tests: testList });
   }
 })();

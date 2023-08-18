@@ -24,6 +24,7 @@ export class EditorWebViewViewProvider implements vscode.WebviewViewProvider {
 
       localResourceRoots: [
         vscode.Uri.joinPath(this._context.extensionUri, "media"),
+        vscode.Uri.joinPath(this._context.extensionUri, "node_modules"),
       ],
     };
 
