@@ -1,8 +1,8 @@
-import * as cp from "child_process";
+import * as shell from "shelljs";
 
 export const execShell = (cmd: string) =>
   new Promise<string>((resolve, reject) => {
-    cp.exec(cmd, (err, out) => {
+    shell.exec(cmd, (code, out, err) => {
       if (err) {
         return reject(err);
       }

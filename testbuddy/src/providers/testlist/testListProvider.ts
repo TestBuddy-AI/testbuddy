@@ -55,7 +55,7 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
           break;
         }
         case "test": {
-          console.log("Llegue");
+          console.log(data.value);
           this.test().then(console.log);
           //execute shell command for testing
           // execShell(
@@ -77,7 +77,7 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
       });
   }
 
-  async test() {}
+  async test(testUrl: string, itBlock?: string) {}
 
   async loadScripts() {
     let testbuddyCMD = await execShell(
