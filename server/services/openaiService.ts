@@ -2,7 +2,7 @@ import { CreateChatCompletionResponse } from "openai";
 import { openAI } from "../config/openai";
 import { ICodeLanguage } from "../types";
 
-export const generateUnitTests = async (codeMessage: string, codeLanguage: ICodeLanguage): Promise<CreateChatCompletionResponse> => {
+export const unitTestsPrompt = async (codeMessage: string, codeLanguage: ICodeLanguage): Promise<CreateChatCompletionResponse> => {
   const response = await openAI.createChatCompletion({
     model: "gpt-3.5-turbo-16k",
     messages: [
