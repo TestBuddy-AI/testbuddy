@@ -1,12 +1,11 @@
 import express from "express";
-import { generateUnitTests, readJSFile, readTSFile } from "../controllers/apiController";
-import { helloWorld } from "../controllers/apiController";
+import { generateUnitTests, helloWorld, receiveFile, unitTestsPrompt } from "../controllers/apiController";
 
 const router = express.Router();
 
-router.post("/generate-unit-tests", generateUnitTests);
+router.post("/unit-tests-prompt", unitTestsPrompt);
 router.get("/hello-world", helloWorld);
-router.post("/read-ts-file", readTSFile);
-router.post("/read-js-file", readJSFile);
+router.post("/receiveFile", receiveFile);
+router.post("/generate-unit-tests", generateUnitTests);
 
 export default router;

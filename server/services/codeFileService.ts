@@ -1,69 +1,62 @@
 import * as fs from "fs";
-import * as path from "path";
-import * as ts from "typescript";
-import { IParsedFunction } from "../types/index";
+import path from "path";
+import ts from "typescript";
+import { ICodeLanguage } from "../types";
+import { unitTestsPrompt } from "./openaiService";
 
+function extractFunctionsAndVariables(sourceFile: ts.SourceFile): string[] {
+  const results: string[] = [];
 
-export const readTypescriptFile = (): IParsedFunction[] => {
-  const inputFilePath = path.join(__dirname, "../data/operationsFunctions.ts")
-  const fileContents = fs.readFileSync(inputFilePath, "utf8");
-
-  const sourceFile = ts.createSourceFile(
-    inputFilePath,
-    fileContents,
-    ts.ScriptTarget.Latest,
-    true
-  );
-
-  const functionObjects: IParsedFunction[] = [];
-
-  function parseTypescriptFunctions(node: ts.Node) {
-    if (
-      ts.isFunctionDeclaration(node) ||
-      ts.isArrowFunction(node) ||
-      ts.isFunctionExpression(node)
-    ) {
-      const functionCode = fileContents.substring(node.pos, node.end);
-
-      // Remove leading whitespace and newline characters
-      const cleanedCode = functionCode.replace(/^\s+/gm, "");
-
-      const functionName = (node as ts.FunctionLikeDeclaration).name?.getText() || `unnamed_${functionObjects.length}`;
-
-      // Remove newline characters from the code
-      const codeWithoutNewlines = cleanedCode.replace(/\n/g, "");
-
-      functionObjects.push({ name: functionName, code: codeWithoutNewlines });
+  function visit(node: ts.Node) {
+    if (ts.isFunctionDeclaration(node) || ts.isVariableStatement(node)) {
+      let code = node.getText(sourceFile);
+      // Remove newlines and extra spaces
+      code = code.replace(/\s+/g, " ").trim();
+      results.push(code);
     }
-    ts.forEachChild(node, parseTypescriptFunctions);
+    ts.forEachChild(node, visit);
   }
 
-  parseTypescriptFunctions(sourceFile);
+  visit(sourceFile);
 
-  return functionObjects;
+  return results;
 }
 
-function parseFunctions(jsCode: string): IParsedFunction[] {
-  const functionRegex = /function\s+(\w+)\s*\(([^)]*)\)\s*{([\s\S]*?)}/g;
-  const functions: IParsedFunction[] = [];
 
-  let match;
-  while ((match = functionRegex.exec(jsCode)) !== null) {
-    const [, functionName, parameters, functionCode] = match;
-    const cleanedFunctionCode = functionCode.replace(/\s+/g, " ");
-    const fullFunctionCode = `function ${functionName}(${parameters}) {${cleanedFunctionCode}}`;
-    functions.push({
-      name: functionName,
-      code: fullFunctionCode
-    });
+export function readJSorTSFile(): string[] {
+  const filePath = path.join(__dirname, "../uploads/operationsFunctions.ts")
+  const program = ts.createProgram([filePath], { allowJs: true });
+  const sourceFile = program.getSourceFile(filePath);
+
+  if (!sourceFile) {
+    throw new Error(`Cannot read the source file: ${filePath}`);
   }
 
-  return functions;
+  return extractFunctionsAndVariables(sourceFile);
 }
 
-export const readJavascriptFile = (): IParsedFunction[] => {
-  const inputFilePath = path.join(__dirname, "../data/JSOperations.js")
-  const jsCode = fs.readFileSync(inputFilePath, "utf-8");
+export function receiveFile(fileName: string, file: Buffer, success: (message: string) => void, error: (message: string) => void) {
+  const storagePath = path.join(__dirname, "../uploads");
 
-  return parseFunctions(jsCode);
+  if (!fs.existsSync(storagePath)) fs.mkdirSync(storagePath);
+
+  const filePath = path.join(storagePath, fileName);
+
+  fs.writeFile(filePath, file, (err) => {
+    if (err) error("Error saving file");
+
+    success("File saved successfully");
+  });
+}
+
+export function generateUnitTests() {
+  const functionsToTest = readJSorTSFile();
+
+  if (functionsToTest.length === 0) throw new Error("No functions found in file");
+
+  return functionsToTest.map( async(fn) => {
+    const { choices } = await unitTestsPrompt(fn, ICodeLanguage.typescript);
+    return choices[0].message?.content
+  });
+
 }
