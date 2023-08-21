@@ -26,7 +26,7 @@
         "unmatched": 0,
         "updated": 0
     },
-    "startTime": 1692401812679,
+    "startTime": 1692410607282,
     "success": true,
     "testResults": [
         {
@@ -92,10 +92,10 @@
                     "title": "sets the fieldErrors key to the yup messages on failure"
                 }
             ],
-            "endTime": 1692401815430,
+            "endTime": 1692410608906,
             "message": "",
             "name": "/Users/camilo.salinas/Documents/Personal/Github/testbuddy/cases/lowForm/tests/useLowForm.test.ts",
-            "startTime": 1692401813207,
+            "startTime": 1692410607614,
             "status": "passed",
             "summary": ""
         },
@@ -201,10 +201,10 @@
                     "title": "does not generate labels if the skip prop is passed"
                 }
             ],
-            "endTime": 1692401815575,
+            "endTime": 1692410608976,
             "message": "",
             "name": "/Users/camilo.salinas/Documents/Personal/Github/testbuddy/cases/lowForm/tests/Form.test.tsx",
-            "startTime": 1692401813207,
+            "startTime": 1692410607615,
             "status": "passed",
             "summary": ""
         }

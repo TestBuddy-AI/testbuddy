@@ -29,6 +29,11 @@ export const getWelcomeHtml = (
     )
   );
   html = html.replace("{{jsSource2}}", scriptUri2);
+
+  const videoUri = webview.asWebviewUri(
+    vscode.Uri.joinPath(_context.extensionUri, "media/lottie.gif")
+  );
+  html = html.replace("{{gifURL}}", videoUri);
   // Do the same for the stylesheet.
   const styleResetUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media", "reset.css")
