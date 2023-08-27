@@ -5,30 +5,28 @@ import {
   IResponseStatus,
   ISuccessResponse,
 } from "../types/response";
-import { File, Blob } from "buffer";
+import path = require("path");
 
 export async function generateTests(buffer: Buffer, fileName: string) {
   try {
-    console.log("entre a generateTests");
-    let form = new FormData();
-
-    form.append("file", buffer, {
-      filename: fileName,
-    });
     // 👇️ const data: GetUsersResponse
     console.log("ejecutando");
-    const { data, status } = await axios.post<
-      ISuccessResponse | IErrorResponse
-    >("https://test-buddy-server.onrender.com/receiveFile", form, {
-      headers: {
-        Accept: "application/json",
-      },
-    });
+    await axios.post(
+      "https://test-buddy-server.onrender.com/receiveFile",
+      buffer,
+      {
+        headers: {
+          "Content-Type": "application/octet-stream", // Change this to send as raw binary data
+          "File-Name": path.basename(fileName),
+        },
+      }
+    );
     console.log("Listo");
-    console.log(JSON.stringify(data, null, 4));
-
+    const { data, status } = await axios.post(
+      "https://test-buddy-server.onrender.com/generate-unit-tests"
+    );
     // 👇️ "response status is: 200"
-    console.log("response status is: ", status);
+    console.log(data);
 
     return data;
   } catch (error) {
