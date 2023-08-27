@@ -6,6 +6,8 @@ import { checkNpm } from "../../utils/checkEnv";
 import { parse } from "jest-editor-support";
 import { ParsedNode } from "jest-editor-support/index";
 import * as fs from "fs";
+import { generateTests } from "../../utils/useAxios";
+import { Blob } from "buffer";
 
 //https://stackoverflow.com/questions/43007267/how-to-run-a-system-command-from-vscode-extension Check answers at the end, fs.watch for file updates
 export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
@@ -57,6 +59,29 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
         case "test": {
           console.log(data.value);
           this.test().then(console.log);
+          //execute shell command for testing
+          // execShell(
+          //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
+          // ).then(console.log);
+          break;
+        }
+        case "generate": {
+          console.log(data.value);
+
+          const editor = vscode.window.activeTextEditor;
+
+          if (editor) {
+            let document = editor.document;
+
+            // Get the document text
+
+            console.log(document);
+
+            let buffer = fs.readFileSync(document.uri.fsPath);
+
+            generateTests(buffer, document.fileName).then(console.log);
+            // DO SOMETHING WITH `documentText`
+          }
           //execute shell command for testing
           // execShell(
           //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`

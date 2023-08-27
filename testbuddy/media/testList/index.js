@@ -162,6 +162,12 @@
 
     vscode.setState({ tests: testList });
   }
+
+  document
+    .getElementById("btn-generate-tests")
+    .addEventListener("vsc-click", (ev) => {
+      vscode.postMessage({ type: "generate", value: {} });
+    });
 })();
 
 var getPath = function (str) {
