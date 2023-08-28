@@ -27,7 +27,6 @@ export function receiveFile(fileName: string, file: Buffer, success: (message: s
 
   if (!fs.existsSync(storagePath)) fs.mkdirSync(storagePath);
 
-  const fileExtension = fileName.split(".")[1];
   const filePath = path.join(storagePath, fileName);
 
   const filesInDirectory = fs.readdirSync(storagePath);
@@ -90,7 +89,7 @@ function getFilenameLang(fileName: string) {
       return undefined;
   }
 }
-
+/*
 function calculateFileHash(filePath: string, algorithm: string = 'sha256'): Promise<string> {
   return new Promise((resolve, reject) => {
     const hash = crypto.createHash(algorithm);
@@ -109,4 +108,4 @@ function calculateFileHash(filePath: string, algorithm: string = 'sha256'): Prom
       reject(error);
     });
   });
-}
+}*/
