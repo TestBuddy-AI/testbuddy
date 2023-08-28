@@ -2,7 +2,7 @@ import * as fs from "fs";
 import path from "path";
 import ts from "typescript";
 import { ICodeLanguage, IReadFileFunctionsResponse } from "../types";
-import * as crypto from "crypto";
+//import * as crypto from "crypto";
 
 function extractFunctionsAndVariables(sourceFile: ts.SourceFile): string[] {
   const results: string[] = [];
