@@ -2,7 +2,7 @@ import * as fs from "fs";
 import path from "path";
 import ts from "typescript";
 import { ICodeLanguage, IReadFileFunctionsResponse } from "../types";
-import { unitTestsPrompt } from "./openaiService";
+import * as crypto from "crypto";
 
 function extractFunctionsAndVariables(sourceFile: ts.SourceFile): string[] {
   const results: string[] = [];
@@ -28,7 +28,7 @@ export function receiveFile(fileName: string, file: Buffer, success: (message: s
   if (!fs.existsSync(storagePath)) fs.mkdirSync(storagePath);
 
   const fileExtension = fileName.split(".")[1];
-  const filePath = path.join(storagePath, `file.${fileExtension}`);
+  const filePath = path.join(storagePath, fileName);
 
   const filesInDirectory = fs.readdirSync(storagePath);
 
@@ -73,20 +73,7 @@ export function readJSorTSFile(): IReadFileFunctionsResponse {
     throw new Error(`Could not infer code language of file ${fileName}`);
   }
 
-  return { lang: codeLang, functions: extractFunctionsAndVariables(sourceFile) };
-}
-
-export function generateUnitTests() {
-  const functionsToTest = readJSorTSFile().functions;
-
-  if (functionsToTest.length === 0) throw new Error("No functions found in file");
-
-  console.log(functionsToTest);
-
-  return functionsToTest.map(async (fn) => {
-    const { choices } = await unitTestsPrompt(fn, ICodeLanguage.typescript);
-    return choices[0].message?.content;
-  });
+  return { fileName: fileName, lang: codeLang, functions: extractFunctionsAndVariables(sourceFile) };
 }
 
 function getFilenameLang(fileName: string) {
@@ -102,4 +89,24 @@ function getFilenameLang(fileName: string) {
     default:
       return undefined;
   }
+}
+
+function calculateFileHash(filePath: string, algorithm: string = 'sha256'): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash(algorithm);
+    const stream = fs.createReadStream(filePath);
+
+    stream.on('data', chunk => {
+      hash.update(chunk);
+    });
+
+    stream.on('end', () => {
+      const fileHash = hash.digest('hex');
+      resolve(fileHash);
+    });
+
+    stream.on('error', error => {
+      reject(error);
+    });
+  });
 }

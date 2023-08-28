@@ -64,7 +64,7 @@ export const receiveFile = async (req: Request, res: Response) => {
 
 export const generateUnitTests = async (req: Request, res: Response) => {
   try {
-    const resolvedArray = await Promise.all(codeFileService.generateUnitTests());
+    const resolvedArray = await Promise.all(openaiService.generateUnitTests());
 
     const result = resolvedArray.join(",");
 

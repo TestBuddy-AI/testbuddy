@@ -30,6 +30,7 @@ export interface IErrorResponse {
 }
 
 export interface IReadFileFunctionsResponse {
+  fileName: string,
   lang: ICodeLanguage,
   functions: string[]
 }

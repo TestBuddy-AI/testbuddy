@@ -1,6 +1,7 @@
 import { CreateChatCompletionResponse } from "openai";
 import { openAI } from "../config/openai";
 import { ICodeLanguage } from "../types";
+import { readJSorTSFile } from "./codeFileService";
 
 export const unitTestsPrompt = async (codeMessage: string, codeLanguage: ICodeLanguage): Promise<CreateChatCompletionResponse> => {
   const response = await openAI.createChatCompletion({
@@ -31,4 +32,15 @@ export const unitTestsPrompt = async (codeMessage: string, codeLanguage: ICodeLa
     model,
     choices
   };
+}
+
+export function generateUnitTests() {
+  const { functions, lang } = readJSorTSFile();
+
+  if (functions.length === 0) throw new Error("No functions found in file");
+
+  return functions.map(async (fn) => {
+    const { choices } = await unitTestsPrompt(fn, lang);
+    return choices[0].message?.content;
+  });
 }
