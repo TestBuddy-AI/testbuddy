@@ -77,7 +77,7 @@ export const generateUnitTests = async (req: Request, res: Response) => {
     res.status(500).send(
       {
         status: IResponseStatus.error,
-        message: error,
+        message: (error as any).toString(),
         data: {}
       } as IErrorResponse
     )
