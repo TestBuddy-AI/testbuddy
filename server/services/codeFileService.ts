@@ -30,23 +30,16 @@ export function receiveFile(fileName: string, file: Buffer, success: (message: s
   const fileExtension = fileName.split(".")[1];
   const filePath = path.join(storagePath, `file.${fileExtension}`);
 
-  fs.readdir(storagePath, (err, files) => {
-    if (err) {
-      error(`$Error reading directory:, ${err}`);
-      return;
-    }
+  const filesInDirectory = fs.readdirSync(storagePath);
 
-    files.forEach((file) => {
+  if (filesInDirectory) {
+    filesInDirectory.forEach((file) => {
       const filePath = path.join(storagePath, file);
 
-      fs.unlink(filePath, (unlinkErr) => {
-        if (unlinkErr) {
-          error(`$Error reading directory:, ${unlinkErr}`);
-          return;
-        }
-      });
+      fs.unlinkSync(filePath);
+      console.log(`File ${file} was unlinked`);
     });
-  });
+  }
 
   fs.writeFile(filePath, file, (err) => {
     if (err) {
@@ -54,6 +47,7 @@ export function receiveFile(fileName: string, file: Buffer, success: (message: s
       return;
     }
 
+    console.log("Writing file...");
     success("File saved successfully");
   });
 }
@@ -89,9 +83,9 @@ export function generateUnitTests() {
 
   console.log(functionsToTest);
 
-  return functionsToTest.map( async(fn) => {
+  return functionsToTest.map(async (fn) => {
     const { choices } = await unitTestsPrompt(fn, ICodeLanguage.typescript);
-    return choices[0].message?.content
+    return choices[0].message?.content;
   });
 }
 
