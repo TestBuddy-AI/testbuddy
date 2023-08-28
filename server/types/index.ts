@@ -28,3 +28,8 @@ export interface IErrorResponse {
   data: object;
   message: string;
 }
+
+export interface IReadFileFunctionsResponse {
+  lang: ICodeLanguage,
+  functions: string[]
+}
