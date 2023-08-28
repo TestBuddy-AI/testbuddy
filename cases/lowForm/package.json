@@ -7,8 +7,8 @@
     "dist"
   ],
   "scripts": {
-    "test:list": "jest --listTests --json > testList.json",
-    "test": "jest --json --outputFile=output.json",
+    "test:list": "jest --listTests",
+    "test": "jest",
     "build": "rollup -c",
     "prepack": "npm run build",
     "testbuddy": "jest --json --outputFile=output.json",

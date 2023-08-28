@@ -14,8 +14,8 @@
       tree.addEventListener("vsc-run-action", (ev) => {
         console.log(ev.detail);
         vscode.postMessage({
-          type: ev.detail.actionId,
-          value: ev.detail.value,
+          type: "test",
+          value: { ...ev.detail.value, action: ev.detail.actionId },
         });
       });
       tree?.setAttribute("listener", "true");
@@ -162,6 +162,12 @@
 
     vscode.setState({ tests: testList });
   }
+
+  document
+    .getElementById("btn-generate-tests")
+    .addEventListener("vsc-click", (ev) => {
+      vscode.postMessage({ type: "generate", value: {} });
+    });
 })();
 
 var getPath = function (str) {
