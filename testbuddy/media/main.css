@@ -55,3 +55,24 @@ body {
     padding: 0;
     width: 28px;
   }
+
+  .loader{
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999999;
+	background: rgba(0,0,0,0.8);
+  }
+
+  .loader.active{
+	display: flex;
+  }
+
+  .loader img{
+	max-width: 100%;
+  }
