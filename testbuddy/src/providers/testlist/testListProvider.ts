@@ -8,6 +8,8 @@ import { ParsedNode } from "jest-editor-support/index";
 import * as fs from "fs";
 import { generateTests } from "../../utils/useAxios";
 import { Blob } from "buffer";
+import { ISuccessResponse } from "../../types/response";
+import path = require("path");
 
 //https://stackoverflow.com/questions/43007267/how-to-run-a-system-command-from-vscode-extension Check answers at the end, fs.watch for file updates
 export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
@@ -79,7 +81,24 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
 
             let buffer = fs.readFileSync(document.uri.fsPath);
 
-            generateTests(buffer, document.fileName).then(console.log);
+            generateTests(buffer, document.fileName)
+              .then((response) => {
+                let fileContents = response.data.result;
+                let encoder = new TextEncoder();
+                return vscode.workspace.fs.writeFile(
+                  vscode.Uri.joinPath(
+                    vscode.workspace.workspaceFolders[0].uri,
+                    "tests/" +
+                      path.basename(document.uri.fsPath).split(".")[0] +
+                      ".test.ts"
+                  ),
+                  encoder.encode(fileContents as string)
+                );
+              })
+              .then(() => {
+                return this.initialize();
+              })
+              .then(console.log);
             // DO SOMETHING WITH `documentText`
           }
           //execute shell command for testing
@@ -91,15 +110,7 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
       }
     });
 
-    this.loadScripts()
-      .then(() => {
-        console.log("LOADED");
-        return this.loadCurrentTests();
-      })
-      .then((tests) => {
-        console.log("TESTS", tests);
-        this.addTests(tests);
-      });
+    this.initialize().then(console.log);
   }
 
   async test(testUrl: string, itBlock?: string) {}
@@ -143,6 +154,18 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
   public addTests(testList: ParsedNode[]) {
     console.log(testList);
     this._view?.webview.postMessage({ type: "addTests", content: testList });
+  }
+
+  public async initialize() {
+    return this.loadScripts()
+      .then(() => {
+        console.log("LOADED");
+        return this.loadCurrentTests();
+      })
+      .then((tests) => {
+        console.log("TESTS", tests);
+        this.addTests(tests);
+      });
   }
 
   public addColor() {
