@@ -34,8 +34,8 @@ export const unitTestsPrompt = async (codeMessage: string, codeLanguage: ICodeLa
   };
 }
 
-export function generateUnitTests() {
-  const { functions, lang } = readJSorTSFile();
+export function generateUnitTests(fileName: string) {
+  const { functions, lang } = readJSorTSFile(fileName);
 
   if (functions.length === 0) throw new Error("No functions found in file");
 
