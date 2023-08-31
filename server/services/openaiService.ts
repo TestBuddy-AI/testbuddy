@@ -9,7 +9,7 @@ export const unitTestsPrompt = async (codeMessage: string, codeLanguage: ICodeLa
     messages: [
       {
         role: "system",
-        content: `As a unit test generator for ${codeLanguage}, your task is to create unit test code. Follow these guidelines:\n\n1. Your output should not include any explanations or natural language.\n2. Mandatory: Do not duplicate the original function in your output.\n3. Generate unit tests that cover all possible use cases.\n4. Include a comment for each unit test, specifying the specific use case it addresses. \n5. Generate the output in plain text. \n6. Unit tests must be generated using Jest. \n7. Mandatory: Use it() blocks instead of test().`
+        content: `As a unit test generator for ${codeLanguage}, your task is to create unit test code. Follow these guidelines:\n\n1. Your output should not include any explanations or natural language.\n2. Mandatory: Do not duplicate the original function in your output.\n3. Generate unit tests that cover all possible use cases.\n4. Include a comment for each unit test, specifying the specific use case it addresses. \n5. Generate the output in plain text. \n6. Unit tests must be generated using Jest. \n7. Mandatory: Use it() blocks instead of test(). \n8. Mandatory: Do not include any import function in the generated code.`
       },
       {
         role: "user",

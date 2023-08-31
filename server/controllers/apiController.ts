@@ -65,8 +65,15 @@ export const receiveFile = async (req: Request, res: Response) => {
 export const generateUnitTests = async (req: Request, res: Response) => {
   try {
     const resolvedArray = await Promise.all(openaiService.generateUnitTests());
+    const resolvedArrayNoMarkdown = resolvedArray.map((code)  => {
+    if (code !== undefined) {
+      return code.replace(/```[\w]*([\s\S]+?)```/g, '$1');
+    }
+    return '';
+  });
+  
 
-    const result = resolvedArray.join(",");
+    const result = resolvedArrayNoMarkdown.join(",");
 
     res.status(200).send({
       status: IResponseStatus.success,
