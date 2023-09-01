@@ -22,10 +22,6 @@ const config = {
 const pool = new ConnectionPool(config);
 
 export const getDbConnection = async () => {
-    try {
-        if (!pool.connected && !pool.connecting) await pool.connect();
-        return pool;
-    } catch (err) {
-        throw err;
-    }
+    if (!pool.connected && !pool.connecting) await pool.connect();
+    return pool;
 };
