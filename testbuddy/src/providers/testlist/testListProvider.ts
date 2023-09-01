@@ -58,8 +58,17 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
           );
           break;
         }
-        case "test": {
-          console.log(data.value);
+        case "runTest": {
+          let fileURL = data.value;
+
+          //execute shell command for testing
+          // execShell(
+          //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
+          // ).then(console.log);
+          break;
+        }
+        case "regenerate": {
+          console.log("Llegue");
           this.test().then(console.log);
           //execute shell command for testing
           // execShell(
@@ -83,12 +92,16 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
   async test(testUrl: string, itBlock?: string) {}
 
   async loadScripts() {
+    let tesBuddyFolder = await execShell(
+      `cd ${vscode.workspace.workspaceFolders[0].uri.path} && mkdir testbuddy`
+    );
+    //TO-DO: Add testbuddy folder to gitignore, Define gitignore rules, add sesion id for teams/workspaces as a file. Create configuration file like .prettierrc(?)
     let testbuddyCMD = await execShell(
-      `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm pkg set 'scripts.testbuddy'='jest --json --outputFile=output.json'`
+      `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm pkg set 'scripts.testbuddy'='jest --json --outputFile=testbuddy/output.json'`
     );
     console.log("testBuddy");
     let testbuddyListCMD = await execShell(
-      `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm pkg set 'scripts.testbuddy:list'='jest --listTests --json > testList.json'`
+      `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm pkg set 'scripts.testbuddy:list'='jest --listTests --json > testbuddy/testList.json'`
     );
     console.log("testBuddyList");
   }
@@ -103,7 +116,7 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
       fs.readFileSync(
         vscode.Uri.joinPath(
           vscode.workspace.workspaceFolders[0].uri,
-          "testList.json"
+          "testbuddy/testList.json"
         ).fsPath,
         "utf8"
       )
