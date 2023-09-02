@@ -11,8 +11,8 @@
     "test": "jest",
     "build": "rollup -c",
     "prepack": "npm run build",
-    "testbuddy": "jest --json --outputFile=testbuddy/output.json",
-    "testbuddy:list": "jest --listTests --json > testbuddy/testList.json"
+    "testbuddy": "jest --json --outputFile=./testbuddy/output.json",
+    "testbuddy:list": "jest --listTests --json > ./testbuddy/testList.json"
   },
   "keywords": [
     "React",
