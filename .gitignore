@@ -131,3 +131,5 @@ dist
 
 # IntelliJ Idea
 .idea
+
+*.DS_Store
