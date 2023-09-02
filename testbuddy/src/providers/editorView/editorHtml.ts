@@ -11,7 +11,7 @@ export const getEditorHtml = (
       _context.extensionPath,
       "src",
       "providers",
-      "editor",
+      "editorView",
       "index.html"
     )
   );
