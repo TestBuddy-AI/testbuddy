@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { EditorWebViewViewProvider } from "./providers/editor/editorProvider";
+import { EditorWebViewViewProvider } from "./providers/editorView/editorProvider";
 import { TestListWebViewViewProvider } from "./providers/testlist/testListProvider";
 import { WelcomeWebViewViewProvider } from "./providers/welcomeView/welcomeProvider";
 import { error } from "console";

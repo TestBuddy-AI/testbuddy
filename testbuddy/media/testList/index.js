@@ -14,8 +14,8 @@
       tree.addEventListener("vsc-run-action", (ev) => {
         console.log(ev.detail);
         vscode.postMessage({
-          type: "test",
-          value: { ...ev.detail.value, action: ev.detail.actionId },
+          type: ev.detail.actionId,
+          value: ev.detail.value,
         });
       });
       tree?.setAttribute("listener", "true");
@@ -40,8 +40,17 @@
         addTests(message.content);
         break;
       }
+      case "loading": {
+        setLoader(message.content);
+        break;
+      }
     }
   });
+
+  function setLoader(active) {
+    if (active) document.querySelector(".loader")?.classList.add("active");
+    else document.querySelector(".loader")?.classList.remove("active");
+  }
 
   function updateTests(testList) {
     const tree = document.getElementById("actions-example");
