@@ -14,8 +14,8 @@
       tree.addEventListener("vsc-run-action", (ev) => {
         console.log(ev.detail);
         vscode.postMessage({
-          type: "test",
-          value: { ...ev.detail.value, action: ev.detail.actionId },
+          type: ev.detail.actionId,
+          value: ev.detail.value,
         });
       });
       tree?.setAttribute("listener", "true");

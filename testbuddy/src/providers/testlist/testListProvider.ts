@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import { getTestListHtml } from "./testListHtml";
-import { execShell } from "../../utils/execShell";
+import { execShell, execShellMultiplatform } from "../../utils/execShell";
 import { checkNpm } from "../../utils/checkEnv";
 import { parse } from "jest-editor-support";
 import { ParsedNode } from "jest-editor-support/index";
@@ -60,7 +60,7 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
         }
         case "runTest": {
           let fileURL = data.value;
-
+          console.log(fileURL);
           //execute shell command for testing
           // execShell(
           //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
@@ -92,8 +92,9 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
   async test(testUrl: string, itBlock?: string) {}
 
   async loadScripts() {
-    let tesBuddyFolder = await execShell(
-      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && mkdir -p testbuddy`
+    let tesBuddyFolder = await execShellMultiplatform(
+      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && mkdir -p testbuddy`,
+      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && if not exist "testbuddy" mkdir testbuddy`
     );
     //TO-DO: Add testbuddy folder to gitignore, Define gitignore rules, add sesion id for teams/workspaces as a file. Create configuration file like .prettierrc(?)
     let testbuddyCMD = await execShell(
