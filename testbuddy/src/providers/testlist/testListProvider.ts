@@ -98,11 +98,11 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
     );
     //TO-DO: Add testbuddy folder to gitignore, Define gitignore rules, add sesion id for teams/workspaces as a file. Create configuration file like .prettierrc(?)
     let testbuddyCMD = await execShell(
-      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm pkg set 'scripts.testbuddy'='jest --json --outputFile=testbuddy/output.json'`
+      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm pkg set "scripts.testbuddy"="jest --json --outputFile=testbuddy/output.json"`
     );
     console.log("testBuddy");
     let testbuddyListCMD = await execShell(
-      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm pkg set 'scripts.testbuddy:list'='jest --listTests --json > testbuddy/testList.json'`
+      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm pkg set "scripts.testbuddy:list"="jest --listTests --json > testbuddy/testList.json"`
     );
     console.log("testBuddyList");
   }
