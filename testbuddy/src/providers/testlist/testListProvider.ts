@@ -93,15 +93,15 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
 
   async loadScripts() {
     let tesBuddyFolder = await execShell(
-      `cd ${vscode.workspace.workspaceFolders[0].uri.path} && mkdir testbuddy`
+      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && mkdir -p testbuddy`
     );
     //TO-DO: Add testbuddy folder to gitignore, Define gitignore rules, add sesion id for teams/workspaces as a file. Create configuration file like .prettierrc(?)
     let testbuddyCMD = await execShell(
-      `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm pkg set 'scripts.testbuddy'='jest --json --outputFile=testbuddy/output.json'`
+      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm pkg set 'scripts.testbuddy'='jest --json --outputFile=testbuddy/output.json'`
     );
     console.log("testBuddy");
     let testbuddyListCMD = await execShell(
-      `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm pkg set 'scripts.testbuddy:list'='jest --listTests --json > testbuddy/testList.json'`
+      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm pkg set 'scripts.testbuddy:list'='jest --listTests --json > testbuddy/testList.json'`
     );
     console.log("testBuddyList");
   }
@@ -109,7 +109,7 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
     console.log("load Current");
 
     await execShell(
-      `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run testbuddy:list`
+      `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm run testbuddy:list`
     );
 
     let testsList: string[] = JSON.parse(
