@@ -32,20 +32,26 @@ export interface IErrorResponse {
 export interface IReadFileFunctionsResponse {
   fileName: string,
   lang: ICodeLanguage,
-  functions: string[]
+  functions: ITestFunction[]
 }
 
 export interface IUnitTestFile {
   fileName: string;
-  fileHash: string;
   sessionId: string;
-  unitTests: string;
-  conversation?: IConversation[]
+  conversation?: IConversation[],
+  functions: ITestFunction[]
   // TODO: add values to properties on runtime
   // prompt_tokens: number;
   // completion_tokens: number;
   // requestTime: number;
   // fileLang: ICodeLanguage;
+}
+
+export interface ITestFunction {
+  fileName: string;
+  code: string;
+  hash: string;
+  unitTests?: string;
 }
 
 export interface IConversation {
