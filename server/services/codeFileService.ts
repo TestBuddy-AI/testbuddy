@@ -1,14 +1,16 @@
 import * as crypto from "crypto";
 import * as fs from "fs";
+import md5 from "md5";
 import path from "path";
 import ts from "typescript";
-import { ICodeLanguage, IReadFileFunctionsResponse, IUnitTestFile } from "../types";
+import { ICodeLanguage, IReadFileFunctionsResponse, ITestFunction, IUnitTestFile } from "../types";
+import { generateFunctionUnitTests } from "./openaiService";
 
-function extractFunctionsAndVariables(sourceFile: ts.SourceFile): string[] {
+function extractFunctions(sourceFile: ts.SourceFile): string[] {
   const results: string[] = [];
 
   function visit(node: ts.Node) {
-    if (ts.isFunctionDeclaration(node) || ts.isVariableStatement(node)) {
+    if (ts.isFunctionDeclaration(node) || ts.isArrowFunction(node)) {
       let code = node.getText(sourceFile);
       code = code.replace(/\s+/g, " ").trim();
       results.push(code);
@@ -54,7 +56,15 @@ export function readJSorTSFile(fileName: string): IReadFileFunctionsResponse {
     throw new Error(`Could not infer code language of file ${fileName}`);
   }
 
-  return { fileName: fileName, lang: codeLang, functions: extractFunctionsAndVariables(sourceFile) };
+  const functions = extractFunctions(sourceFile).map(stringFn => {
+    return {
+      fileName: fileName,
+      code: stringFn,
+      hash: md5(stringFn)
+    } as ITestFunction;
+  });
+
+  return { fileName: fileName, lang: codeLang, functions: functions };
 }
 
 function getFilenameLang(fileName: string) {
@@ -92,14 +102,11 @@ function calculateFileHash(filePath: string, algorithm: string = "sha256"): Prom
   });
 }
 
-export async function storeUnitTests(unitTests: string, sessionId: string, fileName: string) {
-  const hash = await calculateFileHash(path.join(__dirname, `../uploads/${fileName}`));
-
+export async function storeUnitTests(functions: ITestFunction[], sessionId: string, fileName: string) {
   const unitTestFile: IUnitTestFile = {
     fileName,
-    fileHash: hash,
     sessionId,
-    unitTests
+    functions
   };
 
   fs.readFile(path.join(__dirname, "../data/unitTestFiles.json"), "utf8", (error, data) => {
@@ -129,24 +136,24 @@ function addOrUpdateUnitTestFile(unitTestFiles: IUnitTestFile[], unitTestFile: I
   }
 }
 
-export async function getUnitTests(sessionId: string, fileName: string) {
-  const data = fs.readFileSync(path.join(__dirname, "../data/unitTestFiles.json"), "utf8");
-
-  const unitTestFiles: IUnitTestFile[] = JSON.parse(data);
-  const foundTests = unitTestFiles.find(test => test.sessionId === sessionId && test.fileName === fileName);
-
-  if (foundTests) {
-    const hash = await calculateFileHash(path.join(__dirname, `../uploads/${fileName}`));
-
-    if (hash === foundTests.fileHash) {
-      return foundTests.unitTests;
-    }
-
-    return undefined;
-  }
-
-  return undefined;
-}
+// export async function getUnitTests(sessionId: string, fileName: string) {
+//   const data = fs.readFileSync(path.join(__dirname, "../data/unitTestFiles.json"), "utf8");
+//
+//   const unitTestFiles: IUnitTestFile[] = JSON.parse(data);
+//   const foundTests = unitTestFiles.find(test => test.sessionId === sessionId && test.fileName === fileName);
+//
+//   if (foundTests) {
+//     const hash = await calculateFileHash(path.join(__dirname, `../uploads/${fileName}`));
+//
+//     if (hash === foundTests.fileHash) {
+//       return foundTests.unitTests;
+//     }
+//
+//     return undefined;
+//   }
+//
+//   return undefined;
+// }
 
 export async function removeFile(fileName: string) {
   fs.unlink(path.join(__dirname, `../uploads/${fileName}`), (err) => {
@@ -154,3 +161,61 @@ export async function removeFile(fileName: string) {
     console.info(`File ${fileName} was unlinked`);
   });
 }
+
+export async function getOrGenerateUnitTests(sessionId: string, fileName: string) {
+  const data = fs.readFileSync(path.join(__dirname, "../data/unitTestFiles.json"), "utf8");
+  const { functions, lang } = readJSorTSFile(fileName);
+
+  const unitTestFiles: IUnitTestFile[] = JSON.parse(data);
+  const foundTests = unitTestFiles.find(test => test.sessionId === sessionId && test.fileName === fileName);
+  const currentFileFunctions = functions;
+
+  // First see if file has unit tests
+  if (foundTests) {
+    // Now see which file functions match the provided ones
+    const storedFileFunctions = foundTests.functions;
+
+    console.log("⚠️ File functions");
+    console.log(currentFileFunctions);
+
+    const sameFunctions = storedFileFunctions.filter(fn => currentFileFunctions.some(fn2 => fn.hash === fn2.hash));
+    const functionsStoredOnly = storedFileFunctions.filter(fn => !currentFileFunctions.some(fn2 => fn2.hash === fn.hash));
+    const functionsFileOnly = currentFileFunctions.filter(fn2 => !storedFileFunctions.some(fn => fn.hash === fn2.hash));
+
+
+    console.log("✅ same");
+    console.dir(sameFunctions);
+
+    console.log("✅ functionsStoredOnly");
+    console.dir(functionsStoredOnly);
+
+    console.log("✅ functionsFileOnly");
+    console.dir(functionsFileOnly);
+
+    // Delete stored only
+
+    // Generate tests for changed functions
+
+    return undefined;
+  } else {
+    console.log("No unit tests found, generating...");
+    return generateUnitTests(currentFileFunctions, lang);
+  }
+}
+
+function generateUnitTests(functions: ITestFunction[], lang: ICodeLanguage) {
+  const result = functions.map(async fn => {
+    const unitTests = await generateFunctionUnitTests(fn, lang);
+    const unitTestsNoMarkdown = unitTests?.replace(/```\w*([\s\S]+?)```/g, "$1");
+
+    return {
+      fileName: fn.fileName,
+      code: fn.code,
+      hash: fn.hash,
+      unitTests: unitTestsNoMarkdown
+    } as ITestFunction;
+  });
+
+  return Promise.all(result);
+}
+
