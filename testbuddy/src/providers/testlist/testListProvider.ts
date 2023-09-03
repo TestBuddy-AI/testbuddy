@@ -3,9 +3,12 @@ import * as vscode from "vscode";
 import { getTestListHtml } from "./testListHtml";
 import { ParsedNode } from "jest-editor-support/index";
 import * as fs from "fs";
-import { generateTests } from "../../utils/useAxios";
 import path = require("path");
 import { loadCurrentTests, loadScripts } from "../../commands/commands";
+import { showError } from "../../utils/toast";
+import { generateTestsRequest } from "../../utils/useAxios";
+import { testRunnerUtil } from "../../utils/testRunner";
+import { IRunnerOptions } from "../../types/IRunnerOptions";
 
 //https://stackoverflow.com/questions/43007267/how-to-run-a-system-command-from-vscode-extension Check answers at the end, fs.watch for file updates
 export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
@@ -40,35 +43,7 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
       this._context
     );
 
-    webviewView.webview.onDidReceiveMessage(async (data) => {
-      switch (data.type) {
-        case "runTest": {
-          let fileURL = data.value;
-          console.log(fileURL);
-          //execute shell command for testing
-          // execShell(
-          //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
-          // ).then(console.log);
-          break;
-        }
-        case "regenerate": {
-          console.log("Llegue");
-          this.test().then(console.log);
-          //execute shell command for testing
-          // execShell(
-          //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
-          // ).then(console.log);
-          break;
-        }
-        case "generate": {
-          console.log(data.value);
-          this.setLoading(true);
-          await this.testGeneration();
-          this.setLoading(false);
-          break;
-        }
-      }
-    });
+    webviewView.webview.onDidReceiveMessage(this.messageHandler);
 
     this.initialize().then(console.log);
   }
@@ -91,9 +66,11 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
         this.addTests(tests);
       });
   }
+
   setLoading(active: boolean) {
     this._view?.webview.postMessage({ type: "loading", content: active });
   }
+
   public async testGeneration() {
     try {
       const editor = vscode.window.activeTextEditor;
@@ -103,7 +80,8 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
         console.log(document);
         let buffer = fs.readFileSync(document.uri.fsPath);
 
-        let response = await generateTests(buffer, document.fileName);
+        let response = await generateTestsRequest(buffer, document.fileName);
+
         let fileContents = response.data.result;
         let encoder = new TextEncoder();
 
@@ -120,10 +98,52 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
         await this.initialize();
       }
     } catch (error: any) {
-      vscode.window.showErrorMessage(
-        error,
-        "Oops an error has happened. Please try again"
-      );
+      console.log(error);
     }
   }
+
+  private messageHandler = async (data: { type: string; value: any }) => {
+    switch (data.type) {
+      case "runTest": {
+        let testValue: { file: string; test: string } = data.value;
+        const results = await testRunnerUtil(
+          IRunnerOptions.javascript,
+          testValue.file,
+          testValue.test
+        );
+
+        this._view?.webview.postMessage({
+          type: "results",
+          content: { results, ...testValue },
+        });
+        //execute shell command for testing
+        // execShell(
+        //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
+        // ).then(console.log);
+        break;
+      }
+      case "regenerate": {
+        console.log("Llegue");
+        this.test().then(console.log);
+        //execute shell command for testing
+        // execShell(
+        //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
+        // ).then(console.log);
+        break;
+      }
+      case "generate": {
+        await this.generateTests();
+        break;
+      }
+    }
+  };
+
+  private async generateTests() {
+    console.info("Generating ");
+    this.setLoading(true);
+    await this.testGeneration();
+    this.setLoading(false);
+  }
+
+  private async runTests() {}
 }

@@ -10,7 +10,7 @@ export async function loadScripts() {
   );
   //TO-DO: Add testbuddy folder to gitignore, Define gitignore rules, add sesion id for teams/workspaces as a file. Create configuration file like .prettierrc(?)
   let testbuddyCMD = await execShell(
-    `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm pkg set "scripts.testbuddy"="jest --json --outputFile=./testbuddy/output.json"`
+    `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm pkg set "scripts.testbuddy"="jest --json"`
   );
   console.log("testBuddy");
   let testbuddyListCMD = await execShell(

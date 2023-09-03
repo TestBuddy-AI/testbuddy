@@ -76,3 +76,14 @@ body {
   .loader img{
 	max-width: 100%;
   }
+
+
+  .theme-icon.green{
+	color: #0f0 !important;
+  }
+  .theme-icon.red{
+	color: #f00 !important;
+  }
+  .theme-icon{
+	color: var(--inactive-selection-icon-foreground) !important;
+  }

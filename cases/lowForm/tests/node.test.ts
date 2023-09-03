@@ -1,3 +1,5 @@
+import {parse} from 'jest-editor-support'
+
 test('parse - valid path', () => {
   const path = "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx";
   const result = parse(path);

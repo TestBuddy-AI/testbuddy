@@ -1,8 +1,17 @@
 //@ts-check
-
+import {
+  actions,
+  ICONS,
+  getDecorations,
+  TEST_STATUS,
+  updateLoadingIcons,
+  updateResultsIcons,
+  mapNode,
+} from "./treeOperations.js";
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 (function () {
+  console.log(getDecorations(TEST_STATUS.DEFAULT, 10));
   const vscode = acquireVsCodeApi();
 
   const oldState = vscode.getState() || { tests: [] };
@@ -44,6 +53,10 @@
         setLoader(message.content);
         break;
       }
+      case "results": {
+        console.log(message.content);
+        break;
+      }
     }
   });
 
@@ -62,21 +75,11 @@
   function addTests(testList) {
     console.log(testList, "---");
     const tree = document.getElementById("actions-example");
-
-    const icons = true;
-
-    const actions = [
-      {
-        icon: "run",
-        actionId: "runTest",
-        tooltip: "Run all",
-      },
-      {
-        icon: "refresh",
-        actionId: "regenerateTest",
-        tooltip: "Regenerate tests",
-      },
-    ];
+    const icons = {
+      branch: ICONS.LOADING,
+      leaf: ICONS.ERROR,
+      open: ICONS.PASSED,
+    };
 
     /**
          * {
@@ -110,23 +113,36 @@
             }
         },
          */
-    const data = testList.map((root) => {
-      root.label = getPath(root.file);
-      root.icons = icons;
-      root.actions = actions;
-      root.value = { file: root.file, test: "all" };
-      root.subItems = root.children.map((test) => {
-        test.label = test.name;
-        test.icons = icons;
-        test.actions = actions;
-        test.value = {
-          file: root.file,
-          test: test.name,
-        };
-        return test;
-      });
-      return root;
-    });
+    const data = testList.map((root) => mapNode(root, true));
+    // const data = testList.map((root) => {
+    //   root.label = getPath(root.file);
+    //   root.icons = icons;
+    //   root.status = true;
+    //   root.actions = actions;
+    //   // root.decorations = getDecorations(
+    //   //   TEST_STATUS.DEFAULT,
+    //   //   root.children.length
+    //   // );
+    //   root.decorations = getDecorations(
+    //     TEST_STATUS.EXECUTED,
+    //     root.children.length,
+    //     10,
+    //     20
+    //   );
+    //   root.value = { file: root.file, test: "all" };
+    //   root.subItems = root.children.map((test) => {
+    //     test.label = test.name;
+    //     test.status = true;
+    //     test.icons = icons;
+    //     test.actions = actions;
+    //     test.value = {
+    //       file: root.file,
+    //       test: test.name,
+    //     };
+    //     return test;
+    //   });
+    //   return root;
+    // });
     // const data = [
     //   {
     //     label: "vscode-tree",
@@ -168,7 +184,25 @@
 
     tree.data = data;
     setTreeListener(tree);
-
+    updateLoadingIcons();
+    const style = document.createElement("style");
+    style.textContent = `
+      .theme-icon[name="${ICONS.PASSED}"]{
+        color: #0f0 !important;
+      }
+      .theme-icon[name="${ICONS.ERROR}"]{
+        color: #f00 !important;
+      }
+      .theme-icon[name="${ICONS.DEFAULT}"]{
+        color: var(--secondary-background) !important;
+      }
+      .theme-icon{
+        color: var(--inactive-selection-icon-foreground) !important;
+      }
+    `;
+    tree?.shadowRoot?.append(style);
+    console.log(tree);
+    updateResultsIcons();
     vscode.setState({ tests: testList });
   }
 

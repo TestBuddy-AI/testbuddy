@@ -6,27 +6,34 @@ import {
   ISuccessResponse,
 } from "../types/response";
 import path = require("path");
+import { showError, showMessage } from "./toast";
 
-export async function generateTests(buffer: Buffer, fileName: string) {
+const BASE_URL = "http://localhost:3000";
+
+export async function generateTestsRequest(buffer: Buffer, fileName: string) {
+  // 👇️ const data: GetUsersResponse
   try {
-    // 👇️ const data: GetUsersResponse
     console.log("ejecutando");
-    await axios.post("http://localhost:3000/receiveFile", buffer, {
-      headers: {
-        "Content-Type": "application/octet-stream", // Change this to send as raw binary data
-        "File-Name": path.basename(fileName),
-      },
-    });
-    console.log("Listo");
-    const { data, status } = await axios.post(
-      "http://localhost:3000/generate-unit-tests"
-    );
-    // 👇️ "response status is: 200"
-    console.log(data);
+    let rSendFile = await sendFile(buffer, fileName);
 
+    console.log(rSendFile.status, "<---- Status Sendfile");
+
+    const { data, status } = await getTests();
+    console.log(status, "<---- Status genUnitTests");
     return data;
   } catch (error: any) {
-    console.log("error message: ", error);
-    throw new Error(error.message);
+    showError(
+      "Oops something went wrong when trying to generate the tests, Please try again"
+    );
   }
 }
+
+const sendFile = (buffer: Buffer, fileName: string) =>
+  axios.post(`${BASE_URL}/receiveFile`, buffer, {
+    headers: {
+      "Content-Type": "application/octet-stream", // Change this to send as raw binary data
+      "File-Name": path.basename(fileName),
+    },
+  });
+
+const getTests = () => axios.post(`${BASE_URL}/generate-unit-tests`);
