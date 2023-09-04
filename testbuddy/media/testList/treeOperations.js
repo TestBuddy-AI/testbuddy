@@ -97,6 +97,7 @@ export const updateLoadingIcons = () => {
   loadingIcons.forEach((el) => {
     el.classList.add("red");
     el.setAttribute("spin", "");
+    el.requestUpdate();
   });
   updateResultsIcons();
 };
@@ -197,7 +198,7 @@ export const mapNode = (testNode, isRoot = false) => {
     return node;
   }
 };
-const getIcons = (iconType = ICONS.DEFAULT) => {
+export const getIcons = (iconType = ICONS.DEFAULT) => {
   const icons = {
     branch: iconType,
     leaf: iconType,
@@ -206,79 +207,63 @@ const getIcons = (iconType = ICONS.DEFAULT) => {
   return icons;
 };
 
+export function updateNodeInArray(idToUpdate, isLoading, result) {
+  // Iterate through each tree in the array
+  for (let i = 0; i < treeHTMLElement.data.length; i++) {
+    const tree = treeHTMLElement.data[i];
+
+    // Call the updateNode function for each tree in the array
+    updateNode(tree, idToUpdate, isLoading, result);
+  }
+}
+
+export function updateNode(node, idToUpdate, isLoading, result) {
+  // Base case: If the current node's id matches the idToUpdate, update it
+  if (node.id === idToUpdate) {
+    if (isLoading) {
+      node.icons = getIcons(ICONS.LOADING);
+      node.decorations = getDecorations(TEST_STATUS.RUNNING);
+    }
+
+    // Update other properties based on the result if needed
+    if (result !== undefined) {
+      // Update the status based on the result
+      switch (result) {
+        case "passed": {
+          node.icons = getIcons(ICONS.PASSED);
+          break;
+        }
+        case "failed": {
+          node.icons = getIcons(ICONS.ERROR);
+          break;
+        }
+        case "pending": {
+          //   node.icons = getIcons(ICONS.DEFAULT);
+          break;
+        }
+      }
+      updateResultsIcons();
+
+      // You can add more updates here based on the result if needed
+    }
+  }
+
+  // Recursive case: If the current node has subItems, traverse them
+  if (node.subItems && node.subItems.length > 0) {
+    for (let i = 0; i < node.subItems.length; i++) {
+      updateNode(node.subItems[i], idToUpdate, isLoading, result);
+    }
+  }
+  treeHTMLElement.requestUpdate();
+  setTimeout(() => updateLoadingIcons(), 0);
+}
+
 //"status": "failed" | "pending" | "passed",
-const updateNodeInTree = (
-  file,
-  loading = false,
-  isRoot = false,
-  testResultNode = {}
-) => {
-  if (testResultNode.status === "pending") {
-    return;
-  }
-  const nodeId = createId(isRoot, file, testResultNode.title);
-  root = treeHTMLElement.data.find((el) => (el.id = createId(true, file)));
-  if (loading) {
-    const changes = {
-      icons: getIcons(ICONS.LOADING),
-      decorations: getDecorations(TEST_STATUS.RUNNING),
-    };
-    updatePropertyById(nodeId, root, changes);
-  }
-  if (!isRoot) {
-    const changes = {
-      icons:
-        testResultNode.status === "passed"
-          ? getIcons(ICONS.PASSED)
-          : getIcons(ICONS.ERROR),
-    };
-    updatePropertyById(nodeId, root, changes);
-  } else {
-  }
-};
 
-const createId = (isRoot, file, title = "") => {
+export const createId = (isRoot, file, title = "") => {
   return isRoot ? file + "--all" : file + "--" + title;
-};
-
-const replaceOrAdd = (arr, el, key = "id") => {
-  const existingIndex = arr.findIndex((e) => e[key] === el[key]);
-
-  if (existingIndex >= 0) {
-    arr[existingIndex] = el;
-  } else {
-    arr.push(el);
-  }
 };
 
 const getPath = function (str) {
   return str.split("\\").pop().split("/").pop();
 };
-
-const findNodeById = (tree, id) => {
-  let result = null;
-  if (tree.id === id) {
-    return tree;
-  }
-
-  if (Array.isArray(tree.children) && tree.children.length > 0) {
-    tree.children.some((node) => {
-      result = findNodeById(node, id);
-      return result;
-    });
-  }
-  return result;
-};
-
-function updatePropertyById(id, data, properties) {
-  if (data.id === id) {
-    data = { ...data, ...properties };
-  }
-  if (data.children !== undefined && data.children.length > 0) {
-    for (i = 0; i < data.children.length; i++) {
-      data.children[i] = updatePropertyById(id, data.children[i], properties);
-    }
-  }
-
-  return data;
-}

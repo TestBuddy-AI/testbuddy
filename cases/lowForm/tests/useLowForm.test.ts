@@ -49,7 +49,7 @@ describe('useLowForm', () => {
     const { result } = setup();
     expect(typeof result.current.getFormState).toEqual('function');
     expect(typeof result.current.handleFormSubmit).toEqual('function');
-    expect(typeof result.current.registerElement).toEqual('function');
+    expect(typeof result.current.registerElement).toEqual('functions');
   });
 
   it('creates a key in the form data value for each registered element', () => {

@@ -7,6 +7,9 @@ import {
   updateLoadingIcons,
   updateResultsIcons,
   mapNode,
+  getIcons,
+  updateNodeInArray,
+  createId,
 } from "./treeOperations.js";
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
@@ -21,6 +24,17 @@ import {
   const setTreeListener = (tree) => {
     if (tree?.getAttribute("listener") !== "true") {
       tree.addEventListener("vsc-run-action", (ev) => {
+        const el = ev.detail.value;
+        // updateNodeInTree(ev.detail.value.file, true, true, {
+        //   title: ev.detail.value.test,
+        // });
+        updateNodeInArray(
+          createId(el.test === "all", el.file, el.test),
+          true,
+          undefined
+        );
+        if (el.test === "all") {
+        }
         console.log(ev.detail);
         vscode.postMessage({
           type: ev.detail.actionId,
@@ -54,7 +68,30 @@ import {
         break;
       }
       case "results": {
-        console.log(message.content);
+        const el = message.content;
+
+        const resultArray = el.results.testResults;
+        resultArray.forEach((resultObject) => {
+          let fileName = resultObject.name;
+          let assertions = resultObject.assertionResults;
+          let passed = true;
+          assertions.forEach((assertion) => {
+            updateNodeInArray(
+              createId(assertion.title === "all", fileName, assertion.title),
+              false,
+              assertion.status
+            );
+            if (assertion.status === "failed") {
+              passed = false;
+            }
+          });
+          updateNodeInArray(
+            createId(true, fileName, "all"),
+            false,
+            passed ? "passed" : "failed"
+          );
+        });
+
         break;
       }
     }
@@ -69,6 +106,22 @@ import {
     const tree = document.getElementById("actions-example");
 
     tree.data = testList;
+    const style = document.createElement("style");
+    style.textContent = `
+      .theme-icon[name="${ICONS.PASSED}"]{
+        color: #0f0 !important;
+      }
+      .theme-icon[name="${ICONS.ERROR}"]{
+        color: #f00 !important;
+      }
+      .theme-icon[name="${ICONS.DEFAULT}"]{
+        color: var(--secondary-background) !important;
+      }
+      .theme-icon{
+        color: var(--inactive-selection-icon-foreground) !important;
+      }
+    `;
+    tree?.shadowRoot?.append(style);
 
     setTreeListener(tree);
   }
@@ -183,6 +236,7 @@ import {
     // ];
 
     tree.data = data;
+
     setTreeListener(tree);
     updateLoadingIcons();
     const style = document.createElement("style");
@@ -203,7 +257,7 @@ import {
     tree?.shadowRoot?.append(style);
     console.log(tree);
     updateResultsIcons();
-    vscode.setState({ tests: testList });
+    vscode.setState({ tests: data });
   }
 
   document
