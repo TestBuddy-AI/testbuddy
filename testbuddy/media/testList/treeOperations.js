@@ -99,7 +99,6 @@ export const updateLoadingIcons = () => {
     el.setAttribute("spin", "");
     el.requestUpdate();
   });
-  updateResultsIcons();
 };
 
 export const updateResultsIcons = () => {
@@ -223,14 +222,21 @@ export function updateNode(node, idToUpdate, isLoading, result) {
     if (isLoading) {
       node.icons = getIcons(ICONS.LOADING);
       node.decorations = getDecorations(TEST_STATUS.RUNNING);
+      if (node.subItems && node.subItems.length > 0) {
+        node.subItems.forEach((children) => {
+          updateNode(children, children.id, isLoading, result);
+        });
+      }
     }
 
     // Update other properties based on the result if needed
     if (result !== undefined) {
       // Update the status based on the result
+      // TODO - ACTUALIZAR DECORATIONS PARA INCLUIR LOS TESTS PASADOS, ACTUALIZAR HIJOS PARA INCLUIR RUNNING en el LOAD
       switch (result) {
         case "passed": {
           node.icons = getIcons(ICONS.PASSED);
+
           break;
         }
         case "failed": {
@@ -242,6 +248,7 @@ export function updateNode(node, idToUpdate, isLoading, result) {
           break;
         }
       }
+      node.decorations = [];
       updateResultsIcons();
 
       // You can add more updates here based on the result if needed
@@ -255,7 +262,6 @@ export function updateNode(node, idToUpdate, isLoading, result) {
     }
   }
   treeHTMLElement.requestUpdate();
-  setTimeout(() => updateLoadingIcons(), 0);
 }
 
 //"status": "failed" | "pending" | "passed",

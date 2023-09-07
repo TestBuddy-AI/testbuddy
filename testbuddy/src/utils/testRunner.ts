@@ -6,8 +6,9 @@ const path = require("path");
 
 export const testRunnerUtil = async (
   engine: IRunnerOptions,
-  testfile: string,
-  testdetail: string = "all"
+  testfile: string = "",
+  testdetail: string = "all",
+  runAll: boolean = false
 ) => {
   let results = {};
   switch (engine) {
@@ -25,43 +26,64 @@ export const testRunnerUtil = async (
   return results;
 };
 
-const runJsTests = async (testfile: string, testdetail: string) => {
-  //Creates Output file url by concatenating testFile and test result
-  const outputFile = createOuptuFileUrl(
-    testdetail === "all",
-    testfile,
-    testdetail
-  ).replace(vscode.workspace.workspaceFolders[0].uri.fsPath, "");
-  //Creates the directory if not exists, Windows && Mac versions working
-  let tesBuddyFolder = await execShellMultiplatform(
-    `cd ${
-      vscode.workspace.workspaceFolders[0].uri.fsPath
-    } && mkdir -p testbuddy/${path.parse(outputFile).dir}`,
-    `cd ${
-      vscode.workspace.workspaceFolders[0].uri.fsPath
-    } && if not exist "testbuddy/${
-      path.parse(outputFile).dir
-    }" mkdir testbuddy/${path.parse(outputFile).dir}`
-  );
-  try {
-    //Runs tests and outputs the results file to the directory prevously created
-    if (testdetail === "all") {
+const runJsTests = async (
+  testfile: string,
+  testdetail: string,
+  runAll: boolean = false
+) => {
+  //CASE: Run all tests in the project
+  if (runAll) {
+    try {
+      const outputFile = "output";
       await execShell(
-        `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json -i ${testfile}`
+        `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json"`
       );
-    } else {
-      await execShell(
-        `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json -i ${testfile} -t "${testdetail}"`
+    } catch (err) {
+    } finally {
+      let buffer = fs.readFileSync(
+        vscode.workspace.workspaceFolders[0].uri.fsPath +
+          `/testbuddy/${outputFile}.json`
       );
+      return JSON.parse(buffer.toString());
     }
-  } catch (err) {
-  } finally {
-    //Reads the results from the file prevously generated
-    let buffer = fs.readFileSync(
-      vscode.workspace.workspaceFolders[0].uri.fsPath +
-        `/testbuddy/${outputFile}.json`
+  } else {
+    //Creates Output file url by concatenating testFile and test result
+    const outputFile = createOuptuFileUrl(
+      testdetail === "all",
+      testfile,
+      testdetail
+    ).replace(vscode.workspace.workspaceFolders[0].uri.fsPath, "");
+    //Creates the directory if not exists, Windows && Mac versions working
+    let tesBuddyFolder = await execShellMultiplatform(
+      `cd ${
+        vscode.workspace.workspaceFolders[0].uri.fsPath
+      } && mkdir -p testbuddy/${path.parse(outputFile).dir}`,
+      `cd ${
+        vscode.workspace.workspaceFolders[0].uri.fsPath
+      } && if not exist "testbuddy/${
+        path.parse(outputFile).dir
+      }" mkdir testbuddy/${path.parse(outputFile).dir}`
     );
-    return JSON.parse(buffer.toString());
+    try {
+      //Runs tests and outputs the results file to the directory prevously created
+      if (testdetail === "all") {
+        await execShell(
+          `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json -i ${testfile}`
+        );
+      } else {
+        await execShell(
+          `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json -i ${testfile} -t "${testdetail}"`
+        );
+      }
+    } catch (err) {
+    } finally {
+      //Reads the results from the file prevously generated
+      let buffer = fs.readFileSync(
+        vscode.workspace.workspaceFolders[0].uri.fsPath +
+          `/testbuddy/${outputFile}.json`
+      );
+      return JSON.parse(buffer.toString());
+    }
   }
 };
 

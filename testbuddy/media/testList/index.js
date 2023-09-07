@@ -1,4 +1,5 @@
 //@ts-check
+import { runTests } from "./testRunner.js";
 import {
   actions,
   ICONS,
@@ -24,22 +25,28 @@ import {
   const setTreeListener = (tree) => {
     if (tree?.getAttribute("listener") !== "true") {
       tree.addEventListener("vsc-run-action", (ev) => {
-        const el = ev.detail.value;
-        // updateNodeInTree(ev.detail.value.file, true, true, {
-        //   title: ev.detail.value.test,
-        // });
-        updateNodeInArray(
-          createId(el.test === "all", el.file, el.test),
-          true,
-          undefined
-        );
-        if (el.test === "all") {
+        console.log(ev);
+        const { actionId, item, value } = ev.detail;
+        switch (actionId) {
+          case "runTest": {
+            runTests(vscode, ev.detail);
+            break;
+          }
+          case "regenerateTest": {
+            vscode.postMessage({
+              type: actionId,
+              value: value,
+            });
+            break;
+          }
+          case "goToFile": {
+            vscode.postMessage({
+              type: actionId,
+              value: value,
+            });
+            break;
+          }
         }
-        console.log(ev.detail);
-        vscode.postMessage({
-          type: ev.detail.actionId,
-          value: ev.detail.value,
-        });
       });
       tree?.setAttribute("listener", "true");
     }
@@ -48,10 +55,6 @@ import {
   if (tests) {
     updateTests(tests);
   }
-  //   document.getElementById("jest").addEventListener("click", () => {
-  //     console.log("Ejecute");
-  //     vscode.postMessage({ type: "test", value: "all" });
-  //   });
 
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
@@ -85,6 +88,7 @@ import {
               passed = false;
             }
           });
+
           updateNodeInArray(
             createId(true, fileName, "all"),
             false,
@@ -120,6 +124,20 @@ import {
       .theme-icon{
         color: var(--inactive-selection-icon-foreground) !important;
       }
+      .theme-icon[name="${ICONS.LOADING}"]{
+        animation-name: spin;
+        animation-duration: 1000ms;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear; 
+      }
+      @keyframes spin {
+        from {
+            transform:rotate(0deg);
+        }
+        to {
+            transform:rotate(360deg);
+        }
+    }
     `;
     tree?.shadowRoot?.append(style);
 
@@ -265,6 +283,11 @@ import {
     .addEventListener("vsc-click", (ev) => {
       vscode.postMessage({ type: "generate", value: {} });
     });
+
+  document.getElementById("btn-test").addEventListener("vsc-click", (ev) => {
+    console.log("Hacer Algo");
+    runTests(vscode);
+  });
 })();
 
 var getPath = function (str) {
