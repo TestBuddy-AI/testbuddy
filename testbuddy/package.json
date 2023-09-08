@@ -122,7 +122,14 @@
           "when": "testBuddy.loadEditorView == true && (resourceLangId =~ /^(typescript|typescriptreact|javascript|javascriptreact|python|)$/i)"
         }
       ]
-    }
+    },
+    "keybindings": [
+      {
+        "command": "testBuddy.generateTest",
+        "key": "ctrl+alt+t",
+        "when": "testBuddy.loadEditorView == true && (resourceLangId =~ /^(typescript|typescriptreact|javascript|javascriptreact|python|)$/i)"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

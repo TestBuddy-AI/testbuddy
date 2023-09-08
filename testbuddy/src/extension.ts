@@ -4,6 +4,7 @@ import { TestListWebViewViewProvider } from "./providers/testlist/testListProvid
 import { WelcomeWebViewViewProvider } from "./providers/welcomeView/welcomeProvider";
 import { error } from "console";
 import { checkNpm } from "./utils/checkEnv";
+import { commandGenerateTestHadler } from "./utils/testCreator";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("Debug1");
@@ -30,9 +31,13 @@ export function activate(context: vscode.ExtensionContext) {
   console.log("Debug3");
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("testBuddy.generateTest", (...args) => {
-      console.log(args);
-    })
+    vscode.commands.registerCommand(
+      "testBuddy.generateTest",
+      async (...args) => {
+        console.log(args);
+        await commandGenerateTestHadler(args);
+      }
+    )
   );
 }
 
