@@ -28,6 +28,12 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
   console.log("Debug3");
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("testBuddy.generateTest", (...args) => {
+      console.log(args);
+    })
+  );
 }
 
 const initializeApp = (context: vscode.ExtensionContext) => {

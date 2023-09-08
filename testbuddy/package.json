@@ -73,6 +73,15 @@
         "command": "testBuddy.selectLanguage",
         "category": "TestBuddy",
         "title": "Select Project Language"
+      },
+      {
+        "command": "testBuddy.generateTest",
+        "category": "TestBuddy",
+        "title": "🤖 TestBuddy - Generate tests for this file",
+        "icon": {
+          "dark": "./assets/iconwhite.svg",
+          "light": "./assets/icon.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -92,11 +101,25 @@
       ]
     },
     "menus": {
-      "view/title": [
+      "editor/context": [
         {
-          "command": "calicoColors.clearColors",
+          "command": "testBuddy.generateTest",
           "group": "navigation",
-          "when": "view == testBuddy.testBuddyWebViewView"
+          "when": "testBuddy.loadEditorView == true && (resourceLangId =~ /^(typescript|typescriptreact|javascript|javascriptreact|python|)$/i)"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "command": "testBuddy.generateTest",
+          "group": "navigation",
+          "when": "testBuddy.loadEditorView == true && (resourceLangId =~ /^(typescript|typescriptreact|javascript|javascriptreact|python|)$/i)"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "testBuddy.generateTest",
+          "group": "navigation",
+          "when": "testBuddy.loadEditorView == true && (resourceLangId =~ /^(typescript|typescriptreact|javascript|javascriptreact|python|)$/i)"
         }
       ]
     }

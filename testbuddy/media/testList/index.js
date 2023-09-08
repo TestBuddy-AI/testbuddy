@@ -53,6 +53,7 @@ import {
         }
       });
       tree?.setAttribute("listener", "true");
+      vscode.setState({ tests: treeHTMLElement.data });
     }
   };
 
@@ -95,6 +96,8 @@ import {
           console.log(nodeStatus, "++++++++");
           updateNodeInArray(el.id, false, { status: nodeStatus });
         });
+
+        vscode.setState({ tests: treeHTMLElement.data });
         break;
       }
     }
@@ -106,6 +109,7 @@ import {
   }
 
   function updateTests(testList) {
+    console.log(testList);
     const tree = document.getElementById("actions-example");
 
     tree.data = testList;
