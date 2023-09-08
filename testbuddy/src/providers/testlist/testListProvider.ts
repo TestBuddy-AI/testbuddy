@@ -9,6 +9,7 @@ import { showError } from "../../utils/toast";
 import { generateTestsRequest } from "../../utils/useAxios";
 import { testRunnerUtil } from "../../utils/testRunner";
 import { IRunnerOptions } from "../../types/IRunnerOptions";
+import { showSource } from "../../utils/showSource";
 
 //https://stackoverflow.com/questions/43007267/how-to-run-a-system-command-from-vscode-extension Check answers at the end, fs.watch for file updates
 export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
@@ -133,6 +134,15 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
       }
       case "generate": {
         await this.generateTests();
+        break;
+      }
+      case "goToFile": {
+        console.log(data.value);
+        if (!data.value.open.start) {
+          showSource(data.value.file, 0);
+        } else {
+          showSource(data.value.file, data.value.open.start.line - 1);
+        }
         break;
       }
     }

@@ -126,59 +126,25 @@ export const updateResultsIcons = () => {
   });
 };
 
-export const mapInitialTests = (testList) => {
-  const defaultIcons = {
-    branch: ICONS.DEFAULT,
-    leaf: ICONS.DEFAULT,
-    open: ICONS.DEFAULT,
-  };
-
-  const data = testList.map((root) => {
-    root.id = root.file + "//all";
-    root.label = getPath(root.file);
-    root.icons = defaultIcons;
-    root.status = true;
-    root.actions = actions;
-    // root.decorations = getDecorations(
-    //   TEST_STATUS.DEFAULT,
-    //   root.children.length
-    // );
-    root.decorations = getDecorations(
-      TEST_STATUS.EXECUTED,
-      root.children.length,
-      10,
-      20
-    );
-    root.value = { file: root.file, test: "all" };
-    root.subItems = root.children.map((test) => {
-      test.id = root.file + "//" + test.name;
-      test.label = test.name;
-      test.status = true;
-      test.icons = icons;
-      test.actions = actions;
-      test.value = {
-        file: root.file,
-        test: test.name,
-      };
-      return test;
-    });
-    return root;
-  });
-};
-
 export const mapNode = (testNode, isRoot = false) => {
+  console.log(testNode);
   if (isRoot) {
     const node = {
       id: createId(isRoot, testNode.file),
       label: getPath(testNode.file),
       icons: getIcons(),
-      status: true,
+      status: undefined,
+      isRoot: true,
       actions: actions,
       decorations: getDecorations(
         TEST_STATUS.DEFAULT,
         testNode.children.length
       ),
-      value: { file: testNode.file, test: "all" },
+      value: {
+        file: testNode.file,
+        test: "all",
+        open: { start: testNode.start, end: testNode.end, file: testNode.file },
+      },
       subItems: testNode.children.map((node) => mapNode(node, false)),
     };
     return node;
@@ -187,11 +153,13 @@ export const mapNode = (testNode, isRoot = false) => {
       id: createId(isRoot, testNode.file, testNode.name),
       label: testNode.name,
       icons: getIcons(),
-      status: true,
+      status: undefined,
+      isRoot: false,
       actions: actions,
       value: {
         file: testNode.file,
         test: testNode.name,
+        open: { start: testNode.start, end: testNode.end, file: testNode.file },
       },
     };
     return node;
@@ -222,6 +190,7 @@ export function updateNode(node, idToUpdate, isLoading, result) {
     if (isLoading) {
       node.icons = getIcons(ICONS.LOADING);
       node.decorations = getDecorations(TEST_STATUS.RUNNING);
+      node.status = "loading";
       if (node.subItems && node.subItems.length > 0) {
         node.subItems.forEach((children) => {
           updateNode(children, children.id, isLoading, result);
@@ -230,26 +199,31 @@ export function updateNode(node, idToUpdate, isLoading, result) {
     }
 
     // Update other properties based on the result if needed
-    if (result !== undefined) {
+    if (result && result.status !== undefined) {
       // Update the status based on the result
       // TODO - ACTUALIZAR DECORATIONS PARA INCLUIR LOS TESTS PASADOS, ACTUALIZAR HIJOS PARA INCLUIR RUNNING en el LOAD
-      switch (result) {
+      switch (result.status) {
         case "passed": {
           node.icons = getIcons(ICONS.PASSED);
-
+          node.status = "passed";
           break;
         }
         case "failed": {
           node.icons = getIcons(ICONS.ERROR);
+          node.status = "failed";
+          if (result.failureMessages) {
+            node.message = result.failureMessages.join(" ");
+          }
           break;
         }
         case "pending": {
           //   node.icons = getIcons(ICONS.DEFAULT);
+          node.status = "pending";
           break;
         }
       }
       node.decorations = [];
-      updateResultsIcons();
+      // updateResultsIcons();
 
       // You can add more updates here based on the result if needed
     }
@@ -265,6 +239,51 @@ export function updateNode(node, idToUpdate, isLoading, result) {
 }
 
 //"status": "failed" | "pending" | "passed",
+export const updateParentStatus = (node) => {
+  console.log(node);
+  if (!node.subItems || node.subItems.length === 0) {
+    // Leaf node
+    return node.status;
+  }
+
+  let failed = false;
+  let passed = false;
+  let pending = false;
+
+  for (const child of node.subItems) {
+    const childStatus = updateParentStatus(child);
+
+    if (childStatus === "failed") {
+      failed = true;
+      passed = false;
+      pending = false;
+      break; // No need to check other children if one has failed
+    } else if (childStatus === "passed") {
+      passed = true;
+    } else if (childStatus === "pending") {
+      pending = true;
+      passed = false;
+      failed = false;
+    } else {
+      // Handle undefined status
+      passed = false;
+      failed = false;
+      pending = true;
+    }
+  }
+
+  if (failed) {
+    node.status = "failed";
+  } else if (passed) {
+    node.status = "passed";
+  } else if (pending) {
+    node.status = "pending";
+  } else {
+    node.status = undefined;
+  }
+
+  return node.status;
+};
 
 export const createId = (isRoot, file, title = "") => {
   return isRoot ? file + "--all" : file + "--" + title;

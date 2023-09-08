@@ -11,6 +11,8 @@ import {
   getIcons,
   updateNodeInArray,
   createId,
+  treeHTMLElement,
+  updateParentStatus,
 } from "./treeOperations.js";
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
@@ -26,13 +28,15 @@ import {
     if (tree?.getAttribute("listener") !== "true") {
       tree.addEventListener("vsc-run-action", (ev) => {
         console.log(ev);
-        const { actionId, item, value } = ev.detail;
+        const { actionId, item, value, open } = ev.detail;
         switch (actionId) {
           case "runTest": {
             runTests(vscode, ev.detail);
             break;
           }
           case "regenerateTest": {
+            console.log(item);
+            console.log(item.message);
             vscode.postMessage({
               type: actionId,
               value: value,
@@ -42,7 +46,7 @@ import {
           case "goToFile": {
             vscode.postMessage({
               type: actionId,
-              value: value,
+              value: { ...value },
             });
             break;
           }
@@ -77,25 +81,20 @@ import {
         resultArray.forEach((resultObject) => {
           let fileName = resultObject.name;
           let assertions = resultObject.assertionResults;
-          let passed = true;
+
           assertions.forEach((assertion) => {
             updateNodeInArray(
               createId(assertion.title === "all", fileName, assertion.title),
               false,
-              assertion.status
+              assertion
             );
-            if (assertion.status === "failed") {
-              passed = false;
-            }
           });
-
-          updateNodeInArray(
-            createId(true, fileName, "all"),
-            false,
-            passed ? "passed" : "failed"
-          );
         });
-
+        treeHTMLElement.data.forEach((el) => {
+          let nodeStatus = updateParentStatus(el);
+          console.log(nodeStatus, "++++++++");
+          updateNodeInArray(el.id, false, { status: nodeStatus });
+        });
         break;
       }
     }
@@ -185,78 +184,12 @@ import {
         },
          */
     const data = testList.map((root) => mapNode(root, true));
-    // const data = testList.map((root) => {
-    //   root.label = getPath(root.file);
-    //   root.icons = icons;
-    //   root.status = true;
-    //   root.actions = actions;
-    //   // root.decorations = getDecorations(
-    //   //   TEST_STATUS.DEFAULT,
-    //   //   root.children.length
-    //   // );
-    //   root.decorations = getDecorations(
-    //     TEST_STATUS.EXECUTED,
-    //     root.children.length,
-    //     10,
-    //     20
-    //   );
-    //   root.value = { file: root.file, test: "all" };
-    //   root.subItems = root.children.map((test) => {
-    //     test.label = test.name;
-    //     test.status = true;
-    //     test.icons = icons;
-    //     test.actions = actions;
-    //     test.value = {
-    //       file: root.file,
-    //       test: test.name,
-    //     };
-    //     return test;
-    //   });
-    //   return root;
-    // });
-    // const data = [
-    //   {
-    //     label: "vscode-tree",
-    //     icons,
-    //     actions,
-    //     value: "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree",
-    //     subItems: [
-    //       {
-    //         icons,
-    //         actions,
-    //         label: "index.ts",
-    //         value:
-    //           "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\index.ts",
-    //       },
-    //       {
-    //         icons,
-    //         actions,
-    //         label: "vscode-tree.styles.ts",
-    //         value:
-    //           "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\vscode-tree.styles.ts",
-    //       },
-    //       {
-    //         icons,
-    //         actions,
-    //         label: "vscode-tree.test.ts",
-    //         value:
-    //           "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\vscode-tree.test.ts",
-    //       },
-    //       {
-    //         icons,
-    //         actions,
-    //         label: "vscode-tree.ts",
-    //         value:
-    //           "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\vscode-tree.ts",
-    //       },
-    //     ],
-    //   },
-    // ];
 
     tree.data = data;
 
+    console.log(data);
     setTreeListener(tree);
-    updateLoadingIcons();
+    // updateLoadingIcons();
     const style = document.createElement("style");
     style.textContent = `
       .theme-icon[name="${ICONS.PASSED}"]{
@@ -283,7 +216,6 @@ import {
     .addEventListener("vsc-click", (ev) => {
       vscode.postMessage({ type: "generate", value: {} });
     });
-
   document.getElementById("btn-test").addEventListener("vsc-click", (ev) => {
     console.log("Hacer Algo");
     runTests(vscode);
