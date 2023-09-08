@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import * as codeFileService from "../services/codeFileService";
+import { getUnitTests, removeFile, storeUnitTests } from "../services/codeFileService";
 import * as openaiService from "../services/openaiService";
-import { IErrorResponse, IResponseStatus, ISuccessResponse } from "../types";
-import { ICodeLanguage } from "../types";
+import { ICodeLanguage, IErrorResponse, IResponseStatus, ISuccessResponse } from "../types";
 
 export const helloWorld = async (req: Request, res: Response) => {
   res.status(200).send({
@@ -49,7 +49,7 @@ export const receiveFile = async (req: Request, res: Response) => {
       data: {},
       message
     } as IErrorResponse);
-  }
+  };
 
   const success = (message: string) => {
     res.status(200).send({
@@ -57,16 +57,36 @@ export const receiveFile = async (req: Request, res: Response) => {
       data: {},
       message
     } as ISuccessResponse);
-  }
+  };
 
   codeFileService.receiveFile(fileName, req.body, success, error);
-}
+};
 
-export const generateUnitTests = async (req: Request, res: Response) => {
+export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
   try {
-    const resolvedArray = await Promise.all(codeFileService.generateUnitTests());
+    const { sessionId, fileName } = req.body;
+    const existingTests = await getUnitTests(sessionId, fileName);
+    let result;
 
-    const result = resolvedArray.join(",");
+    if (!existingTests) {
+      const resolvedArray = await Promise.all(openaiService.generateUnitTests(fileName));
+      const resolvedArrayNoMarkdown = resolvedArray.map((code) => {
+        if (code !== undefined) {
+          return code.replace(/```[\w]*([\s\S]+?)```/g, "$1");
+        }
+        return "";
+      });
+
+      const unitTests = resolvedArrayNoMarkdown.join(",");
+
+      await storeUnitTests(unitTests, sessionId, fileName);
+
+      result = unitTests;
+    } else {
+      result = existingTests;
+    }
+
+    await removeFile(fileName);
 
     res.status(200).send({
       status: IResponseStatus.success,
@@ -80,6 +100,6 @@ export const generateUnitTests = async (req: Request, res: Response) => {
         message: (error as unknown)?.toString(),
         data: {}
       } as IErrorResponse
-    )
+    );
   }
-}
+};

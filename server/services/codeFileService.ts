@@ -1,8 +1,8 @@
+import * as crypto from "crypto";
 import * as fs from "fs";
 import path from "path";
 import ts from "typescript";
-import { ICodeLanguage, IReadFileFunctionsResponse } from "../types";
-import { unitTestsPrompt } from "./openaiService";
+import { ICodeLanguage, IReadFileFunctionsResponse, IUnitTestFile } from "../types";
 
 function extractFunctionsAndVariables(sourceFile: ts.SourceFile): string[] {
   const results: string[] = [];
@@ -10,7 +10,6 @@ function extractFunctionsAndVariables(sourceFile: ts.SourceFile): string[] {
   function visit(node: ts.Node) {
     if (ts.isFunctionDeclaration(node) || ts.isVariableStatement(node)) {
       let code = node.getText(sourceFile);
-      // Remove newlines and extra spaces
       code = code.replace(/\s+/g, " ").trim();
       results.push(code);
     }
@@ -27,19 +26,7 @@ export function receiveFile(fileName: string, file: Buffer, success: (message: s
 
   if (!fs.existsSync(storagePath)) fs.mkdirSync(storagePath);
 
-  const fileExtension = fileName.split(".")[1];
-  const filePath = path.join(storagePath, `file.${fileExtension}`);
-
-  const filesInDirectory = fs.readdirSync(storagePath);
-
-  if (filesInDirectory) {
-    filesInDirectory.forEach((file) => {
-      const filePath = path.join(storagePath, file);
-
-      fs.unlinkSync(filePath);
-      console.log(`File ${file} was unlinked`);
-    });
-  }
+  const filePath = path.join(storagePath, fileName);
 
   fs.writeFile(filePath, file, (err) => {
     if (err) {
@@ -47,18 +34,12 @@ export function receiveFile(fileName: string, file: Buffer, success: (message: s
       return;
     }
 
-    console.log("Writing file...");
+    console.info("File saved!");
     success("File saved successfully");
   });
 }
 
-export function readJSorTSFile(): IReadFileFunctionsResponse {
-  let fileName = "";
-
-  fs.readdirSync(path.join(__dirname, "../uploads")).forEach(file => {
-    fileName = file;
-  });
-
+export function readJSorTSFile(fileName: string): IReadFileFunctionsResponse {
   const filePath = path.join(__dirname, `../uploads/${fileName}`);
   const program = ts.createProgram([filePath], { allowJs: true });
   const sourceFile = program.getSourceFile(filePath);
@@ -73,20 +54,7 @@ export function readJSorTSFile(): IReadFileFunctionsResponse {
     throw new Error(`Could not infer code language of file ${fileName}`);
   }
 
-  return { lang: codeLang, functions: extractFunctionsAndVariables(sourceFile) };
-}
-
-export function generateUnitTests() {
-  const functionsToTest = readJSorTSFile().functions;
-
-  if (functionsToTest.length === 0) throw new Error("No functions found in file");
-
-  console.log(functionsToTest);
-
-  return functionsToTest.map(async (fn) => {
-    const { choices } = await unitTestsPrompt(fn, ICodeLanguage.typescript);
-    return choices[0].message?.content;
-  });
+  return { fileName: fileName, lang: codeLang, functions: extractFunctionsAndVariables(sourceFile) };
 }
 
 function getFilenameLang(fileName: string) {
@@ -102,4 +70,87 @@ function getFilenameLang(fileName: string) {
     default:
       return undefined;
   }
+}
+
+function calculateFileHash(filePath: string, algorithm: string = "sha256"): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash(algorithm);
+    const stream = fs.createReadStream(filePath);
+
+    stream.on("data", chunk => {
+      hash.update(chunk);
+    });
+
+    stream.on("end", () => {
+      const fileHash = hash.digest("hex");
+      resolve(fileHash);
+    });
+
+    stream.on("error", error => {
+      reject(error);
+    });
+  });
+}
+
+export async function storeUnitTests(unitTests: string, sessionId: string, fileName: string) {
+  const hash = await calculateFileHash(path.join(__dirname, `../uploads/${fileName}`));
+
+  const unitTestFile: IUnitTestFile = {
+    fileName,
+    fileHash: hash,
+    sessionId,
+    unitTests
+  };
+
+  fs.readFile(path.join(__dirname, "../data/unitTestFiles.json"), "utf8", (error, data) => {
+    if (error) {
+      console.error(error);
+      throw error;
+    }
+
+    const unitTestFiles = JSON.parse(data);
+    const newUnitTestFiles = addOrUpdateUnitTestFile(unitTestFiles, unitTestFile);
+    const newJSON = JSON.stringify(newUnitTestFiles);
+
+    fs.writeFileSync(path.join(__dirname, "../data/unitTestFiles.json"), newJSON);
+  });
+}
+
+function addOrUpdateUnitTestFile(unitTestFiles: IUnitTestFile[], unitTestFile: IUnitTestFile) {
+  const index = unitTestFiles.findIndex(item => item.sessionId === unitTestFile.sessionId && item.fileName === unitTestFile.fileName);
+
+  if (index !== -1) {
+    const newUnitTestFiles = [...unitTestFiles];
+    newUnitTestFiles[index] = unitTestFile;
+
+    return newUnitTestFiles;
+  } else {
+    return [...unitTestFiles, unitTestFile];
+  }
+}
+
+export async function getUnitTests(sessionId: string, fileName: string) {
+  const data = fs.readFileSync(path.join(__dirname, "../data/unitTestFiles.json"), "utf8");
+
+  const unitTestFiles: IUnitTestFile[] = JSON.parse(data);
+  const foundTests = unitTestFiles.find(test => test.sessionId === sessionId && test.fileName === fileName);
+
+  if (foundTests) {
+    const hash = await calculateFileHash(path.join(__dirname, `../uploads/${fileName}`));
+
+    if (hash === foundTests.fileHash) {
+      return foundTests.unitTests;
+    }
+
+    return undefined;
+  }
+
+  return undefined;
+}
+
+export async function removeFile(fileName: string) {
+  fs.unlink(path.join(__dirname, `../uploads/${fileName}`), (err) => {
+    if (err) throw err;
+    console.info(`File ${fileName} was unlinked`);
+  });
 }
