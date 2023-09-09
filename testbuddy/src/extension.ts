@@ -29,16 +29,6 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
   console.log("Debug3");
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "testBuddy.generateTest",
-      async (...args) => {
-        console.log(args);
-        await commandGenerateTestHadler(args);
-      }
-    )
-  );
 }
 
 const initializeApp = (context: vscode.ExtensionContext) => {
@@ -50,6 +40,17 @@ const initializeApp = (context: vscode.ExtensionContext) => {
   const editorProvider = new EditorWebViewViewProvider(context);
   const testListprovider = new TestListWebViewViewProvider(context);
 
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "testBuddy.generateTest",
+      async (...args) => {
+        console.log(args);
+        vscode.commands.executeCommand("testBuddy.testListWebViewView.focus");
+        await commandGenerateTestHadler(args);
+        testListprovider.initialize().then(console.log);
+      }
+    )
+  );
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       EditorWebViewViewProvider.viewType,
@@ -126,4 +127,8 @@ const selectTestingLanguage = async (_context: vscode.ExtensionContext) => {
   }
 
   vscode.window.showInformationMessage("Holaaa", input?.label || "Adios");
+  setTimeout(
+    () => vscode.commands.executeCommand("testBuddy.testListWebViewView.focus"),
+    0
+  );
 };

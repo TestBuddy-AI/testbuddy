@@ -1,1 +1,104 @@
-{"numFailedTestSuites":0,"numFailedTests":0,"numPassedTestSuites":1,"numPassedTests":6,"numPendingTestSuites":0,"numPendingTests":0,"numRuntimeErrorTestSuites":0,"numTodoTests":0,"numTotalTestSuites":1,"numTotalTests":6,"openHandles":[],"snapshot":{"added":0,"didUpdate":false,"failure":false,"filesAdded":0,"filesRemoved":0,"filesRemovedList":[],"filesUnmatched":0,"filesUpdated":0,"matched":0,"total":0,"unchecked":0,"uncheckedKeysByFile":[],"unmatched":0,"updated":0},"startTime":1693737263891,"success":true,"testResults":[{"assertionResults":[{"ancestorTitles":["useLowForm"],"failureMessages":[],"fullName":"useLowForm returns the necessary functions handlers","location":null,"status":"passed","title":"returns the necessary functions handlers"},{"ancestorTitles":["useLowForm"],"failureMessages":[],"fullName":"useLowForm creates a key in the form data value for each registered element","location":null,"status":"passed","title":"creates a key in the form data value for each registered element"},{"ancestorTitles":["useLowForm"],"failureMessages":[],"fullName":"useLowForm sets the default value or default checked attribute as the value at initialization","location":null,"status":"passed","title":"sets the default value or default checked attribute as the value at initialization"},{"ancestorTitles":["useLowForm"],"failureMessages":[],"fullName":"useLowForm prevents the default submit event behavior","location":null,"status":"passed","title":"prevents the default submit event behavior"},{"ancestorTitles":["useLowForm"],"failureMessages":[],"fullName":"useLowForm sets the isFormInvalid state property to true if one or more validations fail","location":null,"status":"passed","title":"sets the isFormInvalid state property to true if one or more validations fail"},{"ancestorTitles":["useLowForm"],"failureMessages":[],"fullName":"useLowForm sets the fieldErrors key to the yup messages on failure","location":null,"status":"passed","title":"sets the fieldErrors key to the yup messages on failure"}],"endTime":1693737265214,"message":"","name":"/Users/camilo.salinas/Documents/Personal/Github/testbuddy/cases/lowForm/tests/useLowForm.test.ts","startTime":1693737264083,"status":"passed","summary":""}],"wasInterrupted":false}
+{
+    "numFailedTestSuites": 0,
+    "numFailedTests": 0,
+    "numPassedTestSuites": 1,
+    "numPassedTests": 6,
+    "numPendingTestSuites": 0,
+    "numPendingTests": 0,
+    "numRuntimeErrorTestSuites": 0,
+    "numTodoTests": 0,
+    "numTotalTestSuites": 1,
+    "numTotalTests": 6,
+    "openHandles": [],
+    "snapshot": {
+        "added": 0,
+        "didUpdate": false,
+        "failure": false,
+        "filesAdded": 0,
+        "filesRemoved": 0,
+        "filesRemovedList": [],
+        "filesUnmatched": 0,
+        "filesUpdated": 0,
+        "matched": 0,
+        "total": 0,
+        "unchecked": 0,
+        "uncheckedKeysByFile": [],
+        "unmatched": 0,
+        "updated": 0
+    },
+    "startTime": 1693737263891,
+    "success": true,
+    "testResults": [
+        {
+            "assertionResults": [
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm returns the necessary functions handlers",
+                    "location": null,
+                    "status": "passed",
+                    "title": "returns the necessary functions handlers"
+                },
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm creates a key in the form data value for each registered element",
+                    "location": null,
+                    "status": "passed",
+                    "title": "creates a key in the form data value for each registered element"
+                },
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm sets the default value or default checked attribute as the value at initialization",
+                    "location": null,
+                    "status": "passed",
+                    "title": "sets the default value or default checked attribute as the value at initialization"
+                },
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm prevents the default submit event behavior",
+                    "location": null,
+                    "status": "passed",
+                    "title": "prevents the default submit event behavior"
+                },
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm sets the isFormInvalid state property to true if one or more validations fail",
+                    "location": null,
+                    "status": "passed",
+                    "title": "sets the isFormInvalid state property to true if one or more validations fail"
+                },
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm sets the fieldErrors key to the yup messages on failure",
+                    "location": null,
+                    "status": "passed",
+                    "title": "sets the fieldErrors key to the yup messages on failure"
+                }
+            ],
+            "endTime": 1693737265214,
+            "message": "",
+            "name": "/Users/camilo.salinas/Documents/Personal/Github/testbuddy/cases/lowForm/tests/useLowForm.test.ts",
+            "startTime": 1693737264083,
+            "status": "passed",
+            "summary": ""
+        }
+    ],
+    "wasInterrupted": false
+}

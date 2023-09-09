@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 export const showError = (errorMessage: string) => {
-  vscode.window.showInformationMessage(errorMessage, "Ok");
+  vscode.window.showErrorMessage(errorMessage, "Ok");
 };
 
 export const showMessage = (message: string) => {

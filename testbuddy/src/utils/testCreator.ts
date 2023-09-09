@@ -4,8 +4,9 @@ import { generateTestsRequest } from "./useAxios";
 import { showError } from "./toast";
 import path = require("path");
 
-export const commandGenerateTestHadler = async (...args: any[]) => {
+export const commandGenerateTestHadler = async (args: any[]) => {
   console.log("entre");
+  console.log(args);
   //Caso 1, se ejecuto con el keybinding y no hay URL
   if (args.length === 0) {
     console.log("CASO1");
@@ -14,36 +15,44 @@ export const commandGenerateTestHadler = async (...args: any[]) => {
       if (editor) {
         let document = editor.document;
         let response = await sendTestToBack(document.uri.fsPath);
-        await saveGeneratedTest(response);
+        await saveGeneratedTest(response, document.uri.fsPath);
       } else {
         showError("Please execute the command with an open file");
       }
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
     return;
   }
   //Caso 2, se ejecuto sobre UN solo archivo (editor/title/run, command palette)
   if (args[0] && !Array.isArray(args[1])) {
     console.log("CASO2");
+
     try {
       let response = await sendTestToBack(args[0].fsPath);
-      await saveGeneratedTest(response);
-    } catch (err) {}
+      await saveGeneratedTest(response, args[0].fsPath);
+    } catch (err) {
+      console.log(err);
+    }
     return;
   }
   //Caso 3, se ejecuto sobre un set de archivos (command palette)
   if (Array.isArray(args[1]) && args[1].length > 0) {
     console.log("CASO3");
     try {
-      let fileListToGenerate = new Set();
-      args.forEach((el) => {
+      let fileListToGenerate = new Set<string>();
+      args[1].forEach((el) => {
         fileListToGenerate.add(el.fsPath);
       });
       fileListToGenerate.forEach(async (el) => {
+        console.log(el);
         // TO-DO: Paralelize the requests
-        let response = await sendTestToBack(args[0].fsPath);
-        await saveGeneratedTest(response);
+        let response = await sendTestToBack(el);
+        await saveGeneratedTest(response, el);
       });
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
     return;
   }
 };
@@ -80,21 +89,30 @@ async function testGeneration() {
 }
 
 const sendTestToBack = async (fileURl: string) => {
+  console.log("Send TestToBack");
   let buffer = fs.readFileSync(fileURl);
 
   let response = await generateTestsRequest(buffer, fileURl);
   return response;
 };
 
-const saveGeneratedTest = async (respnseObject: any) => {
+const saveGeneratedTest = async (respnseObject: any, documentUri: string) => {
   try {
+    console.log("saving");
     let fileContents = respnseObject.data.result;
+    console.log("fileContents");
     let encoder = new TextEncoder();
 
     await vscode.workspace.fs.writeFile(
       vscode.Uri.joinPath(
         vscode.workspace.workspaceFolders[0].uri,
-        "tests/" + path.basename(document.uri.fsPath).split(".")[0] + ".test.ts"
+        (
+          "tests/" +
+          path.dirname(documentUri) +
+          "/" +
+          path.basename(documentUri).split(".")[0] +
+          ".test.ts"
+        ).replace(vscode.workspace.workspaceFolders[0].uri.fsPath, "")
       ),
       encoder.encode(fileContents as string)
     );

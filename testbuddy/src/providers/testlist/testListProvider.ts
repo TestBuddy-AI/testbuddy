@@ -68,7 +68,7 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
       });
   }
 
-  setLoading(active: boolean) {
+  public setLoading(active: boolean) {
     this._view?.webview.postMessage({ type: "loading", content: active });
   }
 
