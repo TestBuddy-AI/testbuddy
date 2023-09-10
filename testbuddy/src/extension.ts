@@ -5,6 +5,7 @@ import { WelcomeWebViewViewProvider } from "./providers/welcomeView/welcomeProvi
 import { error } from "console";
 import { checkNpm } from "./utils/checkEnv";
 import { commandGenerateTestHadler } from "./utils/testCreator";
+import { readSessionIdFile } from "./utils/useAxios";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("Debug1");
@@ -37,8 +38,25 @@ const initializeApp = (context: vscode.ExtensionContext) => {
     "testBuddy.loadEditorView",
     true
   );
+  //Providers for each ui
   const editorProvider = new EditorWebViewViewProvider(context);
   const testListprovider = new TestListWebViewViewProvider(context);
+  //Checks For changes on Test Files
+  let watcher = vscode.workspace.createFileSystemWatcher(
+    "**/__tests__/**/*.{js,jsx,ts,tsx}"
+  );
+  let watcher2 = vscode.workspace.createFileSystemWatcher(
+    "**/*.{test,spec}.{js,jsx,ts,tsx}"
+  );
+
+  watcher.onDidChange((uri) => {
+    console.log("GLOB PATTERN 1");
+    testListprovider.initialize();
+  });
+  watcher2.onDidChange((uri) => {
+    console.log("GLOB PATTERN 2");
+    testListprovider.initialize();
+  });
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
@@ -51,6 +69,7 @@ const initializeApp = (context: vscode.ExtensionContext) => {
       }
     )
   );
+
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       EditorWebViewViewProvider.viewType,
@@ -76,6 +95,8 @@ const initializeApp = (context: vscode.ExtensionContext) => {
       editorProvider.clearColors();
     })
   );
+
+  readSessionIdFile().then(console.log);
 };
 
 const selectTestingLanguage = async (_context: vscode.ExtensionContext) => {

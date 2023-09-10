@@ -1,5 +1,5 @@
 import axios from "axios";
-import * as FormData from "form-data";
+import * as vscode from "vscode";
 import {
   IErrorResponse,
   IResponseStatus,
@@ -11,18 +11,51 @@ import { v4 as uuidv4 } from "uuid";
 
 const BASE_URL = "http://localhost:3000";
 //TO-DO: Manage SESSION on file. GENERATE IT / STORE IT
-const sessionID = uuidv4();
+
+export const createSessionIdFile = async (): Promise<{ shared: string }> => {
+  let encoder = new TextEncoder();
+  let sessionObject = {
+    shared: uuidv4(),
+  };
+  await vscode.workspace.fs.writeFile(
+    vscode.Uri.joinPath(
+      vscode.workspace.workspaceFolders[0].uri,
+      "testbuddy/session.json"
+    ),
+    encoder.encode(JSON.stringify(sessionObject))
+  );
+  return sessionObject;
+};
+
+export const readSessionIdFile = async (): Promise<{ shared: string }> => {
+  try {
+    let session = (
+      await vscode.workspace.fs.readFile(
+        vscode.Uri.joinPath(
+          vscode.workspace.workspaceFolders[0].uri,
+          "testbuddy/session.json"
+        )
+      )
+    ).toString();
+    return JSON.parse(session);
+  } catch (err) {
+    let session = await createSessionIdFile();
+    return session;
+  }
+};
 
 export async function generateTestsRequest(buffer: Buffer, fileName: string) {
   // 👇️ const data: GetUsersResponse
   console.log("GenerateTestsRequest");
   try {
+    let { shared } = await readSessionIdFile();
+
     console.log("ejecutando");
     let rSendFile = await sendFile(buffer, fileName);
 
     console.log(rSendFile.status, "<---- Status Sendfile");
 
-    const { data, status } = await getTests(fileName);
+    const { data, status } = await getTests(fileName, shared);
     console.log(status, "<---- Status genUnitTests");
     return data;
   } catch (error: any) {
@@ -41,9 +74,9 @@ const sendFile = (buffer: Buffer, fileName: string) =>
     },
   });
 
-const getTests = (fileName: string) => {
+const getTests = (fileName: string, session: string) => {
   return axios.post(`${BASE_URL}/generate-unit-tests`, {
-    sessionId: sessionID,
+    sessionId: session,
     fileName: fileName,
   });
 };
