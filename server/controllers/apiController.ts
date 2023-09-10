@@ -73,7 +73,7 @@ export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
 
     const unitTestsArray = existingTests?.map(fn => fn.unitTests);
 
-    const result = unitTestsArray?.join(",");
+    const result = unitTestsArray?.join(" ");
 
     await codeFileService.removeFile(fileName);
 
