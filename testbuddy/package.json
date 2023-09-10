@@ -47,7 +47,8 @@
           "type": "webview",
           "id": "testBuddy.editorWebViewView",
           "name": "TestBuddy - Editor",
-          "when": "testBuddy.loadEditorView == true"
+          "when": "testBuddy.loadEditorView == true",
+          "visibility": "collapsed"
         },
         {
           "type": "webview",

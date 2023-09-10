@@ -125,7 +125,11 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
       }
       case "regenerateTest": {
         console.log("Llegue");
-
+        let testValue: { file: string; test: string } = data.value;
+        vscode.commands.executeCommand("testBuddy.sendTestToEditor", [
+          testValue.file,
+          testValue.test,
+        ]);
         console.log("REGEN");
         //execute shell command for testing
         // execShell(

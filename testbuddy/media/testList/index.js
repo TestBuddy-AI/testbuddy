@@ -1,4 +1,3 @@
-//@ts-check
 import { runTests } from "./testRunner.js";
 import {
   actions,

@@ -4,7 +4,7 @@ import { generateTestsRequest } from "./useAxios";
 import { showError } from "./toast";
 import path = require("path");
 
-export const commandGenerateTestHadler = async (args: any[]) => {
+export const commandGenerateTestHandler = async (args: any[]) => {
   console.log("entre");
   console.log(args);
   //Caso 1, se ejecuto con el keybinding y no hay URL

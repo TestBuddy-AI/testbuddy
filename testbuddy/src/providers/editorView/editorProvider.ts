@@ -70,6 +70,22 @@ export class EditorWebViewViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  public setTestToEditor(testFile: string, testName: string) {
+    console.log("Llego al editor", testFile, testName);
+    this._view?.show(true);
+    this._view?.webview.postMessage({
+      type: "sendTest",
+      content: { testFile, testName },
+    });
+  }
+
+  public populateSelector(testList: { testFile: string; testName: string }[]) {
+    this._view?.webview.postMessage({
+      type: "populate",
+      content: { testList },
+    });
+  }
+
   public clearColors() {
     if (this._view) {
       this._view.webview.postMessage({ type: "clearColors" });

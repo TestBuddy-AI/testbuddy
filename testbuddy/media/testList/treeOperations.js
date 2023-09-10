@@ -5,7 +5,7 @@ export const ICONS = {
   PASSED: "pass",
   ERROR: "error",
   DEFAULT: "circle-large",
-  EDIT: "edit",
+  EDIT: "wand",
   LOADING: "loading",
 };
 export const TEST_STATUS = {
@@ -93,7 +93,7 @@ export const updateLoadingIcons = () => {
   const loadingIcons = treeHTMLElement.shadowRoot.querySelectorAll(
     `vscode-icon[name="${ICONS.LOADING}"]`
   );
-  console.log(loadingIcons);
+
   loadingIcons.forEach((el) => {
     el.classList.add("red");
     el.setAttribute("spin", "");
@@ -127,7 +127,6 @@ export const updateResultsIcons = () => {
 };
 
 export const mapNode = (testNode, isRoot = false) => {
-  console.log(testNode);
   if (isRoot) {
     const node = {
       id: createId(isRoot, testNode.file),
@@ -240,7 +239,6 @@ export function updateNode(node, idToUpdate, isLoading, result) {
 
 //"status": "failed" | "pending" | "passed",
 export const updateParentStatus = (node) => {
-  console.log(node);
   if (!node.subItems || node.subItems.length === 0) {
     // Leaf node
     return node.status;
