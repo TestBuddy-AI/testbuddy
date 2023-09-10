@@ -4,7 +4,7 @@ import apiRoutes from "./routes/apiRoutes";
 
 dotenv.config();
 const app = express();
-const port = process.env.PORT;
+const port = process.env.SERVER_PORT;
 
 app.use(express.raw({ type: 'application/octet-stream', limit: '5mb' }));
 app.use(express.json());
