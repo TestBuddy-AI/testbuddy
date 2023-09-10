@@ -1,6 +1,6 @@
 import {parse} from 'jest-editor-support'
 
-test('asdsds - valid path', () => {
+test('asdsdsPRUEBA - valid path', () => {
   const path = "/Users/camilo.salinas/Documents/Personal/testproject/tests/Form.test.tsx";
   const result = parse(path);
   expect(result).toEqual({

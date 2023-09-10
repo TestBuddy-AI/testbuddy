@@ -22,9 +22,9 @@ export const actions = [
     tooltip: "Run all",
   },
   {
-    icon: ICONS.REFRESH,
+    icon: ICONS.EDIT,
     actionId: "regenerateTest",
-    tooltip: "Regenerate tests",
+    tooltip: "Modify tests",
   },
   {
     icon: ICONS.GO_TO_FILE,

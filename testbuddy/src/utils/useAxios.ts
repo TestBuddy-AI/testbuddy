@@ -9,7 +9,7 @@ import path = require("path");
 import { showError, showMessage } from "./toast";
 import { v4 as uuidv4 } from "uuid";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://testbuddyapi.azurewebsites.net/";
 //TO-DO: Manage SESSION on file. GENERATE IT / STORE IT
 
 export const createSessionIdFile = async (): Promise<{ shared: string }> => {
@@ -66,6 +66,28 @@ export async function generateTestsRequest(buffer: Buffer, fileName: string) {
   }
 }
 
+export async function regenerateTest(buffer: Buffer, fileName: string) {
+  // 👇️ const data: GetUsersResponse
+  console.log("RegenerateTestsRequest");
+  try {
+    let { shared } = await readSessionIdFile();
+
+    console.log("ejecutando");
+    let rSendFile = await sendFile(buffer, fileName);
+
+    console.log(rSendFile.status, "<---- Status Sendfile");
+
+    const { data, status } = await getTests(fileName, shared);
+    console.log(status, "<---- Status genUnitTests");
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    showError(
+      "Oops something went wrong when trying to generate the tests, Please try again"
+    );
+  }
+}
+
 const sendFile = (buffer: Buffer, fileName: string) =>
   axios.post(`${BASE_URL}/receiveFile`, buffer, {
     headers: {
@@ -77,6 +99,60 @@ const sendFile = (buffer: Buffer, fileName: string) =>
 const getTests = (fileName: string, session: string) => {
   return axios.post(`${BASE_URL}/generate-unit-tests`, {
     sessionId: session,
-    fileName: fileName,
+    fileName: path.basename(fileName),
+  });
+};
+const getRegeneratedTestSuite = (fileName: string, session: string) => {
+  return axios.post(`${BASE_URL}/regenerate-test-suite`, {
+    sessionId: session,
+    fileName: path.basename(fileName),
+  });
+};
+const getRegeneratedTestSingle = (
+  fileName: string,
+  session: string,
+  testName: string
+) => {
+  return axios.post(`${BASE_URL}/regenerate-test`, {
+    sessionId: session,
+    fileName: path.basename(fileName),
+    test: testName,
+  });
+};
+const getModifiedTestSuite = (
+  fileName: string,
+  session: string,
+  userInput: string
+) => {
+  return axios.post(`${BASE_URL}/modify-test-suite`, {
+    sessionId: session,
+    fileName: path.basename(fileName),
+    userInput: userInput,
+  });
+};
+
+const getModifiedTestSingle = (
+  fileName: string,
+  session: string,
+  testName: string,
+  userInput: string
+) => {
+  return axios.post(`${BASE_URL}/modify-test`, {
+    sessionId: session,
+    fileName: path.basename(fileName),
+    test: testName,
+    userInput: userInput,
+  });
+};
+
+const getFeedbackOnFailedTest = (
+  fileName: string,
+  session: string,
+  error: string
+) => {
+  return axios.post(`${BASE_URL}/modify-test`, {
+    sessionId: session,
+    fileName: path.basename(fileName),
+    error: error,
   });
 };

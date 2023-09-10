@@ -41,7 +41,7 @@ export const LowForm: FC<LowFormProps & { children?: ReactNode | ReactNodeArray 
   id: formId = 'form',
   errorComponent: ErrorComponent,
   style = {},
-  autoComplete = 'on',
+  autoComplete = 'off',
   className = '',
 }) => {
   const { registerElement, handleFormSubmit, getFormState } = useLowForm({

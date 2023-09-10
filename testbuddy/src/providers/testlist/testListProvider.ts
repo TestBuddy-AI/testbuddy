@@ -123,9 +123,10 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
         // ).then(console.log);
         break;
       }
-      case "regenerate": {
+      case "regenerateTest": {
         console.log("Llegue");
-        this.test().then(console.log);
+
+        console.log("REGEN");
         //execute shell command for testing
         // execShell(
         //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
