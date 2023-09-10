@@ -133,3 +133,9 @@ dist
 .idea
 
 *.DS_Store
+
+# Temporary server to emulate file send
+DELETE_THIS/
+
+# File uploads
+./server/uploads
