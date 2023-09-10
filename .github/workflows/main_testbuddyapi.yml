@@ -27,7 +27,6 @@ jobs:
           npm install
           npm run build --if-present
           npm run test --if-present
-          
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
@@ -35,3 +34,4 @@ jobs:
           app-name: 'testbuddyapi'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A43A0E1CF18A4BEAA5ED9582D5136B3A }}
+          package: server
