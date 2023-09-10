@@ -66,9 +66,13 @@ export async function generateTestsRequest(buffer: Buffer, fileName: string) {
   }
 }
 
-export async function regenerateTest(buffer: Buffer, fileName: string) {
+export async function regenerateTest(
+  buffer: Buffer,
+  fileName: string,
+  testName: string
+) {
   // 👇️ const data: GetUsersResponse
-  console.log("RegenerateTestsRequest");
+  console.log("regenerateTest");
   try {
     let { shared } = await readSessionIdFile();
 
@@ -76,14 +80,68 @@ export async function regenerateTest(buffer: Buffer, fileName: string) {
     let rSendFile = await sendFile(buffer, fileName);
 
     console.log(rSendFile.status, "<---- Status Sendfile");
-
-    const { data, status } = await getTests(fileName, shared);
+    let generator = getRegeneratedTestSuite(fileName, shared);
+    if (testName) {
+      generator = getRegeneratedTestSingle(fileName, shared, testName);
+    }
+    const { data, status } = await generator;
     console.log(status, "<---- Status genUnitTests");
     return data;
   } catch (error: any) {
     console.log(error);
     showError(
-      "Oops something went wrong when trying to generate the tests, Please try again"
+      "Oops something went wrong when trying to modify your tests the tests, Please try again"
+    );
+  }
+}
+export async function modifyTest(
+  buffer: Buffer,
+  fileName: string,
+  testName: string,
+  userPrompt: string
+) {
+  // 👇️ const data: GetUsersResponse
+  console.log("modifyTest");
+  try {
+    let { shared } = await readSessionIdFile();
+
+    console.log("ejecutando");
+    let rSendFile = await sendFile(buffer, fileName);
+
+    console.log(rSendFile.status, "<---- Status Sendfile");
+    let generator = getModifiedTestSuite(fileName, shared, userPrompt);
+    if (testName) {
+      generator = getModifiedTestSingle(fileName, shared, testName, userPrompt);
+    }
+    const { data, status } = await generator;
+    console.log(status, "<---- Status genUnitTests");
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    showError(
+      "Oops something went wrong when trying to modify your tests the tests, Please try again"
+    );
+  }
+}
+
+export async function getFeedback(fileName: string, error: string) {
+  console.log("Feedback");
+  try {
+    let { shared } = await readSessionIdFile();
+
+    console.log("ejecutando");
+
+    const { data, status } = await getFeedbackOnFailedTest(
+      fileName,
+      shared,
+      error
+    );
+
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    showError(
+      "Oops something went wrong when trying to modify your tests the tests, Please try again"
     );
   }
 }
