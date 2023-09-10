@@ -82,7 +82,7 @@ const initializeApp = (context: vscode.ExtensionContext) => {
     vscode.commands.registerCommand(
       "testBuddy.populateEditor",
       async (...args) => {
-        editorProvider.setTestToEditor(args[0], args[1]);
+        editorProvider.populateSelector(args[0]);
       }
     )
   );

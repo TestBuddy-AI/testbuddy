@@ -53,6 +53,7 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
 
   public addTests(testList: ParsedNode[]) {
     console.log(testList);
+    vscode.commands.executeCommand("testBuddy.populateEditor", testList);
     this._view?.webview.postMessage({ type: "addTests", content: testList });
   }
 
