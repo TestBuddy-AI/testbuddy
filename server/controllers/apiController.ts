@@ -61,61 +61,19 @@ export const receiveFile = async (req: Request, res: Response) => {
   codeFileService.receiveFile(fileName, req.body, success, error);
 };
 
-// export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
-//   try {
-//     const { sessionId, fileName } = req.body;
-//     const existingTests = await getUnitTests(sessionId, fileName);
-//     let result;
-//
-//     if (!existingTests) {
-//       const resolvedArray = await Promise.all(openaiService.generateUnitTests(fileName));
-//       const resolvedArrayNoMarkdown = resolvedArray.map((code) => {
-//         if (code !== undefined) {
-//           return code.replace(/```[\w]*([\s\S]+?)```/g, "$1");
-//         }
-//         return "";
-//       });
-//
-//       const unitTests = resolvedArrayNoMarkdown.join(",");
-//
-//       await storeUnitTests(unitTests, sessionId, fileName);
-//
-//       result = unitTests;
-//     } else {
-//       result = existingTests;
-//     }
-//
-//     await removeFile(fileName);
-//
-//     res.status(200).send({
-//       status: IResponseStatus.success,
-//       data: { result },
-//       message: ""
-//     } as ISuccessResponse);
-//   } catch (error) {
-//     res.status(500).send(
-//       {
-//         status: IResponseStatus.error,
-//         message: (error as unknown)?.toString(),
-//         data: {}
-//       } as IErrorResponse
-//     );
-//   }
-// };
-
 export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
   try {
     const { sessionId, fileName } = req.body;
 
     const existingTests = await codeFileService.getOrGenerateUnitTests(sessionId, fileName);
 
-    // await codeFileService.storeUnitTests(existingTests || [], sessionId, fileName);
+    await codeFileService.storeUnitTests(existingTests || [], sessionId, fileName);
 
-    console.log(`These are the existing tests ${existingTests}`);
+    console.info(`These are the existing tests ${existingTests}`);
 
     const unitTestsArray = existingTests?.map(fn => fn.unitTests);
 
-    let result = unitTestsArray?.join(",");
+    const result = unitTestsArray?.join(",");
 
     await codeFileService.removeFile(fileName);
 
