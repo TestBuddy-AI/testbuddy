@@ -7,6 +7,7 @@ export const ICONS = {
   DEFAULT: "circle-large",
   EDIT: "wand",
   LOADING: "loading",
+  INFO_ERROR: "run-errors",
 };
 export const TEST_STATUS = {
   RUNNING: "running",
@@ -33,6 +34,28 @@ export const actions = [
   },
 ];
 
+export const actionsError = [
+  {
+    icon: ICONS.RUN,
+    actionId: "runTest",
+    tooltip: "Run all",
+  },
+  {
+    icon: ICONS.EDIT,
+    actionId: "regenerateTest",
+    tooltip: "Modify tests",
+  },
+  {
+    icon: ICONS.GO_TO_FILE,
+    actionId: "goToFile",
+    tooltip: "Open test",
+  },
+  {
+    icon: ICONS.INFO_ERROR,
+    actionId: "showError",
+    tooltip: "Show failure message",
+  },
+];
 export const getDecorations = (
   status,
   numTests = -1,
@@ -119,6 +142,7 @@ export const updateResultsIcons = () => {
       }
       case ICONS.ERROR: {
         el.removeAttribute("spin");
+
         el.classList.add("red");
         break;
       }
@@ -190,6 +214,7 @@ export function updateNode(node, idToUpdate, isLoading, result) {
       node.icons = getIcons(ICONS.LOADING);
       node.decorations = getDecorations(TEST_STATUS.RUNNING);
       node.status = "loading";
+
       if (node.subItems && node.subItems.length > 0) {
         node.subItems.forEach((children) => {
           updateNode(children, children.id, isLoading, result);
@@ -204,19 +229,34 @@ export function updateNode(node, idToUpdate, isLoading, result) {
       switch (result.status) {
         case "passed": {
           node.icons = getIcons(ICONS.PASSED);
+          const index = node.actions.findIndex(
+            (object) => object.icon === ICONS.INFO_ERROR
+          );
+          if (index === -1) {
+            node.actions = actions;
+          }
           node.status = "passed";
           break;
         }
         case "failed": {
           node.icons = getIcons(ICONS.ERROR);
           node.status = "failed";
+          console.log(node.actions);
           if (result.failureMessages) {
             node.message = result.failureMessages.join(" ");
           }
+          node.actions = actionsError;
+
           break;
         }
         case "pending": {
           //   node.icons = getIcons(ICONS.DEFAULT);
+          const index = node.actions.findIndex(
+            (object) => object.icon === ICONS.INFO_ERROR
+          );
+          if (index === -1) {
+            node.actions = actions;
+          }
           node.status = "pending";
           break;
         }

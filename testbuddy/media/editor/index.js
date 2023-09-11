@@ -172,9 +172,13 @@ function createParticle(x, y) {
     },
     false
   );
-  selectorElement.addEventListener("vsc-change", (ev) => {
+  const resetButton = () => {
     buttonElement.removeAttribute("disabled");
     buttonElement.innerHTML = "Modify your test";
+  };
+
+  selectorElement.addEventListener("vsc-change", (ev) => {
+    resetButton();
     selectorElement.setAttribute("selected-index", ev.detail.selectedIndex);
   });
 

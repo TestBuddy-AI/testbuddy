@@ -49,6 +49,9 @@ import {
             });
             break;
           }
+          case "showError": {
+            break;
+          }
         }
       });
       tree?.setAttribute("listener", "true");
@@ -214,14 +217,12 @@ import {
     vscode.setState({ tests: data });
   }
 
-  document
-    .getElementById("btn-generate-tests")
-    .addEventListener("vsc-click", (ev) => {
-      vscode.postMessage({ type: "generate", value: {} });
-    });
   document.getElementById("btn-test").addEventListener("vsc-click", (ev) => {
     console.log("Hacer Algo");
     runTests(vscode);
+  });
+  document.getElementById("btn-refresh").addEventListener("vsc-click", () => {
+    vscode.postMessage({ type: "reload" });
   });
 })();
 

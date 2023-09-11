@@ -64,8 +64,13 @@ const initializeApp = (context: vscode.ExtensionContext) => {
       async (...args) => {
         console.log(args);
         vscode.commands.executeCommand("testBuddy.testListWebViewView.focus");
+        setTimeout(() => {
+          testListprovider.setLoading(true);
+        }, 0);
         await commandGenerateTestHandler(args);
-        testListprovider.initialize().then(console.log);
+        testListprovider
+          .initialize()
+          .then(() => testListprovider.setLoading(false));
       }
     )
   );

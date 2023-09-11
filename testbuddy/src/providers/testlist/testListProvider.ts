@@ -142,6 +142,10 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
         await this.generateTests();
         break;
       }
+      case "reload": {
+        await this.initialize();
+        break;
+      }
       case "goToFile": {
         console.log(data.value);
         if (!data.value.open.start) {
