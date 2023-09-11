@@ -18,6 +18,9 @@ CREATE TABLE UnitTestFunction
 DROP TABLE UnitTestFile;
 DROP TABLE UnitTestFunction;
 
+ALTER TABLE UnitTestFile 
+ADD fileLang VARCHAR(255) NOT NULL;
+
 
 
 

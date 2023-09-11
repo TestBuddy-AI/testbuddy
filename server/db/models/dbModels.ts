@@ -1,3 +1,5 @@
+import { ICodeLanguage } from "../../types";
+
 export interface IUnitTestFile {
   id?: number;
   fileName: string;
@@ -6,7 +8,7 @@ export interface IUnitTestFile {
   // prompt_tokens: number;
   // completion_tokens: number;
   // requestTime: number;
-  // fileLang: ICodeLanguage;
+  fileLang: ICodeLanguage;
 }
 
 export interface ITestFunction {

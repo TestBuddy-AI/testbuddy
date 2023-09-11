@@ -1,3 +1,4 @@
+import { ICodeLanguage } from "../types";
 import { unitTestFileService } from "./services/unitTestFileServices";
 import { unitTestFunctionService } from "./services/unitTestFunctionService";
 
@@ -9,6 +10,7 @@ const runCrudOperations = async () => {
     const newUnitTestFile = {
       fileName: "testFile.ts",
       sessionId: "session123",
+      fileLang: ICodeLanguage.javascipt,
     };
 
     const fileId = await unitTestFileService.create(newUnitTestFile);
