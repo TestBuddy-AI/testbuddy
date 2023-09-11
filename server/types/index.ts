@@ -10,7 +10,6 @@ export interface IParsedFunction {
 export enum ICodeLanguage {
   typescript = "Typescript",
   javascipt = "Javascript",
-  typescriptreact = "Typescript React"
 }
 
 export enum IResponseStatus {

@@ -1,26 +1,13 @@
 import { Request, Response } from "express";
 import * as codeFileService from "../services/codeFileService";
-import * as openaiService from "../services/openaiService";
-import { ICodeLanguage, IErrorResponse, IResponseStatus, ISuccessResponse } from "../types";
+import { IErrorResponse, IResponseStatus, ISuccessResponse } from "../types";
 
 export const helloWorld = async (req: Request, res: Response) => {
   res.status(200).send({
     status: IResponseStatus.success,
     data: {},
-    message: "Hello World!"
+    message: "Hello World!",
   } as ISuccessResponse);
-};
-
-export const unitTestsPrompt = async (req: Request, res: Response) => {
-  try {
-    const userMessage = req.body.userMessage;
-    const response = await openaiService.unitTestsPrompt(userMessage, ICodeLanguage.javascipt);
-
-    res.json(response);
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "An error occurred" });
-  }
 };
 
 export const receiveFile = async (req: Request, res: Response) => {
@@ -32,7 +19,7 @@ export const receiveFile = async (req: Request, res: Response) => {
     return res.status(400).send({
       status: IResponseStatus.error,
       data: {},
-      message: "File-Name header missing"
+      message: "File-Name header missing",
     } as IErrorResponse);
   }
 
@@ -40,7 +27,7 @@ export const receiveFile = async (req: Request, res: Response) => {
     return res.status(400).send({
       status: IResponseStatus.error,
       data: {},
-      message: "File-Path header missing"
+      message: "File-Path header missing",
     } as IErrorResponse);
   }
 
@@ -48,7 +35,7 @@ export const receiveFile = async (req: Request, res: Response) => {
     return res.status(400).send({
       status: IResponseStatus.error,
       data: {},
-      message: "Expected buffer data"
+      message: "Expected buffer data",
     } as IErrorResponse);
   }
 
@@ -56,7 +43,7 @@ export const receiveFile = async (req: Request, res: Response) => {
     return res.status(500).send({
       status: IResponseStatus.error,
       data: {},
-      message
+      message,
     } as IErrorResponse);
   };
 
@@ -64,7 +51,7 @@ export const receiveFile = async (req: Request, res: Response) => {
     res.status(200).send({
       status: IResponseStatus.success,
       data: {},
-      message
+      message,
     } as ISuccessResponse);
   };
 
@@ -75,12 +62,18 @@ export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
   try {
     const { sessionId, filePath } = req.body;
     const fileName = codeFileService.reformatFilePath(filePath);
-    const existingTests = await codeFileService.getOrGenerateUnitTests(sessionId, fileName);
+    const existingTests = await codeFileService.getOrGenerateUnitTests(
+      sessionId,
+      fileName
+    );
 
-    await codeFileService.storeUnitTests(existingTests || [], sessionId, fileName);
+    await codeFileService.storeUnitTests(
+      existingTests || [],
+      sessionId,
+      fileName
+    );
 
-
-    const unitTestsArray = existingTests?.map(fn => fn.unitTests);
+    const unitTestsArray = existingTests?.map((fn) => fn.unitTests);
     const result = unitTestsArray?.join(" ");
 
     await codeFileService.removeFile(fileName);
@@ -88,15 +81,13 @@ export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
     res.status(200).send({
       status: IResponseStatus.success,
       data: { result },
-      message: ""
+      message: "",
     } as ISuccessResponse);
   } catch (error) {
-    res.status(500).send(
-      {
-        status: IResponseStatus.error,
-        message: (error as unknown)?.toString(),
-        data: {}
-      } as IErrorResponse
-    );
+    res.status(500).send({
+      status: IResponseStatus.error,
+      message: (error as unknown)?.toString(),
+      data: {},
+    } as IErrorResponse);
   }
 };

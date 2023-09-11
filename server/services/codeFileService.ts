@@ -90,9 +90,6 @@ function getFilenameLang(fileName: string) {
     case "js":
       return ICodeLanguage.javascipt;
 
-    case "tsx":
-      return ICodeLanguage.typescriptreact;
-
     default:
       return undefined;
   }
