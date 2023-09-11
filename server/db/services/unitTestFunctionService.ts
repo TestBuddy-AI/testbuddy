@@ -61,10 +61,25 @@ const listAll = async (): Promise<ITestFunction[]> => {
   return result.recordset;
 };
 
+const listByFileId = async (
+  unitTestFileId: number
+): Promise<ITestFunction[] | null> => {
+  const pool = await getDbConnection();
+  const result = await pool
+    .request()
+    .input("unitTestFileId", unitTestFileId)
+    .query(
+      "SELECT * FROM UnitTestFunction WHERE unitTestFileId = @unitTestFileId"
+    );
+
+  return result.recordset;
+};
+
 export const unitTestFunctionService = {
   create,
   getById,
   update,
   deleteById,
   listAll,
+  listByFileId,
 };
