@@ -26,10 +26,10 @@ export interface IReadFileFunctionsResponse {
   fileName: string;
   lang: ICodeLanguage;
   functions: ITestFunction[];
-  imports: string[];
+  imports: string[] | undefined;
 }
 
-export interface IGetOrGenerateUnitTestsResponse {
-  imports: string[],
+export interface IGeneratedTestsResponse {
+  imports: string | undefined;
   functions: ITestFunction[]
 }

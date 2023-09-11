@@ -47,8 +47,9 @@ export async function generateFunctionUnitTests(
 }
 
 export async function regenerateUnitTestsPrompt(
-  codeLanguage: ICodeLanguage,
-  unitTestGenerated: ITestFunction
+  originalCode: string,
+  unitTests: string,
+  codeLanguage: ICodeLanguage
 ): Promise<CreateChatCompletionResponse> {
   const response = await openAI.createChatCompletion({
     model: "gpt-3.5-turbo-16k",
@@ -59,11 +60,11 @@ export async function regenerateUnitTestsPrompt(
       },
       {
         role: "user",
-        content: unitTestGenerated.code
+        content: originalCode
       },
       {
         role: "assistant",
-        content: unitTestGenerated.unitTests
+        content: unitTests
       },
       {
         role: "user",
@@ -71,7 +72,7 @@ export async function regenerateUnitTestsPrompt(
           "I wasn't fully satisfied with the previous unit tests. Can you generate a new set of unit tests using a different approach for the same code?"
       }
     ],
-    temperature: 0.3,
+    temperature: 0.6,
     max_tokens: 2560,
     top_p: 1,
     frequency_penalty: 0,
@@ -90,12 +91,13 @@ export async function regenerateUnitTestsPrompt(
 }
 
 export async function regenerateFunctionUnitTests(
-  codeLanguage: ICodeLanguage,
-  unitTestGenerated: ITestFunction
+  testFunction: ITestFunction,
+  codeLanguage: ICodeLanguage
 ) {
   const { choices } = await regenerateUnitTestsPrompt(
-    codeLanguage,
-    unitTestGenerated
+    testFunction.code,
+    testFunction.unitTests || "",
+    codeLanguage
   );
 
   return choices[0].message?.content;

@@ -10,7 +10,7 @@ const runCrudOperations = async () => {
     const newUnitTestFile = {
       fileName: "testFile.ts",
       sessionId: "session123",
-      fileLang: ICodeLanguage.javascipt,
+      fileLang: ICodeLanguage.javascript,
     };
 
     const fileId = await unitTestFileService.create(newUnitTestFile);
