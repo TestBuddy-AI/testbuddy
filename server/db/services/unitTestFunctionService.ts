@@ -1,5 +1,5 @@
 import { getDbConnection } from "../connectors/dbConnector";
-import { ITestFunction } from "../models/unitTestFileModel";
+import { ITestFunction } from "../models/dbModels";
 
 const create = async (unitTestFunction: ITestFunction): Promise<number> => {
   const pool = await getDbConnection();
@@ -23,6 +23,17 @@ const getById = async (id: number): Promise<ITestFunction | null> => {
     .request()
     .input("Id", id)
     .query("SELECT * FROM UnitTestFunction WHERE Id = @Id");
+
+  if (result.recordset.length === 0) return null;
+  return result.recordset[0];
+};
+
+const getByHash = async (hash: string): Promise<ITestFunction | null> => {
+  const pool = await getDbConnection();
+  const result = await pool
+  .request()
+  .input("hash", hash)
+  .query("SELECT * FROM UnitTestFunction WHERE hash = @hash");
 
   if (result.recordset.length === 0) return null;
   return result.recordset[0];
@@ -78,6 +89,7 @@ const listByFileId = async (
 export const unitTestFunctionService = {
   create,
   getById,
+  getByHash,
   update,
   deleteById,
   listAll,

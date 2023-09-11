@@ -2,12 +2,10 @@ import * as fs from "fs";
 import md5 from "md5";
 import path from "path";
 import ts from "typescript";
-import {
-  ICodeLanguage,
-  IReadFileFunctionsResponse,
-  ITestFunction,
-  IUnitTestFile,
-} from "../types";
+import { ITestFunction, IUnitTestFile } from "../db/models/dbModels";
+import { unitTestFileService } from "../db/services/unitTestFileServices";
+import { unitTestFunctionService } from "../db/services/unitTestFunctionService";
+import { ICodeLanguage, IReadFileFunctionsResponse } from "../types";
 import { generateFunctionUnitTests } from "./openaiService";
 
 function extractFunctionsAndImports(sourceFile: ts.SourceFile): {
@@ -81,7 +79,7 @@ export function readJSorTSFile(fileName: string): IReadFileFunctionsResponse {
       return {
         fileName: fileName,
         code: stringFn,
-        hash: md5(stringFn),
+        hash: md5(stringFn)
       } as ITestFunction;
     }
   );
@@ -98,7 +96,7 @@ function getFilenameLang(fileName: string) {
       return ICodeLanguage.typescript;
 
     case "js":
-      return ICodeLanguage.javascipt;
+      return ICodeLanguage.javascript;
 
     default:
       return undefined;
@@ -110,53 +108,37 @@ export async function storeUnitTests(
   sessionId: string,
   fileName: string
 ) {
-  const unitTestFile: IUnitTestFile = {
-    fileName,
-    sessionId,
-    functions,
-  };
+  const resultUnitTestFile =
+    await unitTestFileService.getBySessionIdAndFileName(sessionId, fileName);
 
-  fs.readFile(
-    path.join(__dirname, "../data/unitTestFiles.json"),
-    "utf8",
-    (error, data) => {
-      if (error) {
-        console.error(error);
-        throw error;
+  if (resultUnitTestFile?.id) {
+    functions.map(async fn => {
+      const unitTestFunction: ITestFunction = {
+        hash: fn.hash,
+        code: fn.code,
+        unitTests: fn.unitTests,
+        unitTestFileId: resultUnitTestFile.id
+      };
+
+      const existingFunction = await unitTestFunctionService.getByHash(fn.hash);
+
+      if (!existingFunction) {
+        await unitTestFunctionService.create(unitTestFunction);
       }
-
-      const unitTestFiles = JSON.parse(data);
-      const newUnitTestFiles = addOrUpdateUnitTestFile(
-        unitTestFiles,
-        unitTestFile
-      );
-      const newJSON = JSON.stringify(newUnitTestFiles);
-
-      fs.writeFileSync(
-        path.join(__dirname, "../data/unitTestFiles.json"),
-        newJSON
-      );
-    }
-  );
-}
-
-function addOrUpdateUnitTestFile(
-  unitTestFiles: IUnitTestFile[],
-  unitTestFile: IUnitTestFile
-) {
-  const index = unitTestFiles.findIndex(
-    (item) =>
-      item.sessionId === unitTestFile.sessionId &&
-      item.fileName === unitTestFile.fileName
-  );
-
-  if (index !== -1) {
-    const newUnitTestFiles = [...unitTestFiles];
-    newUnitTestFiles[index] = unitTestFile;
-
-    return newUnitTestFiles;
+    });
   } else {
-    return [...unitTestFiles, unitTestFile];
+    const newUnitTestFile: IUnitTestFile = {
+      fileName,
+      sessionId
+    };
+    const fileId = await unitTestFileService.create(newUnitTestFile);
+    const fnPromises = functions.map((fn) => {
+      const newFunction = { ...fn, unitTestFileId: fileId };
+
+      return unitTestFunctionService.create(newFunction);
+    });
+
+    await Promise.all(fnPromises);
   }
 }
 
@@ -171,46 +153,39 @@ export async function getOrGenerateUnitTests(
   sessionId: string,
   fileName: string
 ) {
-  const data = fs.readFileSync(
-    path.join(__dirname, "../data/unitTestFiles.json"),
-    "utf8"
-  );
   const { functions, lang } = readJSorTSFile(fileName);
+  const unitTestFile: IUnitTestFile | null =
+    await unitTestFileService.getBySessionIdAndFileName(sessionId, fileName);
 
-  const unitTestFiles: IUnitTestFile[] = JSON.parse(data);
-  const foundTests = unitTestFiles.find(
-    (test) => test.sessionId === sessionId && test.fileName === fileName
-  );
-  const currentFileFunctions = functions;
+  if (!!unitTestFile && unitTestFile?.id) {
+    const storedFunctions = await unitTestFunctionService.listByFileId(
+      unitTestFile.id
+    );
 
-  // First see if file has unit tests
-  if (foundTests) {
-    // Now see which file functions match the provided ones
-    const storedFunctions = foundTests.functions;
-
-    console.log("⚠️ File functions");
-    console.log(currentFileFunctions);
-
-    const sameFunctions = storedFunctions.filter((fn) =>
+    const currentFileFunctions = functions;
+    const sameFunctions = storedFunctions?.filter((fn) =>
       currentFileFunctions.some((fn2) => fn.hash === fn2.hash)
     );
-    const functionsStoredOnly = storedFunctions.filter(
+    const functionsStoredOnly = storedFunctions?.filter(
       (fn) => !currentFileFunctions.some((fn2) => fn2.hash === fn.hash)
     );
     const functionsFileOnly = currentFileFunctions.filter(
-      (fn2) => !storedFunctions.some((fn) => fn.hash === fn2.hash)
+      (fn2) => !storedFunctions?.some((fn) => fn.hash === fn2.hash)
     );
 
-    // Delete stored only
-    console.dir(functionsStoredOnly);
-    // async job to delete them
+    if (!!functionsStoredOnly && functionsStoredOnly.length > 0) {
+      functionsStoredOnly.map(async (fn) => {
+        if (fn?.id) {
+          await unitTestFunctionService.deleteById(fn?.id);
+        }
+      });
+    }
 
-    // Generate tests for changed functions
-    const newUnitTests = await generateUnitTests(functionsFileOnly, lang);
+    const newUnitTests = functionsFileOnly.length > 0 ? await generateUnitTests(functionsFileOnly, lang) : [];
 
-    return [...newUnitTests, ...sameFunctions];
+    return [...newUnitTests, ...(sameFunctions ?? [])];
   } else {
-    return await generateUnitTests(currentFileFunctions, lang);
+    return await generateUnitTests(functions, lang);
   }
 }
 
@@ -225,7 +200,7 @@ function generateUnitTests(functions: ITestFunction[], lang: ICodeLanguage) {
     return {
       code: fn.code,
       hash: fn.hash,
-      unitTests: unitTestsNoMarkdown,
+      unitTests: unitTestsNoMarkdown
     } as ITestFunction;
   });
 
