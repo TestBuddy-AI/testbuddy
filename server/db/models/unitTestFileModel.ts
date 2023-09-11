@@ -1,11 +1,17 @@
 export interface IUnitTestFile {
-    id?: number; 
-    fileName: string;
-    fileHash: string;
-    sessionId: string;
-    unitTests: string;
-    prompt_tokens?: number;
-    completion_tokens?: number;
-    requestTime: number;
-    fileLang: string; 
+  fileName: string;
+  sessionId: string;
+  functions?: ITestFunction[];
+  // TODO: add values to properties on runtime
+  // prompt_tokens: number;
+  // completion_tokens: number;
+  // requestTime: number;
+  // fileLang: ICodeLanguage;
+}
+
+export interface ITestFunction {
+  hash: string;
+  code: string;
+  unitTests?: string;
+  unitTestFileId?: number;
 }

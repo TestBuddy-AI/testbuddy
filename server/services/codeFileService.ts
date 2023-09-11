@@ -2,10 +2,18 @@ import * as fs from "fs";
 import md5 from "md5";
 import path from "path";
 import ts from "typescript";
-import { ICodeLanguage, IReadFileFunctionsResponse, ITestFunction, IUnitTestFile } from "../types";
+import {
+  ICodeLanguage,
+  IReadFileFunctionsResponse,
+  ITestFunction,
+  IUnitTestFile,
+} from "../types";
 import { generateFunctionUnitTests } from "./openaiService";
 
-function extractFunctionsAndImports(sourceFile: ts.SourceFile): { imports: string[], functions: string[] } {
+function extractFunctionsAndImports(sourceFile: ts.SourceFile): {
+  imports: string[];
+  functions: string[];
+} {
   const imports: string[] = [];
   const functions: string[] = [];
 
@@ -26,7 +34,7 @@ function extractFunctionsAndImports(sourceFile: ts.SourceFile): { imports: strin
 
   visit(sourceFile);
 
-  return { imports, functions};
+  return { imports, functions };
 }
 
 export function receiveFile(
@@ -68,20 +76,22 @@ export function readJSorTSFile(fileName: string): IReadFileFunctionsResponse {
     throw new Error(`Could not infer code language of file ${fileName}`);
   }
 
-  const functions = extractFunctionsAndImports(sourceFile).functions.map((stringFn) => {
-    return {
-      fileName: fileName,
-      code: stringFn,
-      hash: md5(stringFn)
-    } as ITestFunction;
-  });
+  const functions = extractFunctionsAndImports(sourceFile).functions.map(
+    (stringFn) => {
+      return {
+        fileName: fileName,
+        code: stringFn,
+        hash: md5(stringFn),
+      } as ITestFunction;
+    }
+  );
 
   return { fileName: fileName, lang: codeLang, functions: functions };
 }
 
 function getFilenameLang(fileName: string) {
   const fileNameArray = fileName.split("...");
-  const fileExtension = fileNameArray[fileNameArray.length -1].split(".")[1];
+  const fileExtension = fileNameArray[fileNameArray.length - 1].split(".")[1];
 
   switch (fileExtension) {
     case "ts":
@@ -103,7 +113,7 @@ export async function storeUnitTests(
   const unitTestFile: IUnitTestFile = {
     fileName,
     sessionId,
-    functions
+    functions,
   };
 
   fs.readFile(
@@ -213,10 +223,9 @@ function generateUnitTests(functions: ITestFunction[], lang: ICodeLanguage) {
     );
 
     return {
-      fileName: fn.fileName,
       code: fn.code,
       hash: fn.hash,
-      unitTests: unitTestsNoMarkdown
+      unitTests: unitTestsNoMarkdown,
     } as ITestFunction;
   });
 

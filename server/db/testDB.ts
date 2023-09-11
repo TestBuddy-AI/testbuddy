@@ -1,58 +1,117 @@
 import { unitTestFileService } from "./services/unitTestFileServices";
+import { unitTestFunctionService } from "./services/unitTestFunctionService";
 
 const runCrudOperations = async () => {
-    try {
-        console.log("Starting CRUD operations...");
+  try {
+    console.log("Starting CRUD operations for UnitTestFile...");
 
-        // Create
-        const newUnitTestFile = {
-            fileName: "testFile.ts",
-            fileHash: "abcdef123456",
-            sessionId: "session123",
-            unitTests: "unitTestsSample",
-            prompt_tokens: 123,
-            completion_tokens: 456,
-            requestTime: 100,
-            fileLang: "typescript"
-        };
+    // Create for UnitTestFile
+    const newUnitTestFile = {
+      fileName: "testFile.ts",
+      sessionId: "session123",
+    };
 
-        const id = await unitTestFileService.create(newUnitTestFile);
-        console.log(`New record created with ID: ${id}`);
+    const fileId = await unitTestFileService.create(newUnitTestFile);
+    console.log(`New UnitTestFile record created with ID: ${fileId}`);
 
-        // Retrieve
-        const retrieved = await unitTestFileService.getById(id);
-        if (!retrieved) {
-            throw new Error(`No record found with ID: ${id}`);
-        }
-        console.log("Retrieved record:", retrieved);
-
-        // Update
-        const updatedName = "updatedTestFile.ts";
-        await unitTestFileService.update(id, {
-            ...retrieved,
-            fileName: updatedName
-        });
-        console.log(`Record with ID ${id} updated.`);
-
-        const updated = await unitTestFileService.getById(id);
-        if (!updated) {
-            throw new Error(`No record found with ID: ${id} after update`);
-        }
-        console.log("Updated record:", updated);
-
-
-        // List all records
-        const allRecords = await unitTestFileService.listAll();
-        console.log("All records:", allRecords);
-
-        // Delete
-        await unitTestFileService.deleteById(id);
-        console.log(`Record with ID ${id} deleted.`);
-
-        console.log("CRUD operations completed!");
-    } catch (error) {
-        console.error("Error during CRUD operations:", error);
+    // Retrieve for UnitTestFile
+    const retrievedFile = await unitTestFileService.getById(fileId);
+    if (!retrievedFile) {
+      throw new Error(`No UnitTestFile record found with ID: ${fileId}`);
     }
+    console.log("Retrieved UnitTestFile record:", retrievedFile);
+
+    // Retrieve for UnitTestFile
+    const retrievedFile2 = await unitTestFileService.getBySessionIdAndFileName(
+      "session123",
+      "testFile.ts"
+    );
+    if (!retrievedFile) {
+      throw new Error(
+        `No UnitTestFile record found with sessionId: session123 and fileName: testFile.ts`
+      );
+    }
+    console.log(
+      "Retrieved UnitTestFile by sessionId and fileName record:",
+      retrievedFile2
+    );
+
+    // Update for UnitTestFile
+    const updatedFileName = "updatedTestFile.ts";
+    await unitTestFileService.update(fileId, {
+      ...retrievedFile,
+      fileName: updatedFileName,
+    });
+    console.log(`UnitTestFile record with ID ${fileId} updated.`);
+
+    const updatedFile = await unitTestFileService.getById(fileId);
+    if (!updatedFile) {
+      throw new Error(
+        `No UnitTestFile record found with ID: ${fileId} after update`
+      );
+    }
+    console.log("Updated UnitTestFile record:", updatedFile);
+
+    console.log("Starting CRUD operations for UnitTestFunction...");
+
+    // Create for UnitTestFunction
+    const newUnitTestFunction = {
+      hash: "hash123456",
+      code: "function test() { return true; }",
+      unitTests: "unitTestsSample",
+      unitTestFileId: fileId,
+    };
+
+    const functionId = await unitTestFunctionService.create(
+      newUnitTestFunction
+    );
+    console.log(`New UnitTestFunction record created with ID: ${functionId}`);
+
+    // Retrieve for UnitTestFunction
+    const retrievedFunction = await unitTestFunctionService.getById(functionId);
+    if (!retrievedFunction) {
+      throw new Error(
+        `No UnitTestFunction record found with ID: ${functionId}`
+      );
+    }
+    console.log("Retrieved UnitTestFunction record:", retrievedFunction);
+
+    // Update for UnitTestFunction
+    const updatedCode = "function updatedTest() { return false; }";
+    await unitTestFunctionService.update(functionId, {
+      ...retrievedFunction,
+      code: updatedCode,
+    });
+    console.log(`UnitTestFunction record with ID ${functionId} updated.`);
+
+    const updatedFunction = await unitTestFunctionService.getById(functionId);
+    if (!updatedFunction) {
+      throw new Error(
+        `No UnitTestFunction record found with ID: ${functionId} after update`
+      );
+    }
+    console.log("Updated UnitTestFunction record:", updatedFunction);
+
+    // List all records for UnitTestFunction
+    const allFunctionRecords = await unitTestFunctionService.listAll();
+    console.log("All UnitTestFunction records:", allFunctionRecords);
+
+    // Delete for UnitTestFunction
+    await unitTestFunctionService.deleteById(functionId);
+    console.log(`UnitTestFunction record with ID ${functionId} deleted.`);
+
+    // List all records for UnitTestFile
+    const allFileRecords = await unitTestFileService.listAll();
+    console.log("All UnitTestFile records:", allFileRecords);
+
+    // Delete for UnitTestFile
+    await unitTestFileService.deleteById(fileId);
+    console.log(`UnitTestFile record with ID ${fileId} deleted.`);
+
+    console.log("CRUD operations completed!");
+  } catch (error) {
+    console.error("Error during CRUD operations:", error);
+  }
 };
 
 runCrudOperations();

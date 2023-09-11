@@ -14,7 +14,7 @@ export enum ICodeLanguage {
 
 export enum IResponseStatus {
   success = "success",
-  error = "error"
+  error = "error",
 }
 
 export interface ISuccessResponse {
@@ -30,16 +30,15 @@ export interface IErrorResponse {
 }
 
 export interface IReadFileFunctionsResponse {
-  fileName: string,
-  lang: ICodeLanguage,
-  functions: ITestFunction[]
+  fileName: string;
+  lang: ICodeLanguage;
+  functions: ITestFunction[];
 }
 
 export interface IUnitTestFile {
   fileName: string;
   sessionId: string;
-  conversation?: IConversation[],
-  functions: ITestFunction[]
+  functions: ITestFunction[];
   // TODO: add values to properties on runtime
   // prompt_tokens: number;
   // completion_tokens: number;
@@ -48,13 +47,7 @@ export interface IUnitTestFile {
 }
 
 export interface ITestFunction {
-  fileName: string;
   hash: string;
   code: string;
   unitTests?: string;
-}
-
-export interface IConversation {
-  user: string;
-  assistant: string;
 }
