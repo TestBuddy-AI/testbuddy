@@ -5,7 +5,7 @@ import ts from "typescript";
 import { ITestFunction, IUnitTestFile } from "../db/models/dbModels";
 import { unitTestFileService } from "../db/services/unitTestFileServices";
 import { unitTestFunctionService } from "../db/services/unitTestFunctionService";
-import { ICodeLanguage, IReadFileFunctionsResponse } from "../types";
+import { ICodeLanguage, IGetOrGenerateUnitTestsResponse, IReadFileFunctionsResponse } from "../types";
 import { generateFunctionUnitTests } from "./openaiService";
 
 function extractFunctionsAndImports(sourceFile: ts.SourceFile): {
@@ -74,7 +74,9 @@ export function readJSorTSFile(fileName: string): IReadFileFunctionsResponse {
     throw new Error(`Could not infer code language of file ${fileName}`);
   }
 
-  const functions = extractFunctionsAndImports(sourceFile).functions.map(
+  const { functions, imports } = extractFunctionsAndImports(sourceFile);
+
+  const parsedFunctions = functions.map(
     (stringFn) => {
       return {
         fileName: fileName,
@@ -84,7 +86,7 @@ export function readJSorTSFile(fileName: string): IReadFileFunctionsResponse {
     }
   );
 
-  return { fileName: fileName, lang: codeLang, functions: functions };
+  return { fileName, lang: codeLang, functions: parsedFunctions, imports };
 }
 
 function getFilenameLang(fileName: string) {
@@ -152,8 +154,8 @@ export async function removeFile(fileName: string) {
 export async function getOrGenerateUnitTests(
   sessionId: string,
   fileName: string
-) {
-  const { functions, lang } = readJSorTSFile(fileName);
+): Promise<IGetOrGenerateUnitTestsResponse> {
+  const { functions, lang, imports } = readJSorTSFile(fileName);
   const unitTestFile: IUnitTestFile | null =
     await unitTestFileService.getBySessionIdAndFileName(sessionId, fileName);
 
@@ -183,9 +185,10 @@ export async function getOrGenerateUnitTests(
 
     const newUnitTests = functionsFileOnly.length > 0 ? await generateUnitTests(functionsFileOnly, lang) : [];
 
-    return [...newUnitTests, ...(sameFunctions ?? [])];
+    return { imports, functions: [...newUnitTests, ...(sameFunctions ?? [])] };
   } else {
-    return await generateUnitTests(functions, lang);
+    const generatedFunctions = await generateUnitTests(functions, lang);
+    return { imports, functions: generatedFunctions };
   }
 }
 
@@ -209,4 +212,8 @@ function generateUnitTests(functions: ITestFunction[], lang: ICodeLanguage) {
 
 export function reformatFilePath(path: string): string {
   return path.split("/").join("...");
+}
+
+export function reformatImports(imports: string[]): string {
+  return imports.join("\n").concat("\n\n");
 }
