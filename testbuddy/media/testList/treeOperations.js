@@ -244,8 +244,9 @@ export function updateNode(node, idToUpdate, isLoading, result) {
           console.log(node.actions);
           if (result.failureMessages) {
             node.message = result.failureMessages.join(" ");
+            node.failureMeesages = result.failureMessages;
+            node.actions = actionsError;
           }
-          node.actions = actionsError;
 
           break;
         }

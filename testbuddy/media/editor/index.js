@@ -108,17 +108,26 @@ function createParticle(x, y) {
     // pop(buttonElement);
     buttonElement.innerHTML = `<vscode-icon name="loading" spin spin-duration="1"></vscode-icon> Modifying your test`;
     buttonElement.setAttribute("disabled", "");
-    console.log(form.data);
+    setTimeout(() => {
+      resetButton();
+    }, 20000);
     let currTestPos = Number(selectorElement.getAttribute("selected-index"));
     let selectedTest =
       selectorElement.querySelectorAll("vscode-option")[currTestPos];
     let file = atob(selectedTest.getAttribute("data-file"));
     let name = atob(selectedTest.getAttribute("data-name"));
+    let value = {
+      file: file,
+      name: name,
+      userInput: "",
+      selects: form.data["data-example-checkbox"],
+    };
 
-    console.log(file, name);
     if (form.data["data-example-checkbox"].includes("tell")) {
-      console.log(textareaElement.value);
+      value.userInput = textareaElement.value;
     }
+
+    vscode.postMessage({ type: "modifyTests", value: value });
   });
 
   const populate = (testList) => {

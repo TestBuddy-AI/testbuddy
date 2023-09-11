@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 
 import { getEditorHtml } from "./editorHtml";
 import { execShell } from "../../utils/execShell";
+import { modifyTest, regenerateTest } from "../../utils/useAxios";
+import * as fs from "fs";
 
 //https://stackoverflow.com/questions/43007267/how-to-run-a-system-command-from-vscode-extension Check answers at the end, fs.watch for file updates
 export class EditorWebViewViewProvider implements vscode.WebviewViewProvider {
@@ -30,33 +32,36 @@ export class EditorWebViewViewProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = getEditorHtml(this._view.webview, this._context);
 
-    webviewView.webview.onDidReceiveMessage((data) => {
+    webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
-        case "colorSelected": {
-          vscode.workspace.fs
-            .writeFile(
-              vscode.Uri.joinPath(
-                vscode.workspace.workspaceFolders[0].uri,
-                "results/test" + data.value + ".txt"
-              ),
-              data.value
-            )
-            .then(console.log);
-          vscode.window.activeTextEditor?.insertSnippet(
-            new vscode.SnippetString(`#${data.value}`)
-          );
-          break;
-        }
-        case "test": {
-          console.log("Llegue");
-          execShell(
-            `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm pkg set 'scripts.testbuddy'='jest'`
-          );
-          //execute shell command for testing
+        case "modifyTests": {
+          const { file, name, selects, userInput } = data.value;
+          let buffer = fs.readFileSync(file);
 
-          // execShell(
-          //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`
-          // ).then(console.log);
+          if (name === "all") {
+            //Test Suite
+            if (!userInput) {
+              //Regen
+              await regenerateTest(buffer, file, undefined);
+              return;
+            } else {
+              //Modif
+              await modifyTest(buffer, file, userInput, undefined);
+              return;
+            }
+          } else {
+            //Test Single
+            if (!userInput) {
+              //Regen
+              await regenerateTest(buffer, file, name);
+              return;
+            } else {
+              //Modif
+              await modifyTest(buffer, file, userInput, name);
+              return;
+            }
+          }
+
           break;
         }
       }

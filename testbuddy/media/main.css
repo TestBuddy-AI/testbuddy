@@ -87,3 +87,18 @@ body {
   .theme-icon{
 	color: var(--inactive-selection-icon-foreground) !important;
   }
+  pre {
+	margin-top: 1em;
+    white-space: pre-wrap;
+    white-space: moz-pre-wrap;
+    white-space: -pre-wrap; 
+    white-space: -o-pre-wrap;
+    word-wrap: break-word; 
+	max-height: 200px;
+	overflow-y: scroll;
+	background-color: var(--vscode-editor-background);
+}
+#error-container{
+	width: 100%;
+	height: auto;
+}

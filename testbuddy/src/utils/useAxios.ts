@@ -69,7 +69,7 @@ export async function generateTestsRequest(buffer: Buffer, fileName: string) {
 export async function regenerateTest(
   buffer: Buffer,
   fileName: string,
-  testName: string
+  testName?: string
 ) {
   // 👇️ const data: GetUsersResponse
   console.log("regenerateTest");
@@ -97,8 +97,8 @@ export async function regenerateTest(
 export async function modifyTest(
   buffer: Buffer,
   fileName: string,
-  testName: string,
-  userPrompt: string
+  userPrompt: string,
+  testName?: string
 ) {
   // 👇️ const data: GetUsersResponse
   console.log("modifyTest");

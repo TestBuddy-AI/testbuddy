@@ -96,7 +96,10 @@ const sendTestToBack = async (fileURl: string) => {
   return response;
 };
 
-const saveGeneratedTest = async (respnseObject: any, documentUri: string) => {
+export const saveGeneratedTest = async (
+  respnseObject: any,
+  documentUri: string
+) => {
   try {
     console.log("saving");
     let fileContents = respnseObject.data.result;

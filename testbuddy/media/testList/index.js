@@ -16,7 +16,11 @@ import {
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 (function () {
-  console.log(getDecorations(TEST_STATUS.DEFAULT, 10));
+  const preErrorElement = document.getElementById("error-wrapper");
+  const codeErrorElement = document.getElementById("error-container");
+  const labelErrorTest = document.getElementById("test-label");
+  const errorContainer = document.getElementById("error-container");
+
   const vscode = acquireVsCodeApi();
 
   const oldState = vscode.getState() || { tests: [] };
@@ -50,6 +54,7 @@ import {
             break;
           }
           case "showError": {
+            showError(value.file, value.test, item.message);
             break;
           }
         }
@@ -224,6 +229,14 @@ import {
   document.getElementById("btn-refresh").addEventListener("vsc-click", () => {
     vscode.postMessage({ type: "reload" });
   });
+
+  const showError = (testName, testTitle, error) => {
+    labelErrorTest.innerText =
+      testName + testTitle === "all" ? "all" : testTitle;
+    preErrorElement.removeAttribute("hidden");
+    labelErrorTest.removeAttribute("hidden");
+    codeErrorElement.innerText = error;
+  };
 })();
 
 var getPath = function (str) {
