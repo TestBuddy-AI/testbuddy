@@ -72,8 +72,9 @@ const initializeApp = (context: vscode.ExtensionContext) => {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "testBuddy.sendTestToEditor",
-      async (...args) => {
+      async (args) => {
         vscode.commands.executeCommand("testBuddy.editorWebViewView.focus");
+
         editorProvider.setTestToEditor(args[0], args[1]);
       }
     )

@@ -80,6 +80,7 @@ export class EditorWebViewViewProvider implements vscode.WebviewViewProvider {
   }
 
   public populateSelector(testList: { testFile: string; testName: string }[]) {
+    console.log("POPULATE PROVIDER", testList);
     this._view?.webview.postMessage({
       type: "populate",
       content: { testList },
