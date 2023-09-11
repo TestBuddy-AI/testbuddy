@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="{{cssSource1}}" rel="stylesheet" />
+    <link href="{{cssSource2}}" rel="stylesheet" />
+    <link href="{{cssSource3}}" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="{{cssSource4}}"
+      id="vscode-codicon-stylesheet"
+    />
+
+    <title>TestBuddy</title>
+  </head>
+  <body>
+    <vscode-icon
+      title="Run all tests"
+      id="btn-test"
+      name="run-all"
+      action-icon
+    ></vscode-icon>
+    <vscode-icon
+      title="Refresh test state"
+      id="btn-refresh"
+      name="refresh"
+      action-icon
+    ></vscode-icon>
+    <vscode-tree id="actions-example"></vscode-tree>
+
+    <hr />
+    <br />
+
+    <vscode-label
+      ><span class="normal">Test: </span><span hidden id="test-label"></span
+    ></vscode-label>
+    <pre id="error-wrapper" hidden>
+        <code id="error-container">
+        </code>
+      </pre>
+    <vscode-button id="save-button"> Help me fix it </vscode-button>
+
+    <!-- <vscode-textarea
+      placeholder="Type something"
+      rows="10"
+      cols="40"
+    ></vscode-textarea> -->
+
+    <div class="loader">
+      <img src="{{gifURL}}" />
+    </div>
+    <script src="{{jsSource2}}" type="module"></script>
+
+    <script src="{{jsSource}}" type="module"></script>
+  </body>
+</html>

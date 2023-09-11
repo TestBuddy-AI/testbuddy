@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="{{cssSource1}}" rel="stylesheet" />
+    <link href="{{cssSource2}}" rel="stylesheet" />
+    <link href="{{cssSource3}}" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="{{cssSource4}}"
+      id="vscode-codicon-stylesheet"
+    />
+    <style>
+      particle {
+  position: fixed;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+    </style>
+
+    <title>TestBuddy</title>
+  </head>
+  <body>
+    <!-- <vscode-textarea
+      style="width: 100%"
+      placeholder="Type something"
+      rows="5"
+    ></vscode-textarea> -->
+    <vscode-form-container id="form-data" responsive breakpoint="500">
+      <vscode-form-group>
+        <vscode-form-helper>
+          <vscode-label for="data-example-single-select">
+             TestBuddy - Editor:
+          </vscode-label>
+          <p>
+            <ol>
+              <li>Select the test or test suite you want to modify.</li>
+              <li>Tell testbuddy what you want to modify by checking the checkboxes, if you want to express it in your own words choose the <span style="background: linear-gradient(to right, #fff, #9854FF, #9854FF);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent; font-style: italic;">
+                  Tell TestBuddy what you want
+                </span> and fill the text area with your comments. </li>
+            </ol>
+          </p>
+        </vscode-form-helper>
+      </vscode-form-group>
+      <hr>
+      <vscode-form-group>
+        <vscode-label for="data-example-single-select">
+          Select the test or test suite you want to modify:
+        </vscode-label>
+        <vscode-single-select
+          id="test-select"
+          name="data-example-single-select"
+        >
+          <vscode-option>Loading...</vscode-option>
+          
+        </vscode-single-select>
+      </vscode-form-group>
+
+      <vscode-form-group>
+        <vscode-label for="data-example-checkbox-1">
+          Phasellus quam arcu:
+        </vscode-label>
+        <vscode-checkbox-group>
+          <vscode-checkbox
+            id="data-example-checkbox-1"
+            name="data-example-checkbox"
+            value="imports"
+            label="Remove imports"
+          ></vscode-checkbox>
+          <vscode-checkbox
+            id="data-example-checkbox-2"
+            name="data-example-checkbox"
+            value="mock"
+            label="Include mock data"
+          ></vscode-checkbox>
+          <vscode-checkbox
+            id="toggle-user-input"
+            name="data-example-checkbox"
+            value="tell"
+
+            ><p style="background: linear-gradient(to right, #fff, #9854FF, #9854FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;">
+              Tell TestBuddy what you want
+            </p>
+            
+            </vscode-checkbox
+          >
+        </vscode-checkbox-group>
+      </vscode-form-group>
+      <vscode-form-group>
+        <vscode-textarea
+          id="text-area-user-input"
+          style="width: 100%"
+          placeholder="Suggest Changes"
+          rows="5"
+          hidden
+        ></vscode-textarea>
+      </vscode-form-group>
+      <vscode-form-group>
+        <vscode-button  id="save-button">Modify Test</vscode-button>
+      </vscode-form-group>
+    </vscode-form-container>
+
+    <!-- <button>Hola</button> -->
+    <script src="{{jsSource2}}" type="module"></script>
+    <script src="{{jsSource}}" type="module"></script>
+  </body>
+</html>
