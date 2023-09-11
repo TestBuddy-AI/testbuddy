@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import * as codeFileService from "../services/codeFileService";
-import { getUnitTests, removeFile, storeUnitTests } from "../services/codeFileService";
 import * as openaiService from "../services/openaiService";
 import { ICodeLanguage, IErrorResponse, IResponseStatus, ISuccessResponse } from "../types";
 
@@ -65,28 +64,18 @@ export const receiveFile = async (req: Request, res: Response) => {
 export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
   try {
     const { sessionId, fileName } = req.body;
-    const existingTests = await getUnitTests(sessionId, fileName);
-    let result;
 
-    if (!existingTests) {
-      const resolvedArray = await Promise.all(openaiService.generateUnitTests(fileName));
-      const resolvedArrayNoMarkdown = resolvedArray.map((code) => {
-        if (code !== undefined) {
-          return code.replace(/```[\w]*([\s\S]+?)```/g, "$1");
-        }
-        return "";
-      });
+    const existingTests = await codeFileService.getOrGenerateUnitTests(sessionId, fileName);
 
-      const unitTests = resolvedArrayNoMarkdown.join(",");
+    await codeFileService.storeUnitTests(existingTests || [], sessionId, fileName);
 
-      await storeUnitTests(unitTests, sessionId, fileName);
+    console.info(`These are the existing tests ${existingTests}`);
 
-      result = unitTests;
-    } else {
-      result = existingTests;
-    }
+    const unitTestsArray = existingTests?.map(fn => fn.unitTests);
 
-    await removeFile(fileName);
+    const result = unitTestsArray?.join(",");
+
+    await codeFileService.removeFile(fileName);
 
     res.status(200).send({
       status: IResponseStatus.success,
