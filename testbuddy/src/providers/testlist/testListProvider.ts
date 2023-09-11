@@ -89,7 +89,7 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
 
         await vscode.workspace.fs.writeFile(
           vscode.Uri.joinPath(
-            vscode.workspace.workspaceFolders[0].uri,
+            vscode.workspace.workspaceFolders![0].uri,
             "tests/" +
               path.basename(document.uri.fsPath).split(".")[0] +
               ".test.ts"

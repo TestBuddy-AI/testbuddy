@@ -33,15 +33,17 @@ const runJsTests = async (
 ) => {
   //CASE: Run all tests in the project
   if (runAll) {
+    const outputFile = "output";
     try {
-      const outputFile = "output";
       await execShell(
-        `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json"`
+        `cd ${
+          vscode.workspace.workspaceFolders![0].uri.fsPath
+        } && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json"`
       );
     } catch (err) {
     } finally {
       let buffer = fs.readFileSync(
-        vscode.workspace.workspaceFolders[0].uri.fsPath +
+        vscode.workspace.workspaceFolders![0].uri.fsPath +
           `/testbuddy/${outputFile}.json`
       );
       return JSON.parse(buffer.toString());
@@ -52,14 +54,14 @@ const runJsTests = async (
       testdetail === "all",
       testfile,
       testdetail
-    ).replace(vscode.workspace.workspaceFolders[0].uri.fsPath, "");
+    ).replace(vscode.workspace.workspaceFolders![0].uri.fsPath, "");
     //Creates the directory if not exists, Windows && Mac versions working
     let tesBuddyFolder = await execShellMultiplatform(
       `cd ${
-        vscode.workspace.workspaceFolders[0].uri.fsPath
+        vscode.workspace.workspaceFolders![0].uri.fsPath
       } && mkdir -p testbuddy/${path.parse(outputFile).dir}`,
       `cd ${
-        vscode.workspace.workspaceFolders[0].uri.fsPath
+        vscode.workspace.workspaceFolders![0].uri.fsPath
       } && if not exist "testbuddy/${
         path.parse(outputFile).dir
       }" mkdir testbuddy/${path.parse(outputFile).dir}`
@@ -68,18 +70,22 @@ const runJsTests = async (
       //Runs tests and outputs the results file to the directory prevously created
       if (testdetail === "all") {
         await execShell(
-          `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json -i ${testfile}`
+          `cd ${
+            vscode.workspace.workspaceFolders![0].uri.fsPath
+          } && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json -i ${testfile}`
         );
       } else {
         await execShell(
-          `cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json -i ${testfile} -t "${testdetail}"`
+          `cd ${
+            vscode.workspace.workspaceFolders![0].uri.fsPath
+          } && npm run testbuddy -- --outputFile=./testbuddy/${outputFile}.json -i ${testfile} -t "${testdetail}"`
         );
       }
     } catch (err) {
     } finally {
       //Reads the results from the file prevously generated
       let buffer = fs.readFileSync(
-        vscode.workspace.workspaceFolders[0].uri.fsPath +
+        vscode.workspace.workspaceFolders![0].uri.fsPath +
           `/testbuddy/${outputFile}.json`
       );
       return JSON.parse(buffer.toString());

@@ -21,11 +21,13 @@ export const getTestListHtml = (
   const scriptUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media/testList", "index.js")
   );
+  //@ts-ignore
   html = html.replace("{{jsSource}}", scriptUri);
 
   const videoUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media/lottie.gif")
   );
+  //@ts-ignore
   html = html.replace("{{gifURL}}", videoUri);
   const scriptUri2 = webview.asWebviewUri(
     vscode.Uri.joinPath(
@@ -33,20 +35,24 @@ export const getTestListHtml = (
       "node_modules/@bendera/vscode-webview-elements/dist/bundled.js"
     )
   );
+  //@ts-ignore
   html = html.replace("{{jsSource2}}", scriptUri2);
 
   // Do the same for the stylesheet.
   const styleResetUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media", "reset.css")
   );
+  //@ts-ignore
   html = html.replace("{{cssSource1}}", styleResetUri);
   const styleVSCodeUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media", "vscode.css")
   );
+  //@ts-ignore
   html = html.replace("{{cssSource2}}", styleVSCodeUri);
   const styleMainUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media", "main.css")
   );
+  //@ts-ignore
   html = html.replace("{{cssSource3}}", styleMainUri);
 
   const codiconsUri = webview.asWebviewUri(
@@ -58,6 +64,7 @@ export const getTestListHtml = (
       "codicon.css"
     )
   );
+  //@ts-ignore
   html = html.replace("{{cssSource4}}", codiconsUri);
   return html;
 };

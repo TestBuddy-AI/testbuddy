@@ -40,7 +40,10 @@ const initializeApp = (context: vscode.ExtensionContext) => {
   );
   //Providers for each ui
   const editorProvider = new EditorWebViewViewProvider(context);
-  const testListprovider = new TestListWebViewViewProvider(context);
+  const testListprovider = new TestListWebViewViewProvider(
+    context,
+    "typescript"
+  );
   //Checks For changes on Test Files
   let watcher = vscode.workspace.createFileSystemWatcher(
     "**/__tests__/**/*.{js,jsx,ts,tsx}"

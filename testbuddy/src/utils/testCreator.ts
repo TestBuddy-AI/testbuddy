@@ -75,7 +75,7 @@ async function testGeneration() {
 
       await vscode.workspace.fs.writeFile(
         vscode.Uri.joinPath(
-          vscode.workspace.workspaceFolders[0].uri,
+          vscode.workspace.workspaceFolders![0].uri,
           "tests/" +
             path.basename(document.uri.fsPath).split(".")[0] +
             ".test.ts"
@@ -108,14 +108,14 @@ export const saveGeneratedTest = async (
 
     await vscode.workspace.fs.writeFile(
       vscode.Uri.joinPath(
-        vscode.workspace.workspaceFolders[0].uri,
+        vscode.workspace.workspaceFolders![0].uri,
         (
           "tests/" +
           path.dirname(documentUri) +
           "/" +
           path.basename(documentUri).split(".")[0] +
           ".test.ts"
-        ).replace(vscode.workspace.workspaceFolders[0].uri.fsPath, "")
+        ).replace(vscode.workspace.workspaceFolders![0].uri.fsPath, "")
       ),
       encoder.encode(fileContents as string)
     );

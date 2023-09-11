@@ -19,7 +19,7 @@ export const createSessionIdFile = async (): Promise<{ shared: string }> => {
   };
   await vscode.workspace.fs.writeFile(
     vscode.Uri.joinPath(
-      vscode.workspace.workspaceFolders[0].uri,
+      vscode.workspace.workspaceFolders![0].uri,
       "testbuddy/session.json"
     ),
     encoder.encode(JSON.stringify(sessionObject))
@@ -32,7 +32,7 @@ export const readSessionIdFile = async (): Promise<{ shared: string }> => {
     let session = (
       await vscode.workspace.fs.readFile(
         vscode.Uri.joinPath(
-          vscode.workspace.workspaceFolders[0].uri,
+          vscode.workspace.workspaceFolders![0].uri,
           "testbuddy/session.json"
         )
       )
@@ -217,6 +217,6 @@ const getFeedbackOnFailedTest = (
 };
 
 const removeUserDirectory = (uri: string) => {
-  let pathUri = vscode.workspace.workspaceFolders[0].uri.fsPath;
+  let pathUri = vscode.workspace.workspaceFolders![0].uri.fsPath;
   return uri.replace(pathUri, "");
 };
