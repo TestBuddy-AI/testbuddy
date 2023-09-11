@@ -1,4 +1,5 @@
 // This script will be run within the webview itself
+
 // It cannot access the main VS Code APIs directly.
 const createOuptuFileUrl = (isRoot, file, title) => {
   return btoa(file + title);
@@ -10,6 +11,62 @@ const createOuptuFileUrl = (isRoot, file, title) => {
 var getPath = function (str) {
   return str.split("\\").pop().split("/").pop();
 };
+
+function pop(element) {
+  const bbox = element.getBoundingClientRect();
+  const x = bbox.left + bbox.width / 2;
+  const y = bbox.top + bbox.height / 2;
+
+  for (let i = 0; i < 30; i++) {
+    createParticle(x, y);
+  }
+}
+
+function createParticle(x, y) {
+  const particle = document.createElement("particle");
+  document.body.appendChild(particle);
+
+  // Calculate a random size from 5px to 25px
+  const size = Math.floor(Math.random() * 20 + 5);
+  particle.style.width = `${size}px`;
+  particle.style.height = `${size}px`;
+  // Generate a random color in a blue/purple palette
+  particle.style.background = `hsl(${Math.random() * 90 + 180}, 70%, 60%)`;
+
+  // Generate a random x & y destination within a distance of 75px from the specified position
+  const destinationX = x + (Math.random() - 0.5) * 2 * 75;
+  const destinationY = y + (Math.random() - 0.5) * 2 * 75;
+
+  // Store the animation in a variable as we will need it later
+  const animation = particle.animate(
+    [
+      {
+        // Set the origin position of the particle
+        // We offset the particle with half its size to center it around the specified position
+        transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
+        opacity: 1,
+      },
+      {
+        // We define the final coordinates as the second keyframe
+        transform: `translate(${destinationX}px, ${destinationY}px)`,
+        opacity: 0,
+      },
+    ],
+    {
+      // Set a random duration from 500 to 1500ms
+      duration: Math.random() * 1000 + 500,
+      easing: "cubic-bezier(0, .9, .57, 1)",
+      // Delay every particle with a random value of 200ms
+      delay: Math.random() * 200,
+    }
+  );
+
+  // When the animation is complete, remove the element from the DOM
+  animation.onfinish = () => {
+    particle.remove();
+  };
+}
+
 (function () {
   const vscode = acquireVsCodeApi();
 
@@ -30,6 +87,7 @@ var getPath = function (str) {
         console.log("EDITOR SENDTEST", testFile);
 
         select(testFile, testName);
+        pop(selectorElement);
         break;
       }
       case "populate": {
@@ -46,18 +104,14 @@ var getPath = function (str) {
     else document.querySelector(".loader")?.classList.remove("active");
   }
 
-  buttonElement.addEventListener("click", () => {
+  buttonElement.addEventListener("click", (e) => {
+    pop(buttonElement);
     console.log(form.data);
-    let file = atob(
-      selectorElement
-        .querySelector("vscode-option[selected]")
-        .getAttribute("data-file")
-    );
-    let name = atob(
-      selectorElement
-        .querySelector("vscode-option[selected]")
-        .getAttribute("data-name")
-    );
+    let currTestPos = Number(selectorElement.getAttribute("selected-index"));
+    let selectedTest =
+      selectorElement.querySelectorAll("vscode-option")[currTestPos];
+    let file = atob(selectedTest.getAttribute("data-file"));
+    let name = atob(selectedTest.getAttribute("data-name"));
 
     console.log(file, name);
     if (form.data["data-example-checkbox"].includes("tell")) {
@@ -74,9 +128,7 @@ var getPath = function (str) {
         "data-id",
         `${createOuptuFileUrl(true, root.file, "all")}`
       );
-      if (index === 0) {
-        rootOption.setAttribute("selected", "");
-      }
+
       rootOption.setAttribute("data-file", `${btoa(root.file)}`);
       rootOption.setAttribute("data-name", `${btoa("all")}`);
       rootOption.innerText = `[${getPath(root.file)}] TestSuite`;
@@ -93,6 +145,8 @@ var getPath = function (str) {
         selectorElement.appendChild(childOption);
       });
     });
+
+    selectorElement.setAttribute("selected-index", 0);
   };
 
   const select = (testFile, testName) => {
@@ -100,10 +154,6 @@ var getPath = function (str) {
 
     selectorElement.querySelectorAll("vscode-option").forEach((el, pos) => {
       console.log(el.getAttribute("selected"));
-      if (el.getAttribute("selected")) {
-        el.removeAttribute("selected");
-        selectorElement.removeAttribute("selected-index");
-      }
       if (el.getAttribute("data-id") === dataId) {
         el.setAttribute("selected", "");
         selectorElement.setAttribute("selected-index", pos);
@@ -121,6 +171,9 @@ var getPath = function (str) {
     },
     false
   );
+  selectorElement.addEventListener("vsc-change", (ev) => {
+    selectorElement.setAttribute("selected-index", ev.detail.selectedIndex);
+  });
 
   const oldState = vscode.getState() || { tests: [] };
   /** @type {Array<{ value: string }>} */
