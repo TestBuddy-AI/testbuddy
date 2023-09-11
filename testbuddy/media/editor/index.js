@@ -105,7 +105,9 @@ function createParticle(x, y) {
   }
 
   buttonElement.addEventListener("click", (e) => {
-    pop(buttonElement);
+    // pop(buttonElement);
+    buttonElement.innerHTML = `<vscode-icon name="loading" spin spin-duration="1"></vscode-icon> Modifying your test`;
+    buttonElement.setAttribute("disabled", "");
     console.log(form.data);
     let currTestPos = Number(selectorElement.getAttribute("selected-index"));
     let selectedTest =
@@ -153,7 +155,6 @@ function createParticle(x, y) {
     let dataId = btoa(testFile + testName);
 
     selectorElement.querySelectorAll("vscode-option").forEach((el, pos) => {
-      console.log(el.getAttribute("selected"));
       if (el.getAttribute("data-id") === dataId) {
         el.setAttribute("selected", "");
         selectorElement.setAttribute("selected-index", pos);
@@ -172,6 +173,8 @@ function createParticle(x, y) {
     false
   );
   selectorElement.addEventListener("vsc-change", (ev) => {
+    buttonElement.removeAttribute("disabled");
+    buttonElement.innerHTML = "Modify your test";
     selectorElement.setAttribute("selected-index", ev.detail.selectedIndex);
   });
 

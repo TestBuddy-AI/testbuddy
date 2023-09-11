@@ -147,9 +147,10 @@ export async function getFeedback(fileName: string, error: string) {
 }
 
 const sendFile = (buffer: Buffer, fileName: string) =>
-  axios.post(`${BASE_URL}/receiveFile`, buffer, {
+  axios.post(`${BASE_URL}/receive-file`, buffer, {
     headers: {
       "Content-Type": "application/octet-stream", // Change this to send as raw binary data
+      "File-Path": removeUserDirectory(fileName),
       "File-Name": path.basename(fileName),
     },
   });
@@ -157,13 +158,13 @@ const sendFile = (buffer: Buffer, fileName: string) =>
 const getTests = (fileName: string, session: string) => {
   return axios.post(`${BASE_URL}/generate-unit-tests`, {
     sessionId: session,
-    fileName: path.basename(fileName),
+    filePath: removeUserDirectory(fileName),
   });
 };
 const getRegeneratedTestSuite = (fileName: string, session: string) => {
   return axios.post(`${BASE_URL}/regenerate-test-suite`, {
     sessionId: session,
-    fileName: path.basename(fileName),
+    filePath: removeUserDirectory(fileName),
   });
 };
 const getRegeneratedTestSingle = (
@@ -173,7 +174,7 @@ const getRegeneratedTestSingle = (
 ) => {
   return axios.post(`${BASE_URL}/regenerate-test`, {
     sessionId: session,
-    fileName: path.basename(fileName),
+    filePath: removeUserDirectory(fileName),
     test: testName,
   });
 };
@@ -184,7 +185,7 @@ const getModifiedTestSuite = (
 ) => {
   return axios.post(`${BASE_URL}/modify-test-suite`, {
     sessionId: session,
-    fileName: path.basename(fileName),
+    filePath: removeUserDirectory(fileName),
     userInput: userInput,
   });
 };
@@ -197,7 +198,7 @@ const getModifiedTestSingle = (
 ) => {
   return axios.post(`${BASE_URL}/modify-test`, {
     sessionId: session,
-    fileName: path.basename(fileName),
+    filePath: removeUserDirectory(fileName),
     test: testName,
     userInput: userInput,
   });
@@ -210,7 +211,12 @@ const getFeedbackOnFailedTest = (
 ) => {
   return axios.post(`${BASE_URL}/modify-test`, {
     sessionId: session,
-    fileName: path.basename(fileName),
+    filePath: removeUserDirectory(fileName),
     error: error,
   });
+};
+
+const removeUserDirectory = (uri: string) => {
+  let pathUri = vscode.workspace.workspaceFolders[0].uri.fsPath;
+  return uri.replace(pathUri, "");
 };
