@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { reformatImports } from "../services/codeFileService";
 import * as codeFileService from "../services/codeFileService";
 import { IErrorResponse, IResponseStatus, ISuccessResponse } from "../types";
 
@@ -6,7 +7,7 @@ export const helloWorld = async (req: Request, res: Response) => {
   res.status(200).send({
     status: IResponseStatus.success,
     data: {},
-    message: "Hello World!",
+    message: "Hello World!"
   } as ISuccessResponse);
 };
 
@@ -19,7 +20,7 @@ export const receiveFile = async (req: Request, res: Response) => {
     return res.status(400).send({
       status: IResponseStatus.error,
       data: {},
-      message: "File-Name header missing",
+      message: "File-Name header missing"
     } as IErrorResponse);
   }
 
@@ -27,7 +28,7 @@ export const receiveFile = async (req: Request, res: Response) => {
     return res.status(400).send({
       status: IResponseStatus.error,
       data: {},
-      message: "File-Path header missing",
+      message: "File-Path header missing"
     } as IErrorResponse);
   }
 
@@ -35,7 +36,7 @@ export const receiveFile = async (req: Request, res: Response) => {
     return res.status(400).send({
       status: IResponseStatus.error,
       data: {},
-      message: "Expected buffer data",
+      message: "Expected buffer data"
     } as IErrorResponse);
   }
 
@@ -43,7 +44,7 @@ export const receiveFile = async (req: Request, res: Response) => {
     return res.status(500).send({
       status: IResponseStatus.error,
       data: {},
-      message,
+      message
     } as IErrorResponse);
   };
 
@@ -51,7 +52,7 @@ export const receiveFile = async (req: Request, res: Response) => {
     res.status(200).send({
       status: IResponseStatus.success,
       data: {},
-      message,
+      message
     } as ISuccessResponse);
   };
 
@@ -62,32 +63,32 @@ export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
   try {
     const { sessionId, filePath } = req.body;
     const fileName = codeFileService.reformatFilePath(filePath);
-    const unitTests = await codeFileService.getOrGenerateUnitTests(
+    const { functions, imports } = await codeFileService.getOrGenerateUnitTests(
       sessionId,
       fileName
     );
 
     await codeFileService.storeUnitTests(
-      unitTests || [],
+      functions || [],
       sessionId,
       fileName
     );
 
-    const unitTestsArray = unitTests?.map((fn) => fn.unitTests);
-    const result = unitTestsArray?.join(" ");
+    const unitTestsArray = functions?.map((fn) => fn.unitTests);
+    const result = reformatImports(imports).concat(unitTestsArray?.join(" "));
 
     await codeFileService.removeFile(fileName);
 
     res.status(200).send({
       status: IResponseStatus.success,
       data: { result },
-      message: "",
+      message: ""
     } as ISuccessResponse);
   } catch (error) {
     res.status(500).send({
       status: IResponseStatus.error,
       message: (error as unknown)?.toString(),
-      data: {},
+      data: {}
     } as IErrorResponse);
   }
 };
