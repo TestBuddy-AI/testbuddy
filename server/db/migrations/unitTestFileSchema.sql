@@ -2,7 +2,10 @@ CREATE TABLE UnitTestFile
 (
     id INT PRIMARY KEY IDENTITY(1,1),
     fileName NVARCHAR(255) NOT NULL,
-    sessionId NVARCHAR(255) NOT NULL
+    sessionId NVARCHAR(255) NOT NULL,
+    fileLang NVARCHAR(255) NULL,
+    imports NVARCHAR(MAX) NULL,
+    importsHash NVARCHAR(MAX) NULL
 );
 
 CREATE TABLE UnitTestFunction
@@ -15,11 +18,12 @@ CREATE TABLE UnitTestFunction
     FOREIGN KEY (unitTestFileId) REFERENCES UnitTestFile(id) ON DELETE CASCADE
 );
 
-DROP TABLE UnitTestFile;
 DROP TABLE UnitTestFunction;
+DROP TABLE UnitTestFile;
+
 
 ALTER TABLE UnitTestFile 
-ADD fileLang VARCHAR(255) NOT NULL;
+ADD importsHash VARCHAR(MAX) NOT NULL;
 
 
 
