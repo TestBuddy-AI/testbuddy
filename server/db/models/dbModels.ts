@@ -1,7 +1,7 @@
 export interface IUnitTestFile {
+  id?: number;
   fileName: string;
   sessionId: string;
-  functions?: ITestFunction[];
   // TODO: add values to properties on runtime
   // prompt_tokens: number;
   // completion_tokens: number;
@@ -10,6 +10,7 @@ export interface IUnitTestFile {
 }
 
 export interface ITestFunction {
+  id?: number;
   hash: string;
   code: string;
   unitTests?: string;

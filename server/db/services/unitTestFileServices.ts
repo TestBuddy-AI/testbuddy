@@ -1,5 +1,5 @@
 import { getDbConnection } from "../connectors/dbConnector";
-import { IUnitTestFile } from "../models/unitTestFileModel";
+import { IUnitTestFile } from "../models/dbModels";
 
 const create = async (unitTestFile: IUnitTestFile): Promise<number> => {
   const pool = await getDbConnection();

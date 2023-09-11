@@ -62,18 +62,18 @@ export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
   try {
     const { sessionId, filePath } = req.body;
     const fileName = codeFileService.reformatFilePath(filePath);
-    const existingTests = await codeFileService.getOrGenerateUnitTests(
+    const unitTests = await codeFileService.getOrGenerateUnitTests(
       sessionId,
       fileName
     );
 
     await codeFileService.storeUnitTests(
-      existingTests || [],
+      unitTests || [],
       sessionId,
       fileName
     );
 
-    const unitTestsArray = existingTests?.map((fn) => fn.unitTests);
+    const unitTestsArray = unitTests?.map((fn) => fn.unitTests);
     const result = unitTestsArray?.join(" ");
 
     await codeFileService.removeFile(fileName);

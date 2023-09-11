@@ -1,15 +1,8 @@
-export interface IOpenAIServiceResponse {
-  message: string;
-}
-
-export interface IParsedFunction {
-  name: string;
-  code: string;
-}
+import { ITestFunction } from "../db/models/dbModels";
 
 export enum ICodeLanguage {
   typescript = "Typescript",
-  javascipt = "Javascript",
+  javascript = "Javascript",
 }
 
 export enum IResponseStatus {
@@ -33,21 +26,4 @@ export interface IReadFileFunctionsResponse {
   fileName: string;
   lang: ICodeLanguage;
   functions: ITestFunction[];
-}
-
-export interface IUnitTestFile {
-  fileName: string;
-  sessionId: string;
-  functions: ITestFunction[];
-  // TODO: add values to properties on runtime
-  // prompt_tokens: number;
-  // completion_tokens: number;
-  // requestTime: number;
-  // fileLang: ICodeLanguage;
-}
-
-export interface ITestFunction {
-  hash: string;
-  code: string;
-  unitTests?: string;
 }
