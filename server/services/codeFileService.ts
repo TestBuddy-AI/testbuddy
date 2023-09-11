@@ -43,6 +43,7 @@ export function receiveFile(
 
   fs.writeFile(filePath, file, (err) => {
     if (err) {
+      console.error(`Error saving file ${fileName}`);
       error("Error saving file");
       return;
     }
@@ -79,7 +80,8 @@ export function readJSorTSFile(fileName: string): IReadFileFunctionsResponse {
 }
 
 function getFilenameLang(fileName: string) {
-  const fileExtension = fileName.split(".")[1];
+  const fileNameArray = fileName.split("...");
+  const fileExtension = fileNameArray[fileNameArray.length -1].split(".")[1];
 
   switch (fileExtension) {
     case "ts":
@@ -192,16 +194,8 @@ export async function getOrGenerateUnitTests(
       (fn2) => !storedFunctions.some((fn) => fn.hash === fn2.hash)
     );
 
-    console.info("✅ same");
-    console.dir(sameFunctions);
-
-    console.info("✅ functionsStoredOnly");
-    console.dir(functionsStoredOnly);
-
-    console.info("✅ functionsFileOnly");
-    console.dir(functionsFileOnly);
-
     // Delete stored only
+    console.dir(functionsStoredOnly);
     // async job to delete them
 
     // Generate tests for changed functions
@@ -230,4 +224,8 @@ function generateUnitTests(functions: ITestFunction[], lang: ICodeLanguage) {
   });
 
   return Promise.all(result);
+}
+
+export function reformatFilePath(path: string): string {
+  return path.split("/").join("...");
 }

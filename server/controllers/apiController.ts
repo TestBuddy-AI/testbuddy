@@ -25,12 +25,22 @@ export const unitTestsPrompt = async (req: Request, res: Response) => {
 
 export const receiveFile = async (req: Request, res: Response) => {
   const fileName = req.headers["file-name"] as string;
+  const filePath = req.headers["file-path"] as string;
+  const filePathWithSeparator = codeFileService.reformatFilePath(filePath);
 
   if (!fileName) {
     return res.status(400).send({
       status: IResponseStatus.error,
       data: {},
-      message: "File name header missing"
+      message: "File-Name header missing"
+    } as IErrorResponse);
+  }
+
+  if (!filePath) {
+    return res.status(400).send({
+      status: IResponseStatus.error,
+      data: {},
+      message: "File-Path header missing"
     } as IErrorResponse);
   }
 
@@ -58,21 +68,19 @@ export const receiveFile = async (req: Request, res: Response) => {
     } as ISuccessResponse);
   };
 
-  codeFileService.receiveFile(fileName, req.body, success, error);
+  codeFileService.receiveFile(filePathWithSeparator, req.body, success, error);
 };
 
 export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
   try {
-    const { sessionId, fileName } = req.body;
-
+    const { sessionId, filePath } = req.body;
+    const fileName = codeFileService.reformatFilePath(filePath);
     const existingTests = await codeFileService.getOrGenerateUnitTests(sessionId, fileName);
 
     await codeFileService.storeUnitTests(existingTests || [], sessionId, fileName);
 
-    console.info(`These are the existing tests ${existingTests}`);
 
     const unitTestsArray = existingTests?.map(fn => fn.unitTests);
-
     const result = unitTestsArray?.join(" ");
 
     await codeFileService.removeFile(fileName);
