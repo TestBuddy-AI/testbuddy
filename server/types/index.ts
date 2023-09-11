@@ -50,8 +50,8 @@ export interface IUnitTestFile {
 
 export interface ITestFunction {
   fileName: string;
-  code: string;
   hash: string;
+  code: string;
   unitTests?: string;
 }
 
