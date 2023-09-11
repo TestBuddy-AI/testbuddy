@@ -6,10 +6,14 @@ const create = async (unitTestFile: IUnitTestFile): Promise<number> => {
   const result = await pool
     .request()
     .input("fileName", unitTestFile.fileName)
-    .input("sessionId", unitTestFile.sessionId).query(`INSERT INTO UnitTestFile 
-            (fileName, sessionId)
+    .input("sessionId", unitTestFile.sessionId)
+    .input("fileLang", unitTestFile.fileLang)
+    .input("imports", unitTestFile.imports)
+    .input("importsHash", unitTestFile.importsHash)
+    .query(`INSERT INTO UnitTestFile 
+            (fileName, sessionId, fileLang, imports, importsHash)
             OUTPUT INSERTED.Id 
-            VALUES (@fileName, @sessionId)`);
+            VALUES (@fileName, @sessionId, @fileLang, @imports, @importsHash)`);
 
   return result.recordset[0].Id;
 };
@@ -46,13 +50,20 @@ const update = async (
   id: number,
   unitTestFile: IUnitTestFile
 ): Promise<void> => {
+  console.log("⚠️ This is the unit test file to be saved");
+  console.log(unitTestFile);
+
   const pool = await getDbConnection();
   await pool
     .request()
     .input("Id", id)
     .input("fileName", unitTestFile.fileName)
-    .input("sessionId", unitTestFile.sessionId).query(`UPDATE UnitTestFile 
-            SET fileName = @fileName, sessionId = @sessionId
+    .input("sessionId", unitTestFile.sessionId)
+    .input("fileLang", unitTestFile.fileLang)
+    .input("imports", unitTestFile.imports)
+    .input("importsHash", unitTestFile.importsHash)
+    .query(`UPDATE UnitTestFile 
+            SET fileName = @fileName, sessionId = @sessionId, fileLang = @fileLang, imports = @imports, importsHash = @importsHash
             WHERE Id = @Id`);
 };
 

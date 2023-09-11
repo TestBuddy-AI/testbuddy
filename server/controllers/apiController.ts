@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { reformatImports } from "../services/codeFileService";
 import * as codeFileService from "../services/codeFileService";
 import { IErrorResponse, IResponseStatus, ISuccessResponse } from "../types";
 
@@ -71,13 +70,47 @@ export const getOrGenerateUnitTests = async (req: Request, res: Response) => {
     await codeFileService.storeUnitTests(
       functions || [],
       sessionId,
-      fileName
+      fileName,
+      imports
     );
 
     const unitTestsArray = functions?.map((fn) => fn.unitTests);
-    const result = reformatImports(imports).concat(unitTestsArray?.join(" "));
+    const result = (imports ?? "").concat(unitTestsArray?.join(" "));
 
     await codeFileService.removeFile(fileName);
+
+    res.status(200).send({
+      status: IResponseStatus.success,
+      data: { result },
+      message: ""
+    } as ISuccessResponse);
+  } catch (error) {
+    res.status(500).send({
+      status: IResponseStatus.error,
+      message: (error as unknown)?.toString(),
+      data: {}
+    } as IErrorResponse);
+  }
+};
+
+export const regenerateTestSuite = async (req: Request, res: Response) => {
+  try {
+    const { sessionId, filePath } = req.body;
+    const fileName = codeFileService.reformatFilePath(filePath);
+    const { functions, imports } = await codeFileService.regenerateUnitTestsSuite(
+      sessionId,
+      fileName
+    );
+
+    await codeFileService.storeUnitTests(
+      functions || [],
+      sessionId,
+      fileName,
+      imports
+    );
+
+    const unitTestsArray = functions?.map((fn) => fn.unitTests);
+    const result = (imports ?? "").concat(unitTestsArray?.join(" "));
 
     res.status(200).send({
       status: IResponseStatus.success,

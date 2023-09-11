@@ -5,11 +5,11 @@ import ts from "typescript";
 import { ITestFunction, IUnitTestFile } from "../db/models/dbModels";
 import { unitTestFileService } from "../db/services/unitTestFileServices";
 import { unitTestFunctionService } from "../db/services/unitTestFunctionService";
-import { ICodeLanguage, IGetOrGenerateUnitTestsResponse, IReadFileFunctionsResponse } from "../types";
-import { generateFunctionUnitTests } from "./openaiService";
+import { ICodeLanguage, IGeneratedTestsResponse, IReadFileFunctionsResponse } from "../types";
+import { generateFunctionUnitTests, regenerateFunctionUnitTests } from "./openaiService";
 
 function extractFunctionsAndImports(sourceFile: ts.SourceFile): {
-  imports: string[];
+  imports: string[] | undefined;
   functions: string[];
 } {
   const imports: string[] = [];
@@ -32,7 +32,7 @@ function extractFunctionsAndImports(sourceFile: ts.SourceFile): {
 
   visit(sourceFile);
 
-  return { imports, functions };
+  return { imports: imports.length > 0 ? imports : undefined, functions };
 }
 
 export function receiveFile(
@@ -76,15 +76,13 @@ export function readJSorTSFile(fileName: string): IReadFileFunctionsResponse {
 
   const { functions, imports } = extractFunctionsAndImports(sourceFile);
 
-  const parsedFunctions = functions.map(
-    (stringFn) => {
-      return {
-        fileName: fileName,
-        code: stringFn,
-        hash: md5(stringFn)
-      } as ITestFunction;
-    }
-  );
+  const parsedFunctions = functions.map((stringFn) => {
+    return {
+      fileName: fileName,
+      code: stringFn,
+      hash: md5(stringFn)
+    } as ITestFunction;
+  });
 
   return { fileName, lang: codeLang, functions: parsedFunctions, imports };
 }
@@ -108,13 +106,30 @@ function getFilenameLang(fileName: string) {
 export async function storeUnitTests(
   functions: ITestFunction[],
   sessionId: string,
-  fileName: string
+  fileName: string,
+  imports?: string
 ) {
   const resultUnitTestFile =
     await unitTestFileService.getBySessionIdAndFileName(sessionId, fileName);
 
   if (resultUnitTestFile?.id) {
-    functions.map(async fn => {
+    if (imports || !imports && resultUnitTestFile.imports) {
+      const importsHash = imports ? md5(imports) : undefined;
+
+      if (resultUnitTestFile.imports) {
+        if (importsHash !== resultUnitTestFile.importsHash) {
+          await unitTestFileService.update(resultUnitTestFile.id, {
+            fileName: resultUnitTestFile.fileName,
+            sessionId: resultUnitTestFile.sessionId,
+            fileLang: resultUnitTestFile.fileLang,
+            imports,
+            importsHash
+          });
+        }
+      }
+    }
+
+    functions.map(async (fn) => {
       const unitTestFunction: ITestFunction = {
         hash: fn.hash,
         code: fn.code,
@@ -129,9 +144,18 @@ export async function storeUnitTests(
       }
     });
   } else {
+    const fileLang = getFilenameLang(fileName);
+
+    if (!fileLang)
+      throw new Error(`Error: File lang for ${fileName} could not be inferred`);
+
+    const importsHash = imports ? md5(imports) : undefined;
     const newUnitTestFile: IUnitTestFile = {
       fileName,
-      sessionId
+      sessionId,
+      fileLang,
+      imports,
+      importsHash
     };
     const fileId = await unitTestFileService.create(newUnitTestFile);
     const fnPromises = functions.map((fn) => {
@@ -154,8 +178,9 @@ export async function removeFile(fileName: string) {
 export async function getOrGenerateUnitTests(
   sessionId: string,
   fileName: string
-): Promise<IGetOrGenerateUnitTestsResponse> {
+): Promise<IGeneratedTestsResponse> {
   const { functions, lang, imports } = readJSorTSFile(fileName);
+  const formattedImports = reformatImports(imports);
   const unitTestFile: IUnitTestFile | null =
     await unitTestFileService.getBySessionIdAndFileName(sessionId, fileName);
 
@@ -183,12 +208,15 @@ export async function getOrGenerateUnitTests(
       });
     }
 
-    const newUnitTests = functionsFileOnly.length > 0 ? await generateUnitTests(functionsFileOnly, lang) : [];
+    const newUnitTests =
+      functionsFileOnly.length > 0
+        ? await generateUnitTests(functionsFileOnly, lang)
+        : [];
 
-    return { imports, functions: [...newUnitTests, ...(sameFunctions ?? [])] };
+    return { imports: formattedImports, functions: [...newUnitTests, ...(sameFunctions ?? [])] };
   } else {
     const generatedFunctions = await generateUnitTests(functions, lang);
-    return { imports, functions: generatedFunctions };
+    return { imports: formattedImports, functions: generatedFunctions };
   }
 }
 
@@ -214,6 +242,47 @@ export function reformatFilePath(path: string): string {
   return path.split("/").join("...");
 }
 
-export function reformatImports(imports: string[]): string {
+export function reformatImports(imports: string[] | undefined) {
+  if (!imports) return undefined;
   return imports.join("\n").concat("\n\n");
+}
+
+export async function regenerateUnitTestsSuite(
+  sessionId: string,
+  fileName: string
+): Promise<IGeneratedTestsResponse> {
+  // Get file with fileName -> throw error if not found
+  const resultFile = await unitTestFileService.getBySessionIdAndFileName(
+    sessionId,
+    fileName
+  );
+
+  if (!resultFile || !resultFile?.id) throw new Error(`Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`);
+
+  const fileFunctions = await unitTestFunctionService.listByFileId(
+    resultFile.id
+  );
+
+  if (!fileFunctions) throw new Error(`Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`);
+
+  // Regenerate each unit test
+  const result = fileFunctions.map(async (fn) => {
+    const unitTests = await regenerateFunctionUnitTests(
+      fn,
+      resultFile.fileLang
+    );
+    const unitTestsNoMarkdown = unitTests?.replace(
+      /```\w*([\s\S]+?)```/g,
+      "$1"
+    );
+
+    // Return functions with new code
+    return {
+      code: fn.code,
+      hash: fn.hash,
+      unitTests: unitTestsNoMarkdown
+    } as ITestFunction;
+  });
+
+  return { functions: await Promise.all(result), imports: resultFile.imports };
 }
