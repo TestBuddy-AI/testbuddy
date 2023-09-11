@@ -33,16 +33,18 @@
 
     <hr />
     <br />
+    <span id="error-log" hidden>
+      <vscode-label
+        ><span class="normal">Test: </span><span id="test-label"></span
+      ></vscode-label>
+      <pre id="error-wrapper">
+      <code id="error-container" style="color: red;">
+      </code>
+    </pre>
+      <vscode-button id="save-button"> Help me fix it </vscode-button>
+    </span>
 
-    <vscode-label
-      ><span class="normal">Test: </span><span hidden id="test-label"></span
-    ></vscode-label>
-    <pre id="error-wrapper" hidden>
-        <code id="error-container">
-        </code>
-      </pre>
-    <vscode-button id="save-button"> Help me fix it </vscode-button>
-
+    <span id="error-fix-suggestion" hidden> </span>
     <!-- <vscode-textarea
       placeholder="Type something"
       rows="10"

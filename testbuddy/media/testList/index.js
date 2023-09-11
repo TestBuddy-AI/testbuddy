@@ -20,6 +20,8 @@ import {
   const codeErrorElement = document.getElementById("error-container");
   const labelErrorTest = document.getElementById("test-label");
   const errorContainer = document.getElementById("error-container");
+  const errorLogSpan = document.getElementById("error-log");
+  const errorSuggestionSpan = document.getElementById("error-fix-suggestion");
 
   const vscode = acquireVsCodeApi();
 
@@ -233,8 +235,9 @@ import {
   const showError = (testName, testTitle, error) => {
     labelErrorTest.innerText =
       testName + testTitle === "all" ? "all" : testTitle;
-    preErrorElement.removeAttribute("hidden");
-    labelErrorTest.removeAttribute("hidden");
+
+    errorLogSpan.removeAttribute("hidden");
+    errorLogSpan.scrollIntoView(true);
     codeErrorElement.innerText = error;
   };
 })();
