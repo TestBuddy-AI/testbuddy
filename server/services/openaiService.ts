@@ -287,8 +287,8 @@ export async function feedbackUnitTestsPrompt(
 }
 
 export async function feedbackFunctionUnitTests(
-  codeLanguage: ICodeLanguage,
   unitTestFunctions: ITestFunction[],
+  codeLanguage: ICodeLanguage,
   error: string
 ) {
   const { choices } = await feedbackUnitTestsPrompt(

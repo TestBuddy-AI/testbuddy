@@ -196,3 +196,28 @@ export const regenerateSingleUnitTest = async (req: Request, res: Response) => {
     } as IErrorResponse);
   }
 };
+
+export const feedbackOnFailedTest = async (req: Request, res: Response) => {
+  try {
+    const { sessionId, filePath, error } = req.body;
+    const fileName = codeFileService.reformatFilePath(filePath);
+    const response = await codeFileService.feedbackOnFailedTest(
+      sessionId,
+      fileName,
+      error
+    );
+
+    res.status(200).send({
+      status: IResponseStatus.success,
+      data: { message: response },
+      message: ""
+    } as ISuccessResponse);
+  } catch (error) {
+    res.status(500).send({
+      status: IResponseStatus.error,
+      message: (error as unknown)?.toString(),
+      data: {}
+    } as IErrorResponse);
+  }
+};
+

@@ -5,7 +5,11 @@ import ts from "typescript";
 import { ITestFunction, IUnitTestFile } from "../db/models/dbModels";
 import { unitTestFileService } from "../db/services/unitTestFileServices";
 import { unitTestFunctionService } from "../db/services/unitTestFunctionService";
-import { ICodeLanguage, IGeneratedTestsResponse, IReadFileFunctionsResponse } from "../types";
+import {
+  ICodeLanguage,
+  IGeneratedTestsResponse,
+  IReadFileFunctionsResponse,
+} from "../types";
 import * as openAIService from "./openaiService";
 
 function extractFunctionsAndImports(sourceFile: ts.SourceFile): {
@@ -39,7 +43,7 @@ export function receiveFile(
   fileName: string,
   file: Buffer,
   success: (message: string) => void,
-  error: (message: string) => void
+  error: (message: string) => void,
 ) {
   const storagePath = path.join(__dirname, "../uploads");
 
@@ -80,7 +84,7 @@ export function readJSorTSFile(fileName: string): IReadFileFunctionsResponse {
     return {
       fileName: fileName,
       code: stringFn,
-      hash: md5(stringFn)
+      hash: md5(stringFn),
     } as ITestFunction;
   });
 
@@ -107,13 +111,13 @@ export async function storeUnitTests(
   functions: ITestFunction[],
   sessionId: string,
   fileName: string,
-  imports?: string
+  imports?: string,
 ) {
   const resultUnitTestFile =
     await unitTestFileService.getBySessionIdAndFileName(sessionId, fileName);
 
   if (resultUnitTestFile?.id) {
-    if (imports || !imports && resultUnitTestFile.imports) {
+    if (imports || (!imports && resultUnitTestFile.imports)) {
       const importsHash = imports ? md5(imports) : undefined;
 
       if (resultUnitTestFile.imports) {
@@ -123,7 +127,7 @@ export async function storeUnitTests(
             sessionId: resultUnitTestFile.sessionId,
             fileLang: resultUnitTestFile.fileLang,
             imports,
-            importsHash
+            importsHash,
           });
         }
       }
@@ -134,7 +138,7 @@ export async function storeUnitTests(
         hash: fn.hash,
         code: fn.code,
         unitTests: fn.unitTests,
-        unitTestFileId: resultUnitTestFile.id
+        unitTestFileId: resultUnitTestFile.id,
       };
 
       const existingFunction = await unitTestFunctionService.getByHash(fn.hash);
@@ -155,7 +159,7 @@ export async function storeUnitTests(
       sessionId,
       fileLang,
       imports,
-      importsHash
+      importsHash,
     };
     const fileId = await unitTestFileService.create(newUnitTestFile);
     const fnPromises = functions.map((fn) => {
@@ -177,7 +181,7 @@ export async function removeFile(fileName: string) {
 
 export async function getOrGenerateUnitTests(
   sessionId: string,
-  fileName: string
+  fileName: string,
 ): Promise<IGeneratedTestsResponse> {
   const { functions, lang, imports } = readJSorTSFile(fileName);
   const formattedImports = reformatImports(imports);
@@ -186,18 +190,18 @@ export async function getOrGenerateUnitTests(
 
   if (!!unitTestFile && unitTestFile?.id) {
     const storedFunctions = await unitTestFunctionService.listByFileId(
-      unitTestFile.id
+      unitTestFile.id,
     );
 
     const currentFileFunctions = functions;
     const sameFunctions = storedFunctions?.filter((fn) =>
-      currentFileFunctions.some((fn2) => fn.hash === fn2.hash)
+      currentFileFunctions.some((fn2) => fn.hash === fn2.hash),
     );
     const functionsStoredOnly = storedFunctions?.filter(
-      (fn) => !currentFileFunctions.some((fn2) => fn2.hash === fn.hash)
+      (fn) => !currentFileFunctions.some((fn2) => fn2.hash === fn.hash),
     );
     const functionsFileOnly = currentFileFunctions.filter(
-      (fn2) => !storedFunctions?.some((fn) => fn.hash === fn2.hash)
+      (fn2) => !storedFunctions?.some((fn) => fn.hash === fn2.hash),
     );
 
     if (!!functionsStoredOnly && functionsStoredOnly.length > 0) {
@@ -213,7 +217,10 @@ export async function getOrGenerateUnitTests(
         ? await generateUnitTests(functionsFileOnly, lang)
         : [];
 
-    return { imports: formattedImports, functions: [...newUnitTests, ...(sameFunctions ?? [])] };
+    return {
+      imports: formattedImports,
+      functions: [...newUnitTests, ...(sameFunctions ?? [])],
+    };
   } else {
     const generatedFunctions = await generateUnitTests(functions, lang);
     return { imports: formattedImports, functions: generatedFunctions };
@@ -225,13 +232,13 @@ function generateUnitTests(functions: ITestFunction[], lang: ICodeLanguage) {
     const unitTests = await openAIService.generateFunctionUnitTests(fn, lang);
     const unitTestsNoMarkdown = unitTests?.replace(
       /```\w*([\s\S]+?)```/g,
-      "$1"
+      "$1",
     );
 
     return {
       code: fn.code,
       hash: fn.hash,
-      unitTests: unitTestsNoMarkdown
+      unitTests: unitTestsNoMarkdown,
     } as ITestFunction;
   });
 
@@ -249,35 +256,41 @@ export function reformatImports(imports: string[] | undefined) {
 
 export async function regenerateUnitTestsSuite(
   sessionId: string,
-  fileName: string
+  fileName: string,
 ): Promise<IGeneratedTestsResponse> {
   const resultFile = await unitTestFileService.getBySessionIdAndFileName(
     sessionId,
-    fileName
+    fileName,
   );
 
-  if (!resultFile || !resultFile?.id) throw new Error(`Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`);
+  if (!resultFile || !resultFile?.id)
+    throw new Error(
+      `Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`,
+    );
 
   const fileFunctions = await unitTestFunctionService.listByFileId(
-    resultFile.id
+    resultFile.id,
   );
 
-  if (!fileFunctions) throw new Error(`Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`);
+  if (!fileFunctions)
+    throw new Error(
+      `Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`,
+    );
 
   const result = fileFunctions.map(async (fn) => {
     const unitTests = await openAIService.regenerateFunctionUnitTests(
       fn,
-      resultFile.fileLang
+      resultFile.fileLang,
     );
     const unitTestsNoMarkdown = unitTests?.replace(
       /```\w*([\s\S]+?)```/g,
-      "$1"
+      "$1",
     );
 
     return {
       code: fn.code,
       hash: fn.hash,
-      unitTests: unitTestsNoMarkdown
+      unitTests: unitTestsNoMarkdown,
     } as ITestFunction;
   });
 
@@ -287,46 +300,51 @@ export async function regenerateUnitTestsSuite(
 export async function regenerateSingleUnitTest(
   sessionId: string,
   fileName: string,
-  testToChange: string
+  testToChange: string,
 ): Promise<IGeneratedTestsResponse> {
-
   const resultFile = await unitTestFileService.getBySessionIdAndFileName(
     sessionId,
-    fileName
+    fileName,
   );
 
-  if (!resultFile || !resultFile?.id) throw new Error(`Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`);
+  if (!resultFile || !resultFile?.id)
+    throw new Error(
+      `Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`,
+    );
 
   const fileFunctions = await unitTestFunctionService.listByFileId(
-    resultFile.id
+    resultFile.id,
   );
 
-  if (!fileFunctions) throw new Error(`Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`);
+  if (!fileFunctions)
+    throw new Error(
+      `Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`,
+    );
 
   // Go through each function to find the one that matches
-  const foundIndex = fileFunctions.findIndex(fn => fn.unitTests?.includes(testToChange));
+  const foundIndex = fileFunctions.findIndex(
+    (fn) => fn.unitTests?.includes(testToChange),
+  );
   console.log("☀️ Found this test to be changed");
   const functionToBeChanged = fileFunctions[foundIndex];
   console.log(functionToBeChanged);
 
-  if (!functionToBeChanged) throw new Error(`Unit test ${testToChange} was not found!`);
+  if (!functionToBeChanged)
+    throw new Error(`Unit test ${testToChange} was not found!`);
 
   const unitTests = await openAIService.regenerateSingleFunctionUnitTest(
     functionToBeChanged,
     resultFile.fileLang,
-    testToChange
+    testToChange,
   );
 
-  const unitTestsNoMarkdown = unitTests?.replace(
-    /```\w*([\s\S]+?)```/g,
-    "$1"
-  );
+  const unitTestsNoMarkdown = unitTests?.replace(/```\w*([\s\S]+?)```/g, "$1");
 
   // Return functions with new code
   fileFunctions.splice(foundIndex, 1, {
     code: functionToBeChanged.code,
     hash: functionToBeChanged.hash,
-    unitTests: unitTestsNoMarkdown
+    unitTests: unitTestsNoMarkdown,
   } as ITestFunction);
 
   return { functions: fileFunctions, imports: resultFile.imports };
@@ -335,38 +353,75 @@ export async function regenerateSingleUnitTest(
 export async function modifyUnitTestsSuite(
   sessionId: string,
   fileName: string,
-  userInput: string
+  userInput: string,
 ): Promise<IGeneratedTestsResponse> {
   const resultFile = await unitTestFileService.getBySessionIdAndFileName(
     sessionId,
-    fileName
+    fileName,
   );
 
-  if (!resultFile || !resultFile?.id) throw new Error(`Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`);
+  if (!resultFile || !resultFile?.id)
+    throw new Error(
+      `Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`,
+    );
 
   const fileFunctions = await unitTestFunctionService.listByFileId(
-    resultFile.id
+    resultFile.id,
   );
 
-  if (!fileFunctions) throw new Error(`Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`);
+  if (!fileFunctions)
+    throw new Error(
+      `Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`,
+    );
 
   const result = fileFunctions.map(async (fn) => {
     const unitTests = await openAIService.modifyFunctionUnitTests(
       fn,
       resultFile.fileLang,
-      userInput
+      userInput,
     );
     const unitTestsNoMarkdown = unitTests?.replace(
       /```\w*([\s\S]+?)```/g,
-      "$1"
+      "$1",
     );
 
     return {
       code: fn.code,
       hash: fn.hash,
-      unitTests: unitTestsNoMarkdown
+      unitTests: unitTestsNoMarkdown,
     } as ITestFunction;
   });
 
   return { functions: await Promise.all(result), imports: resultFile.imports };
+}
+
+export async function feedbackOnFailedTest(
+  sessionId: string,
+  fileName: string,
+  error: string,
+) {
+  const resultFile = await unitTestFileService.getBySessionIdAndFileName(
+    sessionId,
+    fileName,
+  );
+
+  if (!resultFile || !resultFile?.id)
+    throw new Error(
+      `Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`,
+    );
+
+  const fileFunctions = await unitTestFunctionService.listByFileId(
+    resultFile.id,
+  );
+
+  if (!fileFunctions)
+    throw new Error(
+      `Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`,
+    );
+
+  return await openAIService.feedbackFunctionUnitTests(
+    fileFunctions,
+    resultFile.fileLang,
+    error,
+  );
 }
