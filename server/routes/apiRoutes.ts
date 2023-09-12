@@ -1,28 +1,16 @@
 import express from "express";
 
-import {
-  feedbackOnFailedTest,
-  getOrGenerateUnitTests,
-  helloWorld,
-  modifySingleUnitTest,
-  modifyTestSuite,
-  receiveFile,
-  regenerateSingleUnitTest,
-  regenerateTestSuite
-} from "../controllers/apiController";
-
+import * as apiController from "../controllers/apiController";
 
 const router = express.Router();
 
-
-router.get("/hello-world", helloWorld);
-
-router.post("/receive-file", receiveFile);
-router.post("/generate-unit-tests", getOrGenerateUnitTests);
-router.post("/regenerate-test-suite", regenerateTestSuite);
-router.post("/regenerate-single-test", regenerateSingleUnitTest);
-router.post("/modify-test-suite", modifyTestSuite);
-router.post("/modify-single-test", modifySingleUnitTest);
-router.post("/feedback-on-failed-test", feedbackOnFailedTest);
+router.get("/hello-world", apiController.helloWorld);
+router.post("/receive-file", apiController.receiveFile);
+router.post("/generate-unit-tests", apiController.getOrGenerateUnitTests);
+router.post("/regenerate-test-suite", apiController.regenerateTestSuite);
+router.post("/regenerate-single-test", apiController.regenerateSingleUnitTest);
+router.post("/modify-test-suite", apiController.modifyTestSuite);
+router.post("/modify-single-test", apiController.modifySingleUnitTest);
+router.post("/feedback-on-failed-test", apiController.feedbackOnFailedTest);
 
 export default router;
