@@ -3,7 +3,9 @@ import express from "express";
 import {
   feedbackOnFailedTest,
   getOrGenerateUnitTests,
-  helloWorld, modifyTestSuite,
+  helloWorld,
+  modifySingleUnitTest,
+  modifyTestSuite,
   receiveFile,
   regenerateSingleUnitTest,
   regenerateTestSuite
@@ -20,7 +22,7 @@ router.post("/generate-unit-tests", getOrGenerateUnitTests);
 router.post("/regenerate-test-suite", regenerateTestSuite);
 router.post("/regenerate-single-test", regenerateSingleUnitTest);
 router.post("/modify-test-suite", modifyTestSuite);
-// router.post("/modify-test")
-router.post("/feedback-on-failed-test", feedbackOnFailedTest)
+router.post("/modify-single-test", modifySingleUnitTest);
+router.post("/feedback-on-failed-test", feedbackOnFailedTest);
 
 export default router;

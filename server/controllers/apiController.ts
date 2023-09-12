@@ -221,3 +221,40 @@ export const feedbackOnFailedTest = async (req: Request, res: Response) => {
   }
 };
 
+export const modifySingleUnitTest = async (req: Request, res: Response) => {
+  try {
+    const { sessionId, filePath, test, userInput } = req.body;
+    const fileName = codeFileService.reformatFilePath(filePath);
+    const { functions, imports } = await codeFileService.modifySingleUnitTest(
+      sessionId,
+      fileName,
+      test,
+      userInput
+    );
+
+    console.log("💽 Storing the following functions...");
+    console.log(functions);
+
+    await codeFileService.storeUnitTests(
+      functions || [],
+      sessionId,
+      fileName,
+      imports
+    );
+
+    const unitTestsArray = functions?.map((fn) => fn.unitTests);
+    const result = (imports ?? "").concat(unitTestsArray?.join(" "));
+
+    res.status(200).send({
+      status: IResponseStatus.success,
+      data: { result },
+      message: ""
+    } as ISuccessResponse);
+  } catch (error) {
+    res.status(500).send({
+      status: IResponseStatus.error,
+      message: (error as unknown)?.toString(),
+      data: {}
+    } as IErrorResponse);
+  }
+};

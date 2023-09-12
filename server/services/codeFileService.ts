@@ -424,3 +424,57 @@ export async function feedbackOnFailedTest(
     error
   );
 }
+
+export async function modifySingleUnitTest(
+  sessionId: string,
+  fileName: string,
+  testToChange: string,
+  userInput: string
+): Promise<IGeneratedTestsResponse> {
+  const resultFile = await unitTestFileService.getBySessionIdAndFileName(
+    sessionId,
+    fileName
+  );
+
+  if (!resultFile || !resultFile?.id)
+    throw new Error(
+      `Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`
+    );
+
+  const fileFunctions = await unitTestFunctionService.listByFileId(
+    resultFile.id
+  );
+
+  if (!fileFunctions)
+    throw new Error(
+      `Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`
+    );
+
+  // Go through each function to find the one that matches
+  const foundIndex = fileFunctions.findIndex((fn) =>
+    fn.unitTests?.includes(testToChange)
+  );
+  console.log("☀️ Found this test to be changed");
+  const functionToBeChanged = fileFunctions[foundIndex];
+  console.log(functionToBeChanged);
+
+  if (!functionToBeChanged)
+    throw new Error(`Unit test ${testToChange} was not found!`);
+
+  const unitTests = await openAIService.modifySingleFunctionUnitTest(
+    functionToBeChanged,
+    testToChange,
+    userInput
+  );
+
+  const unitTestsNoMarkdown = unitTests?.replace(/```\w*([\s\S]+?)```/g, "$1");
+
+  // Return functions with new code
+  fileFunctions.splice(foundIndex, 1, {
+    code: functionToBeChanged.code,
+    hash: functionToBeChanged.hash,
+    unitTests: unitTestsNoMarkdown,
+  } as ITestFunction);
+
+  return { functions: fileFunctions, imports: resultFile.imports };
+}
