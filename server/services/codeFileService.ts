@@ -6,7 +6,7 @@ import { ITestFunction, IUnitTestFile } from "../db/models/dbModels";
 import { unitTestFileService } from "../db/services/unitTestFileServices";
 import { unitTestFunctionService } from "../db/services/unitTestFunctionService";
 import { ICodeLanguage, IGeneratedTestsResponse, IReadFileFunctionsResponse } from "../types";
-import { generateFunctionUnitTests, regenerateFunctionUnitTests } from "./openaiService";
+import * as openAIService from "./openaiService";
 
 function extractFunctionsAndImports(sourceFile: ts.SourceFile): {
   imports: string[] | undefined;
@@ -222,7 +222,7 @@ export async function getOrGenerateUnitTests(
 
 function generateUnitTests(functions: ITestFunction[], lang: ICodeLanguage) {
   const result = functions.map(async (fn) => {
-    const unitTests = await generateFunctionUnitTests(fn, lang);
+    const unitTests = await openAIService.generateFunctionUnitTests(fn, lang);
     const unitTestsNoMarkdown = unitTests?.replace(
       /```\w*([\s\S]+?)```/g,
       "$1"
@@ -251,7 +251,6 @@ export async function regenerateUnitTestsSuite(
   sessionId: string,
   fileName: string
 ): Promise<IGeneratedTestsResponse> {
-  // Get file with fileName -> throw error if not found
   const resultFile = await unitTestFileService.getBySessionIdAndFileName(
     sessionId,
     fileName
@@ -265,9 +264,8 @@ export async function regenerateUnitTestsSuite(
 
   if (!fileFunctions) throw new Error(`Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`);
 
-  // Regenerate each unit test
   const result = fileFunctions.map(async (fn) => {
-    const unitTests = await regenerateFunctionUnitTests(
+    const unitTests = await openAIService.regenerateFunctionUnitTests(
       fn,
       resultFile.fileLang
     );
@@ -276,7 +274,6 @@ export async function regenerateUnitTestsSuite(
       "$1"
     );
 
-    // Return functions with new code
     return {
       code: fn.code,
       hash: fn.hash,
@@ -285,4 +282,52 @@ export async function regenerateUnitTestsSuite(
   });
 
   return { functions: await Promise.all(result), imports: resultFile.imports };
+}
+
+export async function regenerateSingleUnitTest(
+  sessionId: string,
+  fileName: string,
+  testToChange: string
+): Promise<IGeneratedTestsResponse> {
+
+  const resultFile = await unitTestFileService.getBySessionIdAndFileName(
+    sessionId,
+    fileName
+  );
+
+  if (!resultFile || !resultFile?.id) throw new Error(`Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`);
+
+  const fileFunctions = await unitTestFunctionService.listByFileId(
+    resultFile.id
+  );
+
+  if (!fileFunctions) throw new Error(`Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`);
+
+  // Go through each function to find the one that matches
+  const foundIndex = fileFunctions.findIndex(fn => fn.unitTests?.includes(testToChange));
+  console.log("☀️ Found this test to be changed");
+  const functionToBeChanged = fileFunctions[foundIndex];
+  console.log(functionToBeChanged);
+
+  if (!functionToBeChanged) throw new Error(`Unit test ${testToChange} was not found!`);
+
+  const unitTests = await openAIService.regenerateSingleFunctionUnitTest(
+    functionToBeChanged,
+    resultFile.fileLang,
+    testToChange
+  );
+
+  const unitTestsNoMarkdown = unitTests?.replace(
+    /```\w*([\s\S]+?)```/g,
+    "$1"
+  );
+
+  // Return functions with new code
+  fileFunctions.splice(foundIndex, 1, {
+    code: functionToBeChanged.code,
+    hash: functionToBeChanged.hash,
+    unitTests: unitTestsNoMarkdown
+  } as ITestFunction);
+
+  return { functions: fileFunctions, imports: resultFile.imports };
 }

@@ -90,6 +90,60 @@ export async function regenerateUnitTestsPrompt(
   };
 }
 
+export async function regenerateSingleUnitTest(
+  originalCode: string,
+  unitTests: string,
+  codeLanguage: ICodeLanguage,
+  unitTestToChange: string
+): Promise<CreateChatCompletionResponse> {
+  const response = await openAI.createChatCompletion({
+    model: "gpt-3.5-turbo-16k",
+    messages: [
+      {
+        role: "system",
+        content: `You created the following tests ${unitTests} for the user based on ${originalCode}. The user wants to perform a change.`
+      },
+      {
+        role: "user",
+        content: `Regenerate the code for the following string code block ${unitTestToChange} by using a different approach. The rest of the tests should remain the same. Integrate the changes with the original string.`
+      }
+    ],
+    temperature: 1,
+    max_tokens: 2560,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0
+  });
+
+  const { id, object, created, model, choices } = response.data;
+
+  return {
+    id,
+    object,
+    created,
+    model,
+    choices
+  };
+}
+
+export async function regenerateSingleFunctionUnitTest(
+  testFunction: ITestFunction,
+  codeLanguage: ICodeLanguage,
+  testToChange: string
+) {
+  const { choices } = await regenerateSingleUnitTest(
+    testFunction.code,
+    testFunction.unitTests || "",
+    codeLanguage,
+    testToChange
+  );
+
+  console.log(`⚡️Given the test to change ${testToChange} ChatGPT returns`);
+  console.log("❤️", testToChange);
+  console.log(choices[0].message?.content);
+  return choices[0].message?.content;
+}
+
 export async function regenerateFunctionUnitTests(
   testFunction: ITestFunction,
   codeLanguage: ICodeLanguage
