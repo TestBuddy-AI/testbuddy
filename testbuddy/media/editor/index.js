@@ -96,6 +96,9 @@ function createParticle(x, y) {
         populate(testList);
         break;
       }
+      case "result": {
+        resetButton();
+      }
     }
   });
 
@@ -110,7 +113,7 @@ function createParticle(x, y) {
     buttonElement.setAttribute("disabled", "");
     setTimeout(() => {
       resetButton();
-    }, 20000);
+    }, 40000);
     let currTestPos = Number(selectorElement.getAttribute("selected-index"));
     let selectedTest =
       selectorElement.querySelectorAll("vscode-option")[currTestPos];

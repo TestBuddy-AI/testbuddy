@@ -175,6 +175,15 @@ const initializeApp = (
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
+      "testBuddy.reloadTests",
+      async (...args) => {
+        testListprovider.initialize().then(console.log);
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
       "testBuddy.generateTest",
       async (...args) => {
         console.log(args);

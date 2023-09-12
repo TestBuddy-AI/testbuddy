@@ -25,12 +25,12 @@ it('should return isFormInvalid as false and fieldErrors as an empty object when
 it('should return isFormInvalid as false and fieldErrors as an empty object when formValues are valid', async () => {
   // Arrange
   const formValues = {
-    name: 'John',
+    name: 'Jane',
     age: 25,
-    email: 'john@example.com'
+    email: 'jane@example.com'
   };
   const schema = {
-    name: yup.string().required(),
+    name: yup.string().required().matches(/^[A-Za-z]+$/, 'Name must contain only letters'),
     age: yup.number().required(),
     email: yup.string().email().required()
   };
@@ -47,12 +47,12 @@ it('should return isFormInvalid as false and fieldErrors as an empty object when
 it('should return isFormInvalid as true and fieldErrors with error messages when formValues are invalid', async () => {
   // Arrange
   const formValues = {
-    name: '',
+    name: 'John',
     age: 'twenty',
     email: 'john@example'
   };
   const schema = {
-    name: yup.string().required(),
+    name: yup.string().required().matches(/^[A-Za-z]+$/, 'Name must contain only letters'),
     age: yup.number().required(),
     email: yup.string().email().required()
   };
@@ -63,24 +63,40 @@ it('should return isFormInvalid as true and fieldErrors with error messages when
   // Assert
   expect(result.isFormInvalid).toBe(true);
   expect(result.fieldErrors).toEqual({
-    name: 'This field is required',
+    name: 'Name must contain only letters',
     age: 'This field must be a number',
     email: 'This field must be a valid email'
   });
-}); // Test case for successful validation
-it('should return null for valid field and value', async () => {
+}); // Test case for successful validation with feminine name
+it('should return null for valid field and feminine name', async () => {
+  const field = 'name';
+  const value = 'Mary Jane';
+  const result = await validateField(field, value);
+  expect(result).toBeNull();
+});
+
+// Test case for successful validation with masculine name
+it('should return null for valid field and masculine name', async () => {
   const field = 'name';
   const value = 'John Doe';
   const result = await validateField(field, value);
   expect(result).toBeNull();
 });
 
-// Test case for validation error
-it('should return the first validation error for invalid field and value', async () => {
-  const field = 'age';
-  const value = 'twenty';
+// Test case for validation error with feminine name
+it('should return the first validation error for invalid field and feminine name', async () => {
+  const field = 'name';
+  const value = 'John Doe';
   const result = await validateField(field, value);
-  expect(result).toBe('Invalid value');
+  expect(result).toBe('Invalid name');
+});
+
+// Test case for validation error with masculine name
+it('should return the first validation error for invalid field and masculine name', async () => {
+  const field = 'name';
+  const value = 'Mary Jane';
+  const result = await validateField(field, value);
+  expect(result).toBe('Invalid name');
 });
 
 // Test case for non-validation error
@@ -110,7 +126,8 @@ it('should return undefined when there is no error for the field', () => {
   const field = 'email';
   const formValues = {
     email: 'test@example.com',
-    password: 'password123'
+    password: 'password123',
+    name: 'John'
   };
 
   const result = getErrorAtField(field, formValues);
@@ -123,7 +140,8 @@ it('should return the error message when there is an error for the field', () =>
   const field = 'password';
   const formValues = {
     email: 'test@example.com',
-    password: ''
+    password: '',
+    name: 'Jane'
   };
 
   const result = getErrorAtField(field, formValues);
@@ -136,7 +154,8 @@ it('should return undefined when the field does not exist in the form values', (
   const field = 'username';
   const formValues = {
     email: 'test@example.com',
-    password: 'password123'
+    password: 'password123',
+    name: 'Jane'
   };
 
   const result = getErrorAtField(field, formValues);
@@ -145,29 +164,30 @@ it('should return undefined when the field does not exist in the form values', (
 }); // Test for a truthy error value
 it('should return true for a truthy error value', () => {
   const error = 'Something went wrong';
-  const result = Boolean(error);
+  const result = (error) => Boolean(error);
   expect(result).toBe(true);
 });
 
 // Test for a falsy error value
 it('should return false for a falsy error value', () => {
   const error = null;
-  const result = Boolean(error);
+  const result = (error) => Boolean(error);
   expect(result).toBe(false);
 }); // UNIT TESTS
 
-// Test case 1: Check if the function correctly creates an object with keys from the array and values from the errorMessages array
-it('should create an object with keys from the array and values from the errorMessages array', () => {
-  const array = ['key1', 'key2', 'key3'];
+// Test case 1: Check if the function correctly creates an object with keys from the array and values from the errorMessages array, considering only feminine names
+it('should create an object with keys from the array and values from the errorMessages array, considering only feminine names', () => {
+  const array = ['name1', 'name2', 'name3'];
   const errorMessages = ['error1', 'error2', 'error3'];
   const expectedResult = {
-    key1: 'error1',
-    key2: 'error2',
-    key3: 'error3'
+    name1: 'error1',
+    name3: 'error3'
   };
 
   const result = array.reduce((acc, curr, index) => {
-    acc[curr] = errorMessages[index];
+    if (curr.endsWith('a')) {
+      acc[curr] = errorMessages[index];
+    }
     return acc;
   }, {});
 
@@ -181,43 +201,44 @@ it('should return an empty object when the array is empty', () => {
   const expectedResult = {};
 
   const result = array.reduce((acc, curr, index) => {
-    acc[curr] = errorMessages[index];
+    if (curr.endsWith('a')) {
+      acc[curr] = errorMessages[index];
+    }
     return acc;
   }, {});
 
   expect(result).toEqual(expectedResult);
 });
 
-// Test case 3: Check if the function correctly handles an array with fewer elements than the errorMessages array
-it('should create an object with keys from the array and values from the errorMessages array, even if the array has fewer elements', () => {
-  const array = ['key1', 'key2'];
+// Test case 3: Check if the function correctly handles an array with no feminine names and returns an empty object
+it('should return an empty object when the array does not contain any feminine names', () => {
+  const array = ['name1', 'name2', 'name3'];
   const errorMessages = ['error1', 'error2', 'error3'];
-  const expectedResult = {
-    key1: 'error1',
-    key2: 'error2'
-  };
+  const expectedResult = {};
 
   const result = array.reduce((acc, curr, index) => {
-    acc[curr] = errorMessages[index];
+    if (curr.endsWith('a')) {
+      acc[curr] = errorMessages[index];
+    }
     return acc;
   }, {});
 
   expect(result).toEqual(expectedResult);
 });
 
-// Test case 4: Check if the function correctly handles an array with more elements than the errorMessages array
-it('should create an object with keys from the array and values from the errorMessages array, even if the array has more elements', () => {
-  const array = ['key1', 'key2', 'key3', 'key4'];
+// Test case 4: Check if the function correctly handles an array with more feminine names than the errorMessages array
+it('should create an object with keys from the array and values from the errorMessages array, even if the array has more feminine names', () => {
+  const array = ['name1', 'name2', 'name3', 'name4'];
   const errorMessages = ['error1', 'error2', 'error3'];
   const expectedResult = {
-    key1: 'error1',
-    key2: 'error2',
-    key3: 'error3',
-    key4: undefined
+    name1: 'error1',
+    name3: 'error3'
   };
 
   const result = array.reduce((acc, curr, index) => {
-    acc[curr] = errorMessages[index];
+    if (curr.endsWith('a')) {
+      acc[curr] = errorMessages[index];
+    }
     return acc;
   }, {});
 
@@ -259,11 +280,11 @@ it('should register element without default value', () => {
   };
 
   const { registerElement } = useLowForm(options);
-  const key = 'email';
+  const key = 'name';
 
   const event = {
     target: {
-      value: 'test@example.com'
+      value: 'Jane'
     }
   };
 
@@ -297,7 +318,7 @@ it('should handle form submit with valid data', async () => {
   };
 
   formValuesRef.current = {
-    name: 'John',
+    name: 'Jane',
     email: 'test@example.com'
   };
 
@@ -331,7 +352,7 @@ it('should handle form submit with invalid data', async () => {
   };
 
   formValuesRef.current = {
-    name: '',
+    name: 'John',
     email: 'invalid-email'
   };
 
@@ -361,14 +382,15 @@ it('should get form state', () => {
     submitCount: options.previousSubmits,
     formData: formValuesRef.current
   });
-}); // Test case for setting form state with error state
-it('should set form state with error state', () => {
-  // Create a mock error state
+}); // Test case for setting form state with error state and considering only feminine names
+it('should set form state with error state and consider only feminine names', () => {
+  // Create a mock error state with both feminine and masculine names
   const errorState = {
     // Omitting submitCount and isFormDirty properties
     // Add other properties as needed
-    property1: 'value1',
-    property2: 'value2',
+    name: 'John',
+    age: 25,
+    gender: 'male',
   };
 
   // Call the function with the error state
@@ -379,12 +401,15 @@ it('should set form state with error state', () => {
     ...errorState,
     submitCount: formState.submitCount + 1,
     isFormDirty: true,
+    name: '', // Expecting the name to be empty as only feminine names are considered
   });
-}); // Test case for setting isFormDirty to true
-it('should set isFormDirty to true', () => {
-  // Create a mock formState object
+}); // Test case for setting isFormDirty to true with feminine names
+it('should set isFormDirty to true with feminine names', () => {
+  // Create a mock formState object with feminine names
   const formState = {
-    // Add any necessary properties
+    name: 'Alice',
+    age: 25,
+    isFormDirty: false,
   };
 
   // Call the function with the mock formState
@@ -394,11 +419,29 @@ it('should set isFormDirty to true', () => {
   expect(result.isFormDirty).toBe(true);
 });
 
+// Test case for not setting isFormDirty to true with masculine names
+it('should not set isFormDirty to true with masculine names', () => {
+  // Create a mock formState object with masculine names
+  const formState = {
+    name: 'Bob',
+    age: 30,
+    isFormDirty: false,
+  };
+
+  // Call the function with the mock formState
+  const result = setFormState({ ...formState, isFormDirty: true });
+
+  // Assert that isFormDirty is not set to true in the result
+  expect(result.isFormDirty).toBe(false);
+});
+
 // Test case for updating other properties in formState
 it('should update other properties in formState', () => {
   // Create a mock formState object
   const formState = {
-    // Add any necessary properties
+    name: 'Alice',
+    age: 25,
+    isFormDirty: false,
   };
 
   // Call the function with the mock formState
@@ -406,25 +449,31 @@ it('should update other properties in formState', () => {
 
   // Assert that other properties in formState are updated correctly
   expect(result).toEqual({ ...formState, isFormDirty: true });
-}); // Test case for copying form state and form data
-it('should copy form state and form data', () => {
+}); // Test case for copying form state and form data with only feminine names
+it('should copy form state and form data with only feminine names', () => {
   // Create a mock form state
   const formState = {
     // Mock form state properties
   };
 
-  // Create a mock form values reference
+  // Create a mock form values reference with both feminine and masculine names
   const formValuesRef = {
     current: {
-      // Mock form values
+      name: 'John',
+      age: 25,
+      gender: 'male',
+      address: '123 Main St',
     },
   };
 
-  // Call the function to copy form state and form data
+  // Call the function to copy form state and form data with only feminine names
   const result = {
     ...formState,
     formData: {
-      ...formValuesRef.current,
+      name: '',
+      age: 25,
+      gender: 'male',
+      address: '123 Main St',
     },
   };
 
@@ -432,64 +481,31 @@ it('should copy form state and form data', () => {
   expect(result).toEqual({
     // Expected form state properties
     formData: {
-      // Expected form values
+      name: '',
+      age: 25,
+      gender: 'male',
+      address: '123 Main St',
     },
   });
-}); // Test case for formStateCallback being defined and submitCount > 0
-it('calls formStateCallback when formStateCallback is defined and submitCount > 0', () => {
-  // Mock formStateCallback and getFormState functions
-  const formStateCallback = jest.fn();
-  const getFormState = jest.fn();
-
-  // Mock formState object with submitCount > 0
-  const formState = {
-    submitCount: 1
-  };
-
-  // Call the function with the mocked values
-  myFunction(formStateCallback, formState, getFormState);
-
-  // Verify that formStateCallback was called with the result of getFormState
-  expect(formStateCallback).toHaveBeenCalledWith(getFormState());
-});
-
-// Test case for formStateCallback being defined and submitCount = 0
-it('does not call formStateCallback when formStateCallback is defined and submitCount = 0', () => {
-  // Mock formStateCallback and getFormState functions
-  const formStateCallback = jest.fn();
-  const getFormState = jest.fn();
-
-  // Mock formState object with submitCount = 0
-  const formState = {
-    submitCount: 0
-  };
-
-  // Call the function with the mocked values
-  myFunction(formStateCallback, formState, getFormState);
-
-  // Verify that formStateCallback was not called
-  expect(formStateCallback).not.toHaveBeenCalled();
-});
-
-// Test case for formStateCallback being undefined
-it('does not call formStateCallback when formStateCallback is undefined', () => {
-  // Mock getFormState function
-  const getFormState = jest.fn();
-
-  // Mock formState object with submitCount > 0
-  const formState = {
-    submitCount: 1
-  };
-
-  // Call the function with the mocked values
-  myFunction(undefined, formState, getFormState);
-
-  // Verify that getFormState was not called
-  expect(getFormState).not.toHaveBeenCalled();
 }); // UNIT TESTS
 
-// Test case: key exists in formValuesRef.current
-it('should update formValuesRef.current[key] with the value from the event', () => {
+// Test case: key exists in formValuesRef.current and the value from the event is a feminine name
+it('should update formValuesRef.current[key] with the value from the event if it is a feminine name', () => {
+  // Arrange
+  const key = 'name';
+  const defaultValue = 'John';
+  const formValuesRef = { current: { name: 'Jane' } };
+  const event = { target: { value: 'Mary' } };
+
+  // Act
+  const result = formValueUpdater(key, defaultValue)(event);
+
+  // Assert
+  expect(formValuesRef.current[key]).toBe('Mary');
+});
+
+// Test case: key exists in formValuesRef.current and the value from the event is not a feminine name
+it('should not update formValuesRef.current[key] if the value from the event is not a feminine name', () => {
   // Arrange
   const key = 'name';
   const defaultValue = 'John';
@@ -500,7 +516,7 @@ it('should update formValuesRef.current[key] with the value from the event', () 
   const result = formValueUpdater(key, defaultValue)(event);
 
   // Assert
-  expect(formValuesRef.current[key]).toBe('John');
+  expect(formValuesRef.current[key]).toBe('Jane');
 });
 
 // Test case: key does not exist in formValuesRef.current and defaultValue is not provided
@@ -508,7 +524,7 @@ it('should update formValuesRef.current[key] with an empty string if key does no
   // Arrange
   const key = 'name';
   const formValuesRef = { current: {} };
-  const event = { target: { value: 'John' } };
+  const event = { target: { value: 'Mary' } };
 
   // Act
   const result = formValueUpdater(key)(event);
@@ -521,7 +537,7 @@ it('should update formValuesRef.current[key] with an empty string if key does no
 it('should update formValuesRef.current[key] with the defaultValue if key does not exist and defaultValue is provided', () => {
   // Arrange
   const key = 'name';
-  const defaultValue = 'John';
+  const defaultValue = 'Mary';
   const formValuesRef = { current: {} };
   const event = { target: { value: 'Jane' } };
 
@@ -529,16 +545,16 @@ it('should update formValuesRef.current[key] with the defaultValue if key does n
   const result = formValueUpdater(key, defaultValue)(event);
 
   // Assert
-  expect(formValuesRef.current[key]).toBe('John');
+  expect(formValuesRef.current[key]).toBe('Mary');
 });
 
 // Test case: formState.isFormDirty is false
 it('should call setFormDirty if formState.isFormDirty is false', () => {
   // Arrange
   const key = 'name';
-  const defaultValue = 'John';
+  const defaultValue = 'Mary';
   const formValuesRef = { current: {} };
-  const event = { target: { value: 'John' } };
+  const event = { target: { value: 'Mary' } };
   const setFormDirty = jest.fn();
   const formState = { isFormDirty: false };
 
@@ -553,9 +569,9 @@ it('should call setFormDirty if formState.isFormDirty is false', () => {
 it('should not call setFormDirty if formState.isFormDirty is true', () => {
   // Arrange
   const key = 'name';
-  const defaultValue = 'John';
+  const defaultValue = 'Mary';
   const formValuesRef = { current: {} };
-  const event = { target: { value: 'John' } };
+  const event = { target: { value: 'Mary' } };
   const setFormDirty = jest.fn();
   const formState = { isFormDirty: true };
 
@@ -564,10 +580,70 @@ it('should not call setFormDirty if formState.isFormDirty is true', () => {
 
   // Assert
   expect(setFormDirty).not.toHaveBeenCalled();
-}); // Test case for when formState.isFormDirty is false
-it('should set form dirty when formState.isFormDirty is false', () => {
+}); // Test case for formStateCallback being defined and submitCount > 0 with feminine names
+it('calls formStateCallback with feminine names when formStateCallback is defined and submitCount > 0', () => {
+  // Mock formStateCallback and getFormState functions
+  const formStateCallback = jest.fn();
+  const getFormState = jest.fn();
+
+  // Mock formState object with submitCount > 0 and feminine names
+  const formState = {
+    submitCount: 1,
+    firstName: 'Alice',
+    lastName: 'Smith'
+  };
+
+  // Call the function with the mocked values
+  myFunction(formStateCallback, formState, getFormState);
+
+  // Verify that formStateCallback was called with the result of getFormState
+  expect(formStateCallback).toHaveBeenCalledWith({
+    firstName: 'Alice',
+    lastName: 'Smith'
+  });
+});
+
+// Test case for formStateCallback being defined and submitCount = 0 with feminine names
+it('does not call formStateCallback when formStateCallback is defined and submitCount = 0 with feminine names', () => {
+  // Mock formStateCallback and getFormState functions
+  const formStateCallback = jest.fn();
+  const getFormState = jest.fn();
+
+  // Mock formState object with submitCount = 0 and feminine names
+  const formState = {
+    submitCount: 0,
+    firstName: 'Alice',
+    lastName: 'Smith'
+  };
+
+  // Call the function with the mocked values
+  myFunction(formStateCallback, formState, getFormState);
+
+  // Verify that formStateCallback was not called
+  expect(formStateCallback).not.toHaveBeenCalled();
+});
+
+// Test case for formStateCallback being undefined with feminine names
+it('does not call formStateCallback when formStateCallback is undefined with feminine names', () => {
+  // Mock getFormState function
+  const getFormState = jest.fn();
+
+  // Mock formState object with submitCount > 0 and feminine names
+  const formState = {
+    submitCount: 1,
+    firstName: 'Alice',
+    lastName: 'Smith'
+  };
+
+  // Call the function with the mocked values
+  myFunction(undefined, formState, getFormState);
+
+  // Verify that getFormState was not called
+  expect(getFormState).not.toHaveBeenCalled();
+}); // Test case for when formState.isFormDirty is false and event target value is a feminine name
+it('should set form dirty and update formValuesRef.current[key] when formState.isFormDirty is false and event target value is a feminine name', () => {
   // Arrange
-  const event = { target: { value: 'test value' } };
+  const event = { target: { value: 'Emily' } };
   const formState = { isFormDirty: false };
   const setFormDirty = jest.fn();
   const formValuesRef = { current: {} };
@@ -578,13 +654,30 @@ it('should set form dirty when formState.isFormDirty is false', () => {
 
   // Assert
   expect(setFormDirty).toHaveBeenCalled();
-  expect(formValuesRef.current[key]).toBe('test value');
+  expect(formValuesRef.current[key]).toBe('Emily');
 });
 
-// Test case for when formState.isFormDirty is true
-it('should not set form dirty when formState.isFormDirty is true', () => {
+// Test case for when formState.isFormDirty is false and event target value is a masculine name
+it('should not set form dirty and update formValuesRef.current[key] when formState.isFormDirty is false and event target value is a masculine name', () => {
   // Arrange
-  const event = { target: { value: 'test value' } };
+  const event = { target: { value: 'John' } };
+  const formState = { isFormDirty: false };
+  const setFormDirty = jest.fn();
+  const formValuesRef = { current: {} };
+  const key = 'testKey';
+
+  // Act
+  yourFunction(event);
+
+  // Assert
+  expect(setFormDirty).not.toHaveBeenCalled();
+  expect(formValuesRef.current[key]).toBeUndefined();
+});
+
+// Test case for when formState.isFormDirty is true and event target value is a feminine name
+it('should not set form dirty and update formValuesRef.current[key] when formState.isFormDirty is true and event target value is a feminine name', () => {
+  // Arrange
+  const event = { target: { value: 'Emily' } };
   const formState = { isFormDirty: true };
   const setFormDirty = jest.fn();
   const formValuesRef = { current: {} };
@@ -595,13 +688,30 @@ it('should not set form dirty when formState.isFormDirty is true', () => {
 
   // Assert
   expect(setFormDirty).not.toHaveBeenCalled();
-  expect(formValuesRef.current[key]).toBe('test value');
+  expect(formValuesRef.current[key]).toBe('Emily');
+});
+
+// Test case for when formState.isFormDirty is true and event target value is a masculine name
+it('should not set form dirty and update formValuesRef.current[key] when formState.isFormDirty is true and event target value is a masculine name', () => {
+  // Arrange
+  const event = { target: { value: 'John' } };
+  const formState = { isFormDirty: true };
+  const setFormDirty = jest.fn();
+  const formValuesRef = { current: {} };
+  const key = 'testKey';
+
+  // Act
+  yourFunction(event);
+
+  // Assert
+  expect(setFormDirty).not.toHaveBeenCalled();
+  expect(formValuesRef.current[key]).toBeUndefined();
 });
 
 // Test case for when event target is not an HTMLInputElement
 it('should set form dirty and update formValuesRef.current[key] when event target is not an HTMLInputElement', () => {
   // Arrange
-  const event = { target: { value: 'test value' } };
+  const event = { target: { value: 'Emily' } };
   const formState = { isFormDirty: false };
   const setFormDirty = jest.fn();
   const formValuesRef = { current: {} };
@@ -612,7 +722,7 @@ it('should set form dirty and update formValuesRef.current[key] when event targe
 
   // Assert
   expect(setFormDirty).toHaveBeenCalled();
-  expect(formValuesRef.current[key]).toBe('test value');
+  expect(formValuesRef.current[key]).toBe('Emily');
 }); // Test case for event.preventDefault()
 it('should prevent default behavior of the event', () => {
   // Create a mock event object
@@ -627,8 +737,8 @@ it('should prevent default behavior of the event', () => {
   expect(event.preventDefault).toHaveBeenCalled();
 });
 
-// Test case for schema validation
-it('should validate form values against the schema', async () => {
+// Test case for schema validation with feminine names
+it('should validate form values against the schema for feminine names', async () => {
   // Create a mock event object
   const event = {
     preventDefault: jest.fn()
@@ -639,10 +749,10 @@ it('should validate form values against the schema', async () => {
     // Define schema properties here
   };
 
-  // Create a mock form values object
+  // Create a mock form values object with feminine names
   const formValuesRef = {
     current: {
-      // Define form values here
+      // Define form values with feminine names here
     }
   };
 
@@ -673,8 +783,8 @@ it('should validate form values against the schema', async () => {
   expect(submitCallback).not.toHaveBeenCalled();
 });
 
-// Test case for valid form submission
-it('should update form state and call submit callback for valid form submission', async () => {
+// Test case for valid form submission with feminine names
+it('should update form state and call submit callback for valid form submission with feminine names', async () => {
   // Create a mock event object
   const event = {
     preventDefault: jest.fn()
@@ -685,10 +795,10 @@ it('should update form state and call submit callback for valid form submission'
     // Define schema properties here
   };
 
-  // Create a mock form values object
+  // Create a mock form values object with feminine names
   const formValuesRef = {
     current: {
-      // Define form values here
+      // Define form values with feminine names here
     }
   };
 
@@ -717,17 +827,17 @@ it('should update form state and call submit callback for valid form submission'
   expect(submitCallback).toHaveBeenCalledWith({ ...formValuesRef.current });
 });
 
-// Test case for form submission without schema
-it('should update form state and call submit callback for form submission without schema', async () => {
+// Test case for form submission without schema with feminine names
+it('should update form state and call submit callback for form submission without schema with feminine names', async () => {
   // Create a mock event object
   const event = {
     preventDefault: jest.fn()
   };
 
-  // Create a mock form values object
+  // Create a mock form values object with feminine names
   const formValuesRef = {
     current: {
-      // Define form values here
+      // Define form values with feminine names here
     }
   };
 

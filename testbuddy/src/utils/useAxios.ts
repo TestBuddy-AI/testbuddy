@@ -86,6 +86,7 @@ export async function regenerateTest(
     }
     const { data, status } = await generator;
     console.log(status, "<---- Status genUnitTests");
+    console.log(data);
     return data;
   } catch (error: any) {
     console.log(error);
@@ -115,6 +116,7 @@ export async function modifyTest(
     }
     const { data, status } = await generator;
     console.log(status, "<---- Status genUnitTests");
+    console.log(data);
     return data;
   } catch (error: any) {
     console.log(error);

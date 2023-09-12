@@ -4,6 +4,7 @@ import { getEditorHtml } from "./editorHtml";
 import { execShell } from "../../utils/execShell";
 import { modifyTest, regenerateTest } from "../../utils/useAxios";
 import * as fs from "fs";
+import { saveGeneratedTest } from "../../utils/testCreator";
 
 //https://stackoverflow.com/questions/43007267/how-to-run-a-system-command-from-vscode-extension Check answers at the end, fs.watch for file updates
 export class EditorWebViewViewProvider implements vscode.WebviewViewProvider {
@@ -42,22 +43,49 @@ export class EditorWebViewViewProvider implements vscode.WebviewViewProvider {
             //Test Suite
             if (!userInput) {
               //Regen
-              await regenerateTest(buffer, file, undefined);
+              let data = await regenerateTest(buffer, file, undefined);
+              await saveGeneratedTest(
+                data,
+                file.replace("/tests", "").replace(".test.", ".")
+              );
+              this._view.webview.postMessage({ type: "result" });
+              await vscode.commands.executeCommand("testBuddy.reloadTests");
               return;
             } else {
               //Modif
-              await modifyTest(buffer, file, userInput, undefined);
+              let data = await modifyTest(buffer, file, userInput, undefined);
+              await saveGeneratedTest(
+                data,
+                file.replace("/tests", "").replace(".test.", ".")
+              );
+              this._view.webview.postMessage({ type: "result" });
+              await vscode.commands.executeCommand("testBuddy.reloadTests");
+
               return;
             }
           } else {
             //Test Single
             if (!userInput) {
               //Regen
-              await regenerateTest(buffer, file, name);
+              let data = await regenerateTest(buffer, file, name);
+              await saveGeneratedTest(
+                data,
+                file.replace("/tests", "").replace(".test.", ".")
+              );
+              this._view.webview.postMessage({ type: "result" });
+              await vscode.commands.executeCommand("testBuddy.reloadTests");
+
               return;
             } else {
               //Modif
-              await modifyTest(buffer, file, userInput, name);
+              let data = await modifyTest(buffer, file, userInput, name);
+              await saveGeneratedTest(
+                data,
+                file.replace("/tests", "").replace(".test.", ".")
+              );
+              this._view.webview.postMessage({ type: "result" });
+              await vscode.commands.executeCommand("testBuddy.reloadTests");
+
               return;
             }
           }
