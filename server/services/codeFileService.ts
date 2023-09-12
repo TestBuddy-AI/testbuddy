@@ -145,6 +145,14 @@ export async function storeUnitTests(
 
       if (!existingFunction) {
         await unitTestFunctionService.create(unitTestFunction);
+      } else if (existingFunction?.id && unitTestFunction.unitTests !== existingFunction.unitTests) {
+        const updatedFunction: ITestFunction = {
+          hash: unitTestFunction.hash,
+          code: unitTestFunction.code,
+          unitTests: unitTestFunction.unitTests,
+          unitTestFileId: unitTestFunction.unitTestFileId
+        }
+        await unitTestFunctionService.update(existingFunction.id, updatedFunction);
       }
     });
   } else {
