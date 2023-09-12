@@ -331,3 +331,42 @@ export async function regenerateSingleUnitTest(
 
   return { functions: fileFunctions, imports: resultFile.imports };
 }
+
+export async function modifyUnitTestsSuite(
+  sessionId: string,
+  fileName: string,
+  userInput: string
+): Promise<IGeneratedTestsResponse> {
+  const resultFile = await unitTestFileService.getBySessionIdAndFileName(
+    sessionId,
+    fileName
+  );
+
+  if (!resultFile || !resultFile?.id) throw new Error(`Unit tests for file ${fileName} with sessionId ${sessionId} were not found!`);
+
+  const fileFunctions = await unitTestFunctionService.listByFileId(
+    resultFile.id
+  );
+
+  if (!fileFunctions) throw new Error(`Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`);
+
+  const result = fileFunctions.map(async (fn) => {
+    const unitTests = await openAIService.modifyFunctionUnitTests(
+      fn,
+      resultFile.fileLang,
+      userInput
+    );
+    const unitTestsNoMarkdown = unitTests?.replace(
+      /```\w*([\s\S]+?)```/g,
+      "$1"
+    );
+
+    return {
+      code: fn.code,
+      hash: fn.hash,
+      unitTests: unitTestsNoMarkdown
+    } as ITestFunction;
+  });
+
+  return { functions: await Promise.all(result), imports: resultFile.imports };
+}

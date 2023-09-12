@@ -159,7 +159,8 @@ export async function regenerateFunctionUnitTests(
 
 export async function modifyUnitTestsPrompt(
   codeLanguage: ICodeLanguage,
-  unitTestGenerated: ITestFunction,
+  originalCode: string,
+  unitTests: string,
   userInput: string
 ): Promise<CreateChatCompletionResponse> {
   const response = await openAI.createChatCompletion({
@@ -171,11 +172,11 @@ export async function modifyUnitTestsPrompt(
       },
       {
         role: "user",
-        content: unitTestGenerated.code
+        content: originalCode
       },
       {
         role: "assistant",
-        content: unitTestGenerated.unitTests
+        content: unitTests
       },
       {
         role: "user",
@@ -201,13 +202,14 @@ export async function modifyUnitTestsPrompt(
 }
 
 export async function modifyFunctionUnitTests(
-  codeLanguage: ICodeLanguage,
   unitTestGenerated: ITestFunction,
+  codeLanguage: ICodeLanguage,
   userInput: string
 ) {
   const { choices } = await modifyUnitTestsPrompt(
     codeLanguage,
-    unitTestGenerated,
+    unitTestGenerated.code,
+    unitTestGenerated.unitTests || "",
     userInput
   );
 

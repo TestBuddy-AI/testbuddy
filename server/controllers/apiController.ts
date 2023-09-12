@@ -126,6 +126,40 @@ export const regenerateTestSuite = async (req: Request, res: Response) => {
   }
 };
 
+export const modifyTestSuite = async (req: Request, res: Response) => {
+  try {
+    const { sessionId, filePath, userInput } = req.body;
+    const fileName = codeFileService.reformatFilePath(filePath);
+    const { functions, imports } = await codeFileService.modifyUnitTestsSuite(
+      sessionId,
+      fileName,
+      userInput
+    );
+
+    await codeFileService.storeUnitTests(
+      functions || [],
+      sessionId,
+      fileName,
+      imports
+    );
+
+    const unitTestsArray = functions?.map((fn) => fn.unitTests);
+    const result = (imports ?? "").concat(unitTestsArray?.join(" "));
+
+    res.status(200).send({
+      status: IResponseStatus.success,
+      data: { result },
+      message: ""
+    } as ISuccessResponse);
+  } catch (error) {
+    res.status(500).send({
+      status: IResponseStatus.error,
+      message: (error as unknown)?.toString(),
+      data: {}
+    } as IErrorResponse);
+  }
+};
+
 export const regenerateSingleUnitTest = async (req: Request, res: Response) => {
   try {
     const { sessionId, filePath, test } = req.body;
