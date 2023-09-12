@@ -1,20 +1,13 @@
-export interface IOpenAIServiceResponse {
-  message: string;
-}
-
-export interface IParsedFunction {
-  name: string;
-  code: string;
-}
+import { ITestFunction } from "../db/models/dbModels";
 
 export enum ICodeLanguage {
   typescript = "Typescript",
-  javascipt = "Javascript"
+  javascript = "Javascript",
 }
 
 export enum IResponseStatus {
   success = "success",
-  error = "error"
+  error = "error",
 }
 
 export interface ISuccessResponse {
@@ -30,31 +23,13 @@ export interface IErrorResponse {
 }
 
 export interface IReadFileFunctionsResponse {
-  fileName: string,
-  lang: ICodeLanguage,
-  functions: ITestFunction[]
-}
-
-export interface IUnitTestFile {
   fileName: string;
-  sessionId: string;
-  conversation?: IConversation[],
+  lang: ICodeLanguage;
+  functions: ITestFunction[];
+  imports: string[] | undefined;
+}
+
+export interface IGeneratedTestsResponse {
+  imports: string | undefined;
   functions: ITestFunction[]
-  // TODO: add values to properties on runtime
-  // prompt_tokens: number;
-  // completion_tokens: number;
-  // requestTime: number;
-  // fileLang: ICodeLanguage;
-}
-
-export interface ITestFunction {
-  fileName: string;
-  code: string;
-  hash: string;
-  unitTests?: string;
-}
-
-export interface IConversation {
-  user: string;
-  assistant: string;
 }
