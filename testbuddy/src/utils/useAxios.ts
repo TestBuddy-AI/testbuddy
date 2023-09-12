@@ -209,7 +209,7 @@ const getFeedbackOnFailedTest = (
   session: string,
   error: string
 ) => {
-  return axios.post(`${BASE_URL}/modify-test`, {
+  return axios.post(`${BASE_URL}/feedback-on-failed-test`, {
     sessionId: session,
     filePath: removeUserDirectory(fileName),
     error: error,
@@ -218,5 +218,5 @@ const getFeedbackOnFailedTest = (
 
 const removeUserDirectory = (uri: string) => {
   let pathUri = vscode.workspace.workspaceFolders![0].uri.fsPath;
-  return uri.replace(pathUri, "");
+  return uri.replace(pathUri, "").replace("/tests", "").replace(".test.", ".");
 };

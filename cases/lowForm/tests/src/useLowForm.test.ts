@@ -1,630 +1,757 @@
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  SyntheticEvent,
+} from 'react';
+import { AnyObjectSchema } from 'yup';
 
-describe('validateForm', () => {
-  it('should return an object with isFormInvalid set to false and an empty fieldErrors object when formValues is empty', async () => {
-    // Arrange
-    const formValues: Record<string, any> = {};
-    const schema: AnyObjectSchema = {};
+// Test for an empty formValues and schema
+it('should return isFormInvalid as false and fieldErrors as an empty object when formValues and schema are empty', async () => {
+  // Arrange
+  const formValues = {};
+  const schema = {};
 
-    // Act
-    const result = await validateForm(formValues, schema);
+  // Act
+  const result = await yourFunction(formValues, schema);
 
-    // Assert
-    expect(result.isFormInvalid).toBe(false);
-    expect(result.fieldErrors).toEqual({});
-  });
-
-  it('should return an object with isFormInvalid set to false and an empty fieldErrors object when all form values are valid', async () => {
-    // Arrange
-    const formValues: Record<string, any> = {
-      field1: 'value1',
-      field2: 'value2',
-    };
-    const schema: AnyObjectSchema = {};
-
-    // Act
-    const result = await validateForm(formValues, schema);
-
-    // Assert
-    expect(result.isFormInvalid).toBe(false);
-    expect(result.fieldErrors).toEqual({});
-  });
-
-  it('should return an object with isFormInvalid set to true and fieldErrors containing the error message when a form value is invalid', async () => {
-    // Arrange
-    const formValues: Record<string, any> = {
-      field1: 'invalidValue',
-      field2: 'value2',
-    };
-    const schema: AnyObjectSchema = {
-      field1: yup.string().required('Field 1 is required'),
-    };
-
-    // Act
-    const result = await validateForm(formValues, schema);
-
-    // Assert
-    expect(result.isFormInvalid).toBe(true);
-    expect(result.fieldErrors).toEqual({
-      field1: 'Field 1 is required',
-    });
-  });
-
-  it('should return an object with isFormInvalid set to true and fieldErrors containing the first error message when multiple form values are invalid', async () => {
-    // Arrange
-    const formValues: Record<string, any> = {
-      field1: 'invalidValue',
-      field2: 'invalidValue',
-    };
-    const schema: AnyObjectSchema = {
-      field1: yup.string().required('Field 1 is required'),
-      field2: yup.string().required('Field 2 is required'),
-    };
-
-    // Act
-    const result = await validateForm(formValues, schema);
-
-    // Assert
-    expect(result.isFormInvalid).toBe(true);
-    expect(result.fieldErrors).toEqual({
-      field1: 'Field 1 is required',
-    });
-  });
+  // Assert
+  expect(result.isFormInvalid).toBe(false);
+  expect(result.fieldErrors).toEqual({});
 });
- it('should return null if validation passes', async () => {
-  const result = await validateField('name', 'John');
+
+// Test for a valid formValues and schema
+it('should return isFormInvalid as false and fieldErrors as an empty object when formValues are valid', async () => {
+  // Arrange
+  const formValues = {
+    name: 'John',
+    age: 25,
+    email: 'john@example.com'
+  };
+  const schema = {
+    name: yup.string().required(),
+    age: yup.number().required(),
+    email: yup.string().email().required()
+  };
+
+  // Act
+  const result = await yourFunction(formValues, schema);
+
+  // Assert
+  expect(result.isFormInvalid).toBe(false);
+  expect(result.fieldErrors).toEqual({});
+});
+
+// Test for an invalid formValues and schema
+it('should return isFormInvalid as true and fieldErrors with error messages when formValues are invalid', async () => {
+  // Arrange
+  const formValues = {
+    name: '',
+    age: 'twenty',
+    email: 'john@example'
+  };
+  const schema = {
+    name: yup.string().required(),
+    age: yup.number().required(),
+    email: yup.string().email().required()
+  };
+
+  // Act
+  const result = await yourFunction(formValues, schema);
+
+  // Assert
+  expect(result.isFormInvalid).toBe(true);
+  expect(result.fieldErrors).toEqual({
+    name: 'This field is required',
+    age: 'This field must be a number',
+    email: 'This field must be a valid email'
+  });
+}); // Test case for successful validation
+it('should return null for valid field and value', async () => {
+  const field = 'name';
+  const value = 'John Doe';
+  const result = await validateField(field, value);
   expect(result).toBeNull();
 });
 
-it('should return the first validation error if validation fails', async () => {
-  const result = await validateField('age', -10);
-  expect(result).toBe('Age must be a positive number');
+// Test case for validation error
+it('should return the first validation error for invalid field and value', async () => {
+  const field = 'age';
+  const value = 'twenty';
+  const result = await validateField(field, value);
+  expect(result).toBe('Invalid value');
 });
 
-it('should return null if an error other than ValidationError occurs', async () => {
-  const result = await validateField('email', 'invalid-email');
+// Test case for non-validation error
+it('should return null for non-validation error', async () => {
+  const field = 'email';
+  const value = 'test@example.com';
+  const result = await validateField(field, value);
   expect(result).toBeNull();
-}); 
-it('should return the error at the specified field when it exists', () => {
+});
+
+// Test case for empty field
+it('should return null for empty field', async () => {
+  const field = '';
+  const value = 'John Doe';
+  const result = await validateField(field, value);
+  expect(result).toBeNull();
+});
+
+// Test case for empty value
+it('should return null for empty value', async () => {
+  const field = 'name';
+  const value = '';
+  const result = await validateField(field, value);
+  expect(result).toBeNull();
+}); // Test case for a field with no error
+it('should return undefined when there is no error for the field', () => {
   const field = 'email';
   const formValues = {
     email: 'test@example.com',
-    password: 'password123',
+    password: 'password123'
   };
+
   const result = getErrorAtField(field, formValues);
-  expect(result).toBe('Invalid email');
+
+  expect(result).toBeUndefined();
 });
 
-it('should return undefined when the specified field does not have an error', () => {
+// Test case for a field with an error
+it('should return the error message when there is an error for the field', () => {
   const field = 'password';
   const formValues = {
     email: 'test@example.com',
-    password: 'password123',
+    password: ''
   };
+
   const result = getErrorAtField(field, formValues);
-  expect(result).toBeUndefined();
+
+  expect(result).toBe('Password is required');
 });
 
-it('should return undefined when the specified field does not exist in the form values', () => {
+// Test case for a field that does not exist in the form values
+it('should return undefined when the field does not exist in the form values', () => {
   const field = 'username';
   const formValues = {
     email: 'test@example.com',
-    password: 'password123',
+    password: 'password123'
   };
+
   const result = getErrorAtField(field, formValues);
+
   expect(result).toBeUndefined();
-});
- 
-describe('unit tests', () => {
-  it('should return true when error is truthy', () => {
-    const error = new Error('Something went wrong');
-    const result = (error) => Boolean(error);
-    expect(result(error)).toBe(true);
-  });
-
-  it('should return false when error is falsy', () => {
-    const error = null;
-    const result = (error) => Boolean(error);
-    expect(result(error)).toBe(false);
-  });
-});
- // Unit test for the use case when the accumulator is an empty object and the current element is the first element in the array
-it('should set the current element as a property in the accumulator object with the corresponding error message', () => {
-  const acc = {};
-  const curr = 'first';
-  const index = 0;
-  const errorMessages = ['Error 1', 'Error 2', 'Error 3'];
-  const expected = { first: 'Error 1' };
-
-  const result = acc[curr] = errorMessages[index];
-
-  expect(result).toEqual(expected);
+}); // Test for a truthy error value
+it('should return true for a truthy error value', () => {
+  const error = 'Something went wrong';
+  const result = Boolean(error);
+  expect(result).toBe(true);
 });
 
-// Unit test for the use case when the accumulator already has properties and the current element is not the first element in the array
-it('should add the current element as a property in the accumulator object with the corresponding error message', () => {
-  const acc = { first: 'Error 1' };
-  const curr = 'second';
-  const index = 1;
-  const errorMessages = ['Error 1', 'Error 2', 'Error 3'];
-  const expected = { first: 'Error 1', second: 'Error 2' };
+// Test for a falsy error value
+it('should return false for a falsy error value', () => {
+  const error = null;
+  const result = Boolean(error);
+  expect(result).toBe(false);
+}); // UNIT TESTS
 
-  const result = acc[curr] = errorMessages[index];
+// Test case 1: Check if the function correctly creates an object with keys from the array and values from the errorMessages array
+it('should create an object with keys from the array and values from the errorMessages array', () => {
+  const array = ['key1', 'key2', 'key3'];
+  const errorMessages = ['error1', 'error2', 'error3'];
+  const expectedResult = {
+    key1: 'error1',
+    key2: 'error2',
+    key3: 'error3'
+  };
 
-  expect(result).toEqual(expected);
+  const result = array.reduce((acc, curr, index) => {
+    acc[curr] = errorMessages[index];
+    return acc;
+  }, {});
+
+  expect(result).toEqual(expectedResult);
 });
 
-// Unit test for the use case when the accumulator already has properties and the current element is the last element in the array
-it('should add the current element as a property in the accumulator object with the corresponding error message', () => {
-  const acc = { first: 'Error 1', second: 'Error 2' };
-  const curr = 'third';
-  const index = 2;
-  const errorMessages = ['Error 1', 'Error 2', 'Error 3'];
-  const expected = { first: 'Error 1', second: 'Error 2', third: 'Error 3' };
+// Test case 2: Check if the function correctly handles an empty array and returns an empty object
+it('should return an empty object when the array is empty', () => {
+  const array: string[] = [];
+  const errorMessages = ['error1', 'error2', 'error3'];
+  const expectedResult = {};
 
-  const result = acc[curr] = errorMessages[index];
+  const result = array.reduce((acc, curr, index) => {
+    acc[curr] = errorMessages[index];
+    return acc;
+  }, {});
 
-  expect(result).toEqual(expected);
-}); 
-const validateSubmission = async (formValues: Record<string, any>, schema: any): Promise<LowFormFormState> => {
-  // implementation of validateSubmission function
-};
+  expect(result).toEqual(expectedResult);
+});
 
-interface UseLowFormOptions {
-  submitCallback: (formValues: Record<string, any>) => void;
-  formStateCallback?: (formState: LowFormFormState) => void;
-  schema?: any;
-  previousSubmits?: number;
-}
+// Test case 3: Check if the function correctly handles an array with fewer elements than the errorMessages array
+it('should create an object with keys from the array and values from the errorMessages array, even if the array has fewer elements', () => {
+  const array = ['key1', 'key2'];
+  const errorMessages = ['error1', 'error2', 'error3'];
+  const expectedResult = {
+    key1: 'error1',
+    key2: 'error2'
+  };
 
-interface LowFormFormState {
-  isFormInvalid: boolean;
-  isFormDirty: boolean;
-  fieldErrors: Record<string, string>;
-  submitCount: number;
-  formData?: Record<string, any>;
-}
+  const result = array.reduce((acc, curr, index) => {
+    acc[curr] = errorMessages[index];
+    return acc;
+  }, {});
 
-interface UseLowFormHookReturn {
-  registerElement: (key: string, defaultValue?: string | boolean) => (event: SyntheticEvent) => void;
-  handleFormSubmit: (event: SyntheticEvent) => void;
-  getFormState: () => LowFormFormState;
-}
+  expect(result).toEqual(expectedResult);
+});
 
-const useLowForm = ({
-  submitCallback,
-  formStateCallback,
-  schema,
-  previousSubmits = 0,
-}: UseLowFormOptions): UseLowFormHookReturn => {
-  const formValuesRef = useRef<Record<string, any>>({});
-  const [formState, setFormState] = useState<LowFormFormState>({
-    isFormInvalid: false,
-    isFormDirty: false,
-    fieldErrors: {},
-    submitCount: previousSubmits,
-  });
+// Test case 4: Check if the function correctly handles an array with more elements than the errorMessages array
+it('should create an object with keys from the array and values from the errorMessages array, even if the array has more elements', () => {
+  const array = ['key1', 'key2', 'key3', 'key4'];
+  const errorMessages = ['error1', 'error2', 'error3'];
+  const expectedResult = {
+    key1: 'error1',
+    key2: 'error2',
+    key3: 'error3',
+    key4: undefined
+  };
 
-  const updateFormStateOnSubmit = useCallback(
-    (errorState: Omit<LowFormFormState, 'submitCount' | 'isFormDirty'>) => {
-      setFormState({
-        ...errorState,
-        submitCount: formState.submitCount + 1,
-        isFormDirty: true,
-      });
-    },
-    [formState]
-  );
+  const result = array.reduce((acc, curr, index) => {
+    acc[curr] = errorMessages[index];
+    return acc;
+  }, {});
 
-  const setFormDirty = useCallback(() => {
-    setFormState({
-      ...formState,
-      isFormDirty: true,
-    });
-  }, [formState]);
+  expect(result).toEqual(expectedResult);
+}); // UNIT TESTS
 
-  const getFormState = useCallback(() => ({ ...formState, formData: { ...formValuesRef.current } }), [formState]);
+// Test case 1: Register element with default value
+it('should register element with default value', () => {
+  const options: UseLowFormOptions = {
+    submitCallback: jest.fn(),
+    formStateCallback: jest.fn(),
+    schema: {},
+    previousSubmits: 0
+  };
 
-  useEffect(() => {
-    if (formStateCallback && formState.submitCount > 0) {
-      formStateCallback(getFormState());
+  const { registerElement } = useLowForm(options);
+  const key = 'name';
+  const defaultValue = 'John';
+
+  const event = {
+    target: {
+      value: 'John'
     }
-  }, [getFormState, formStateCallback, formState.submitCount]);
-
-  const registerElement = (key: string, defaultValue?: string | boolean) => {
-    if (typeof formValuesRef.current[key] === 'undefined') {
-      formValuesRef.current[key] = defaultValue || '';
-    }
-    return (event: SyntheticEvent) => {
-      if (!formState.isFormDirty) {
-        setFormDirty();
-      }
-      formValuesRef.current[key] = (event.target as HTMLInputElement).value;
-    };
   };
 
-  const handleFormSubmit = useCallback(
-    async (event: SyntheticEvent) => {
-      event.preventDefault();
-      if (schema) {
-        const errorResult = await validateSubmission(formValuesRef.current, schema);
-        if (errorResult.isFormInvalid) {
-          updateFormStateOnSubmit(errorResult);
-          return;
-        }
-      }
-      updateFormStateOnSubmit({ isFormInvalid: false, fieldErrors: {} });
-      submitCallback({ ...formValuesRef.current });
-    },
-    [schema, submitCallback, updateFormStateOnSubmit]
-  );
-
-  return { registerElement, handleFormSubmit, getFormState };
-};
-
-describe('useLowForm', () => {
-  it('should update form state on submit when form is invalid', async () => {
-    const submitCallback = jest.fn();
-    const formStateCallback = jest.fn();
-    const schema = { /* schema definition */ };
-    const previousSubmits = 0;
-
-    const { handleFormSubmit } = useLowForm({ submitCallback, formStateCallback, schema, previousSubmits });
-
-    // simulate form submission with invalid data
-    await handleFormSubmit({ preventDefault: jest.fn() });
-
-    expect(formStateCallback).toHaveBeenCalledWith({
-      isFormInvalid: true,
-      isFormDirty: true,
-      fieldErrors: { /* field errors */ },
-      submitCount: 1,
-      formData: { /* form data */ },
-    });
-    expect(submitCallback).not.toHaveBeenCalled();
-  });
-
-  it('should update form state on submit when form is valid', async () => {
-    const submitCallback = jest.fn();
-    const formStateCallback = jest.fn();
-    const schema = { /* schema definition */ };
-    const previousSubmits = 0;
-
-    const { handleFormSubmit } = useLowForm({ submitCallback, formStateCallback, schema, previousSubmits });
-
-    // simulate form submission with valid data
-    await handleFormSubmit({ preventDefault: jest.fn() });
-
-    expect(formStateCallback).toHaveBeenCalledWith({
-      isFormInvalid: false,
-      isFormDirty: true,
-      fieldErrors: {},
-      submitCount: 1,
-      formData: { /* form data */ },
-    });
-    expect(submitCallback).toHaveBeenCalledWith({ /* form data */ });
-  });
-
-  it('should update form state on registerElement when form is not dirty', () => {
-    const submitCallback = jest.fn();
-    const formStateCallback = jest.fn();
-    const schema = { /* schema definition */ };
-    const previousSubmits = 0;
-
-    const { registerElement } = useLowForm({ submitCallback, formStateCallback, schema, previousSubmits });
-
-    // simulate registering an element with a value
-    const event = { target: { value: 'test' } };
-    const handleChange = registerElement('input', 'default');
-    handleChange(event);
-
-    expect(formStateCallback).not.toHaveBeenCalled();
-  });
-
-  it('should update form state on registerElement when form is dirty', () => {
-    const submitCallback = jest.fn();
-    const formStateCallback = jest.fn();
-    const schema = { /* schema definition */ };
-    const previousSubmits = 0;
-
-    const { registerElement } = useLowForm({ submitCallback, formStateCallback, schema, previousSubmits });
-
-    // simulate registering an element with a value
-    const event = { target: { value: 'test' } };
-    const handleChange = registerElement('input', 'default');
-    handleChange(event);
-
-    expect(formStateCallback).toHaveBeenCalledWith({
-      isFormInvalid: false,
-      isFormDirty: true,
-      fieldErrors: {},
-      submitCount: 0,
-      formData: { /* form data */ },
-    });
-  });
-
-  it('should return the current form state', () => {
-    const submitCallback = jest.fn();
-    const formStateCallback = jest.fn();
-    const schema = { /* schema definition */ };
-    const previousSubmits = 0;
-
-    const { getFormState } = useLowForm({ submitCallback, formStateCallback, schema, previousSubmits });
-
-    const formState = getFormState();
-
-    expect(formState).toEqual({
-      isFormInvalid: false,
-      isFormDirty: false,
-      fieldErrors: {},
-      submitCount: 0,
-      formData: {},
-    });
-  });
-});
- it('should update form state with error state', () => {
-  const errorState: Omit<LowFormFormState, 'submitCount' | 'isFormDirty'> = {
-    // specify the error state properties here
-  };
-
-  const expectedFormState = {
-    ...errorState,
-    submitCount: formState.submitCount + 1,
-    isFormDirty: true,
-  };
-
-  setFormState(expectedFormState);
-
-  expect(formState).toEqual(expectedFormState);
-}); it('should set isFormDirty to true', () => {
-  const setFormState = jest.fn();
-  const formState = { isFormDirty: false };
-
-  setFormState({ ...formState, isFormDirty: true });
-
-  expect(setFormState).toHaveBeenCalledWith({ isFormDirty: true });
-}); 
-it('should return a new object with formState and formData properties', () => {
-  const formState = { prop1: 'value1', prop2: 'value2' };
-  const formValuesRef = { current: { prop3: 'value3', prop4: 'value4' } };
-
-  const result = () => ({ ...formState, formData: { ...formValuesRef.current } });
-
-  expect(result()).toEqual({ prop1: 'value1', prop2: 'value2', formData: { prop3: 'value3', prop4: 'value4' } });
-});
-
-it('should return a new object with formState and an empty formData property if formValuesRef.current is empty', () => {
-  const formState = { prop1: 'value1', prop2: 'value2' };
-  const formValuesRef = { current: {} };
-
-  const result = () => ({ ...formState, formData: { ...formValuesRef.current } });
-
-  expect(result()).toEqual({ prop1: 'value1', prop2: 'value2', formData: {} });
-});
- 
-it('should call formStateCallback if formStateCallback is defined and submitCount is greater than 0', () => {
-  const formStateCallback = jest.fn();
-  const formState = {
-    submitCount: 1
-  };
-  const getFormState = jest.fn();
-
-  // Call the function
-  yourFunction(formStateCallback, formState, getFormState);
-
-  // Expect formStateCallback to be called with the result of getFormState
-  expect(formStateCallback).toHaveBeenCalledWith(getFormState());
-});
-
-it('should not call formStateCallback if formStateCallback is not defined', () => {
-  const formState = {
-    submitCount: 1
-  };
-  const getFormState = jest.fn();
-
-  // Call the function
-  yourFunction(undefined, formState, getFormState);
-
-  // Expect formStateCallback to not have been called
-  expect(formStateCallback).not.toHaveBeenCalled();
-});
-
-it('should not call formStateCallback if submitCount is not greater than 0', () => {
-  const formStateCallback = jest.fn();
-  const formState = {
-    submitCount: 0
-  };
-  const getFormState = jest.fn();
-
-  // Call the function
-  yourFunction(formStateCallback, formState, getFormState);
-
-  // Expect formStateCallback to not have been called
-  expect(formStateCallback).not.toHaveBeenCalled();
-});
- 
-it('should set default value if formValuesRef.current[key] is undefined', () => {
-  const key = 'testKey';
-  const defaultValue = 'defaultValue';
-  const formValuesRef = { current: {} };
-  const event = { target: { value: 'testValue' } };
-
-  const result = yourFunction(key, defaultValue)(event);
+  const onChange = registerElement(key, defaultValue);
+  onChange(event);
 
   expect(formValuesRef.current[key]).toBe(defaultValue);
 });
 
-it('should set empty string as default value if defaultValue is not provided', () => {
-  const key = 'testKey';
+// Test case 2: Register element without default value
+it('should register element without default value', () => {
+  const options: UseLowFormOptions = {
+    submitCallback: jest.fn(),
+    formStateCallback: jest.fn(),
+    schema: {},
+    previousSubmits: 0
+  };
+
+  const { registerElement } = useLowForm(options);
+  const key = 'email';
+
+  const event = {
+    target: {
+      value: 'test@example.com'
+    }
+  };
+
+  const onChange = registerElement(key);
+  onChange(event);
+
+  expect(formValuesRef.current[key]).toBe(event.target.value);
+});
+
+// Test case 3: Handle form submit with valid data
+it('should handle form submit with valid data', async () => {
+  const options: UseLowFormOptions = {
+    submitCallback: jest.fn(),
+    formStateCallback: jest.fn(),
+    schema: {
+      name: {
+        required: true
+      },
+      email: {
+        required: true,
+        pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+      }
+    },
+    previousSubmits: 0
+  };
+
+  const { handleFormSubmit } = useLowForm(options);
+
+  const event = {
+    preventDefault: jest.fn()
+  };
+
+  formValuesRef.current = {
+    name: 'John',
+    email: 'test@example.com'
+  };
+
+  await handleFormSubmit(event);
+
+  expect(event.preventDefault).toHaveBeenCalled();
+  expect(options.submitCallback).toHaveBeenCalledWith(formValuesRef.current);
+});
+
+// Test case 4: Handle form submit with invalid data
+it('should handle form submit with invalid data', async () => {
+  const options: UseLowFormOptions = {
+    submitCallback: jest.fn(),
+    formStateCallback: jest.fn(),
+    schema: {
+      name: {
+        required: true
+      },
+      email: {
+        required: true,
+        pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+      }
+    },
+    previousSubmits: 0
+  };
+
+  const { handleFormSubmit } = useLowForm(options);
+
+  const event = {
+    preventDefault: jest.fn()
+  };
+
+  formValuesRef.current = {
+    name: '',
+    email: 'invalid-email'
+  };
+
+  await handleFormSubmit(event);
+
+  expect(event.preventDefault).toHaveBeenCalled();
+  expect(options.submitCallback).not.toHaveBeenCalled();
+});
+
+// Test case 5: Get form state
+it('should get form state', () => {
+  const options: UseLowFormOptions = {
+    submitCallback: jest.fn(),
+    formStateCallback: jest.fn(),
+    schema: {},
+    previousSubmits: 0
+  };
+
+  const { getFormState } = useLowForm(options);
+
+  const formState = getFormState();
+
+  expect(formState).toEqual({
+    isFormInvalid: false,
+    isFormDirty: false,
+    fieldErrors: {},
+    submitCount: options.previousSubmits,
+    formData: formValuesRef.current
+  });
+}); // Test case for setting form state with error state
+it('should set form state with error state', () => {
+  // Create a mock error state
+  const errorState = {
+    // Omitting submitCount and isFormDirty properties
+    // Add other properties as needed
+    property1: 'value1',
+    property2: 'value2',
+  };
+
+  // Call the function with the error state
+  setFormState({ ...errorState, submitCount: formState.submitCount + 1, isFormDirty: true });
+
+  // Assert that the form state has been updated correctly
+  expect(formState).toEqual({
+    ...errorState,
+    submitCount: formState.submitCount + 1,
+    isFormDirty: true,
+  });
+}); // Test case for setting isFormDirty to true
+it('should set isFormDirty to true', () => {
+  // Create a mock formState object
+  const formState = {
+    // Add any necessary properties
+  };
+
+  // Call the function with the mock formState
+  const result = setFormState({ ...formState, isFormDirty: true });
+
+  // Assert that isFormDirty is set to true in the result
+  expect(result.isFormDirty).toBe(true);
+});
+
+// Test case for updating other properties in formState
+it('should update other properties in formState', () => {
+  // Create a mock formState object
+  const formState = {
+    // Add any necessary properties
+  };
+
+  // Call the function with the mock formState
+  const result = setFormState({ ...formState, isFormDirty: true });
+
+  // Assert that other properties in formState are updated correctly
+  expect(result).toEqual({ ...formState, isFormDirty: true });
+}); // Test case for copying form state and form data
+it('should copy form state and form data', () => {
+  // Create a mock form state
+  const formState = {
+    // Mock form state properties
+  };
+
+  // Create a mock form values reference
+  const formValuesRef = {
+    current: {
+      // Mock form values
+    },
+  };
+
+  // Call the function to copy form state and form data
+  const result = {
+    ...formState,
+    formData: {
+      ...formValuesRef.current,
+    },
+  };
+
+  // Assert the result is correct
+  expect(result).toEqual({
+    // Expected form state properties
+    formData: {
+      // Expected form values
+    },
+  });
+}); // Test case for formStateCallback being defined and submitCount > 0
+it('calls formStateCallback when formStateCallback is defined and submitCount > 0', () => {
+  // Mock formStateCallback and getFormState functions
+  const formStateCallback = jest.fn();
+  const getFormState = jest.fn();
+
+  // Mock formState object with submitCount > 0
+  const formState = {
+    submitCount: 1
+  };
+
+  // Call the function with the mocked values
+  myFunction(formStateCallback, formState, getFormState);
+
+  // Verify that formStateCallback was called with the result of getFormState
+  expect(formStateCallback).toHaveBeenCalledWith(getFormState());
+});
+
+// Test case for formStateCallback being defined and submitCount = 0
+it('does not call formStateCallback when formStateCallback is defined and submitCount = 0', () => {
+  // Mock formStateCallback and getFormState functions
+  const formStateCallback = jest.fn();
+  const getFormState = jest.fn();
+
+  // Mock formState object with submitCount = 0
+  const formState = {
+    submitCount: 0
+  };
+
+  // Call the function with the mocked values
+  myFunction(formStateCallback, formState, getFormState);
+
+  // Verify that formStateCallback was not called
+  expect(formStateCallback).not.toHaveBeenCalled();
+});
+
+// Test case for formStateCallback being undefined
+it('does not call formStateCallback when formStateCallback is undefined', () => {
+  // Mock getFormState function
+  const getFormState = jest.fn();
+
+  // Mock formState object with submitCount > 0
+  const formState = {
+    submitCount: 1
+  };
+
+  // Call the function with the mocked values
+  myFunction(undefined, formState, getFormState);
+
+  // Verify that getFormState was not called
+  expect(getFormState).not.toHaveBeenCalled();
+}); // UNIT TESTS
+
+// Test case: key exists in formValuesRef.current
+it('should update formValuesRef.current[key] with the value from the event', () => {
+  // Arrange
+  const key = 'name';
+  const defaultValue = 'John';
+  const formValuesRef = { current: { name: 'Jane' } };
+  const event = { target: { value: 'John' } };
+
+  // Act
+  const result = formValueUpdater(key, defaultValue)(event);
+
+  // Assert
+  expect(formValuesRef.current[key]).toBe('John');
+});
+
+// Test case: key does not exist in formValuesRef.current and defaultValue is not provided
+it('should update formValuesRef.current[key] with an empty string if key does not exist and defaultValue is not provided', () => {
+  // Arrange
+  const key = 'name';
   const formValuesRef = { current: {} };
-  const event = { target: { value: 'testValue' } };
+  const event = { target: { value: 'John' } };
 
-  const result = yourFunction(key)(event);
+  // Act
+  const result = formValueUpdater(key)(event);
 
+  // Assert
   expect(formValuesRef.current[key]).toBe('');
 });
 
-it('should set formDirty to true if formState.isFormDirty is false', () => {
-  const key = 'testKey';
+// Test case: key does not exist in formValuesRef.current and defaultValue is provided
+it('should update formValuesRef.current[key] with the defaultValue if key does not exist and defaultValue is provided', () => {
+  // Arrange
+  const key = 'name';
+  const defaultValue = 'John';
   const formValuesRef = { current: {} };
-  const event = { target: { value: 'testValue' } };
+  const event = { target: { value: 'Jane' } };
+
+  // Act
+  const result = formValueUpdater(key, defaultValue)(event);
+
+  // Assert
+  expect(formValuesRef.current[key]).toBe('John');
+});
+
+// Test case: formState.isFormDirty is false
+it('should call setFormDirty if formState.isFormDirty is false', () => {
+  // Arrange
+  const key = 'name';
+  const defaultValue = 'John';
+  const formValuesRef = { current: {} };
+  const event = { target: { value: 'John' } };
   const setFormDirty = jest.fn();
   const formState = { isFormDirty: false };
 
-  const result = yourFunction(key)(event);
+  // Act
+  const result = formValueUpdater(key, defaultValue)(event);
 
+  // Assert
   expect(setFormDirty).toHaveBeenCalled();
 });
 
-it('should set formValuesRef.current[key] to event target value', () => {
-  const key = 'testKey';
+// Test case: formState.isFormDirty is true
+it('should not call setFormDirty if formState.isFormDirty is true', () => {
+  // Arrange
+  const key = 'name';
+  const defaultValue = 'John';
   const formValuesRef = { current: {} };
-  const event = { target: { value: 'testValue' } };
+  const event = { target: { value: 'John' } };
+  const setFormDirty = jest.fn();
+  const formState = { isFormDirty: true };
 
-  const result = yourFunction(key)(event);
+  // Act
+  const result = formValueUpdater(key, defaultValue)(event);
 
-  expect(formValuesRef.current[key]).toBe('testValue');
-});
- it('should set form dirty if form state is not dirty', () => {
-  const event = { target: document.createElement('input') } as SyntheticEvent;
+  // Assert
+  expect(setFormDirty).not.toHaveBeenCalled();
+}); // Test case for when formState.isFormDirty is false
+it('should set form dirty when formState.isFormDirty is false', () => {
+  // Arrange
+  const event = { target: { value: 'test value' } };
   const formState = { isFormDirty: false };
   const setFormDirty = jest.fn();
   const formValuesRef = { current: {} };
-  const key = 'exampleKey';
+  const key = 'testKey';
 
-  const result = (event: SyntheticEvent) => {
-    if (!formState.isFormDirty) {
-      setFormDirty();
-    }
-    formValuesRef.current[key] = (event.target as HTMLInputElement).value;
-  };
+  // Act
+  yourFunction(event);
 
-  result(event);
-
+  // Assert
   expect(setFormDirty).toHaveBeenCalled();
-  expect(formValuesRef.current[key]).toBe((event.target as HTMLInputElement).value);
+  expect(formValuesRef.current[key]).toBe('test value');
 });
 
-it('should not set form dirty if form state is already dirty', () => {
-  const event = { target: document.createElement('input') } as SyntheticEvent;
+// Test case for when formState.isFormDirty is true
+it('should not set form dirty when formState.isFormDirty is true', () => {
+  // Arrange
+  const event = { target: { value: 'test value' } };
   const formState = { isFormDirty: true };
   const setFormDirty = jest.fn();
   const formValuesRef = { current: {} };
-  const key = 'exampleKey';
+  const key = 'testKey';
 
-  const result = (event: SyntheticEvent) => {
-    if (!formState.isFormDirty) {
-      setFormDirty();
-    }
-    formValuesRef.current[key] = (event.target as HTMLInputElement).value;
-  };
+  // Act
+  yourFunction(event);
 
-  result(event);
-
+  // Assert
   expect(setFormDirty).not.toHaveBeenCalled();
-  expect(formValuesRef.current[key]).toBe((event.target as HTMLInputElement).value);
-}); it('should prevent default event behavior', () => {
-  const event = { preventDefault: jest.fn() };
-  const schema = null;
-  const formValuesRef = { current: {} };
-  const validateSubmission = jest.fn();
-  const updateFormStateOnSubmit = jest.fn();
-  const submitCallback = jest.fn();
+  expect(formValuesRef.current[key]).toBe('test value');
+});
 
-  const asyncFunction = async (event: SyntheticEvent) => {
-    event.preventDefault();
-    if (schema) {
-      const errorResult = await validateSubmission(formValuesRef.current, schema);
-      if (errorResult.isFormInvalid) {
-        updateFormStateOnSubmit(errorResult);
-        return;
-      }
-    }
-    updateFormStateOnSubmit({ isFormInvalid: false, fieldErrors: {} });
-    submitCallback({ ...formValuesRef.current });
+// Test case for when event target is not an HTMLInputElement
+it('should set form dirty and update formValuesRef.current[key] when event target is not an HTMLInputElement', () => {
+  // Arrange
+  const event = { target: { value: 'test value' } };
+  const formState = { isFormDirty: false };
+  const setFormDirty = jest.fn();
+  const formValuesRef = { current: {} };
+  const key = 'testKey';
+
+  // Act
+  yourFunction(event);
+
+  // Assert
+  expect(setFormDirty).toHaveBeenCalled();
+  expect(formValuesRef.current[key]).toBe('test value');
+}); // Test case for event.preventDefault()
+it('should prevent default behavior of the event', () => {
+  // Create a mock event object
+  const event = {
+    preventDefault: jest.fn()
   };
 
-  asyncFunction(event);
+  // Call the tested function with the mock event
+  testedFunction(event);
 
+  // Expect preventDefault to be called
   expect(event.preventDefault).toHaveBeenCalled();
 });
 
-it('should update form state on submit if schema is provided and form is invalid', async () => {
-  const event = { preventDefault: jest.fn() };
-  const schema = {};
-  const formValuesRef = { current: {} };
-  const validateSubmission = jest.fn().mockResolvedValue({ isFormInvalid: true });
-  const updateFormStateOnSubmit = jest.fn();
-  const submitCallback = jest.fn();
-
-  const asyncFunction = async (event: SyntheticEvent) => {
-    event.preventDefault();
-    if (schema) {
-      const errorResult = await validateSubmission(formValuesRef.current, schema);
-      if (errorResult.isFormInvalid) {
-        updateFormStateOnSubmit(errorResult);
-        return;
-      }
-    }
-    updateFormStateOnSubmit({ isFormInvalid: false, fieldErrors: {} });
-    submitCallback({ ...formValuesRef.current });
+// Test case for schema validation
+it('should validate form values against the schema', async () => {
+  // Create a mock event object
+  const event = {
+    preventDefault: jest.fn()
   };
 
-  await asyncFunction(event);
+  // Create a mock schema
+  const schema = {
+    // Define schema properties here
+  };
 
-  expect(updateFormStateOnSubmit).toHaveBeenCalledWith({ isFormInvalid: true });
+  // Create a mock form values object
+  const formValuesRef = {
+    current: {
+      // Define form values here
+    }
+  };
+
+  // Create a mock error result object
+  const errorResult = {
+    isFormInvalid: true,
+    fieldErrors: {
+      // Define field errors here
+    }
+  };
+
+  // Mock the validateSubmission function to return the error result
+  validateSubmission.mockResolvedValueOnce(errorResult);
+
+  // Call the tested function with the mock event and schema
+  await testedFunction(event, schema);
+
+  // Expect preventDefault to be called
+  expect(event.preventDefault).toHaveBeenCalled();
+
+  // Expect validateSubmission to be called with the form values and schema
+  expect(validateSubmission).toHaveBeenCalledWith(formValuesRef.current, schema);
+
+  // Expect updateFormStateOnSubmit to be called with the error result
+  expect(updateFormStateOnSubmit).toHaveBeenCalledWith(errorResult);
+
+  // Expect submitCallback not to be called
   expect(submitCallback).not.toHaveBeenCalled();
 });
 
-it('should update form state on submit if schema is provided and form is valid', async () => {
-  const event = { preventDefault: jest.fn() };
-  const schema = {};
-  const formValuesRef = { current: {} };
-  const validateSubmission = jest.fn().mockResolvedValue({ isFormInvalid: false });
-  const updateFormStateOnSubmit = jest.fn();
-  const submitCallback = jest.fn();
-
-  const asyncFunction = async (event: SyntheticEvent) => {
-    event.preventDefault();
-    if (schema) {
-      const errorResult = await validateSubmission(formValuesRef.current, schema);
-      if (errorResult.isFormInvalid) {
-        updateFormStateOnSubmit(errorResult);
-        return;
-      }
-    }
-    updateFormStateOnSubmit({ isFormInvalid: false, fieldErrors: {} });
-    submitCallback({ ...formValuesRef.current });
+// Test case for valid form submission
+it('should update form state and call submit callback for valid form submission', async () => {
+  // Create a mock event object
+  const event = {
+    preventDefault: jest.fn()
   };
 
-  await asyncFunction(event);
+  // Create a mock schema
+  const schema = {
+    // Define schema properties here
+  };
 
-  expect(updateFormStateOnSubmit).toHaveBeenCalledWith({ isFormInvalid: false, fieldErrors: {} });
+  // Create a mock form values object
+  const formValuesRef = {
+    current: {
+      // Define form values here
+    }
+  };
+
+  // Create a mock error result object
+  const errorResult = {
+    isFormInvalid: false,
+    fieldErrors: {}
+  };
+
+  // Mock the validateSubmission function to return the error result
+  validateSubmission.mockResolvedValueOnce(errorResult);
+
+  // Call the tested function with the mock event and schema
+  await testedFunction(event, schema);
+
+  // Expect preventDefault to be called
+  expect(event.preventDefault).toHaveBeenCalled();
+
+  // Expect validateSubmission to be called with the form values and schema
+  expect(validateSubmission).toHaveBeenCalledWith(formValuesRef.current, schema);
+
+  // Expect updateFormStateOnSubmit to be called with the error result
+  expect(updateFormStateOnSubmit).toHaveBeenCalledWith(errorResult);
+
+  // Expect submitCallback to be called with the form values
   expect(submitCallback).toHaveBeenCalledWith({ ...formValuesRef.current });
 });
 
-it('should update form state on submit if schema is not provided', async () => {
-  const event = { preventDefault: jest.fn() };
-  const schema = null;
-  const formValuesRef = { current: {} };
-  const validateSubmission = jest.fn();
-  const updateFormStateOnSubmit = jest.fn();
-  const submitCallback = jest.fn();
-
-  const asyncFunction = async (event: SyntheticEvent) => {
-    event.preventDefault();
-    if (schema) {
-      const errorResult = await validateSubmission(formValuesRef.current, schema);
-      if (errorResult.isFormInvalid) {
-        updateFormStateOnSubmit(errorResult);
-        return;
-      }
-    }
-    updateFormStateOnSubmit({ isFormInvalid: false, fieldErrors: {} });
-    submitCallback({ ...formValuesRef.current });
+// Test case for form submission without schema
+it('should update form state and call submit callback for form submission without schema', async () => {
+  // Create a mock event object
+  const event = {
+    preventDefault: jest.fn()
   };
 
-  await asyncFunction(event);
+  // Create a mock form values object
+  const formValuesRef = {
+    current: {
+      // Define form values here
+    }
+  };
 
-  expect(updateFormStateOnSubmit).toHaveBeenCalledWith({ isFormInvalid: false, fieldErrors: {} });
+  // Create a mock error result object
+  const errorResult = {
+    isFormInvalid: false,
+    fieldErrors: {}
+  };
+
+  // Mock the validateSubmission function to return the error result
+  validateSubmission.mockResolvedValueOnce(errorResult);
+
+  // Call the tested function with the mock event and without schema
+  await testedFunction(event);
+
+  // Expect preventDefault to be called
+  expect(event.preventDefault).toHaveBeenCalled();
+
+  // Expect validateSubmission not to be called
+  expect(validateSubmission).not.toHaveBeenCalled();
+
+  // Expect updateFormStateOnSubmit to be called with the error result
+  expect(updateFormStateOnSubmit).toHaveBeenCalledWith(errorResult);
+
+  // Expect submitCallback to be called with the form values
   expect(submitCallback).toHaveBeenCalledWith({ ...formValuesRef.current });
 });
