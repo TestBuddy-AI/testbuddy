@@ -17,6 +17,14 @@
     <title>TestBuddy</title>
   </head>
   <body>
+    <span id="empty" hidden>
+      <img src="{{gifURL2}}" />
+      You don't have any tests, try generating one with:
+      <kbd>ctrl</kbd> +<kbd>alt</kbd> + <kbd>t</kbd> / <kbd>⌘ (command)</kbd> +
+      <kbd>⌥ (option)</kbd> +
+      <kbd>t</kbd>
+    </span>
+
     <vscode-icon
       title="Run all tests"
       id="btn-test"
@@ -41,10 +49,14 @@
       <code id="error-container" style="color: red;">
       </code>
     </pre>
-      <vscode-button id="save-button"> Help me fix it </vscode-button>
+      <vscode-button id="fix-error" style="width: 100%; text-align: center">
+        Help me fix it 🙏
+      </vscode-button>
     </span>
+    <br />
+    <br />
 
-    <span id="error-fix-suggestion" hidden> </span>
+    <p id="error-fix-suggestion" hidden></p>
     <!-- <vscode-textarea
       placeholder="Type something"
       rows="10"

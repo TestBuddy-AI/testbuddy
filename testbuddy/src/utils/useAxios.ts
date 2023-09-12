@@ -211,10 +211,11 @@ const getFeedbackOnFailedTest = (
   session: string,
   error: string
 ) => {
+  console.log("ENVIANDO FEEDBACK BASE", fileName, session, error);
   return axios.post(`${BASE_URL}/feedback-on-failed-test`, {
     sessionId: session,
     filePath: removeUserDirectory(fileName),
-    error: error,
+    error: "Null pointer exception",
   });
 };
 

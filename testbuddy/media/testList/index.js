@@ -22,7 +22,11 @@ import {
   const errorContainer = document.getElementById("error-container");
   const errorLogSpan = document.getElementById("error-log");
   const errorSuggestionSpan = document.getElementById("error-fix-suggestion");
-
+  const fixButton = document.getElementById("fix-error");
+  const feedbackStringContainer = document.getElementById(
+    "error-fix-suggestion"
+  );
+  const emptyState = document.getElementById("empty");
   const vscode = acquireVsCodeApi();
 
   const oldState = vscode.getState() || { tests: [] };
@@ -120,6 +124,12 @@ import {
         console.log("llegue aca");
         break;
       }
+      case "feedbackResult": {
+        setFeedback(message.content.feedback);
+        fixButton.innerHTML = "Help me fix it 🙏";
+        fixButton.removeAttribute("disabled");
+        break;
+      }
     }
   });
 
@@ -127,8 +137,16 @@ import {
     if (active) document.querySelector(".loader")?.classList.add("active");
     else document.querySelector(".loader")?.classList.remove("active");
   }
-
+  function setFeedback(feebackString) {
+    feedbackStringContainer.removeAttribute("hidden");
+    feedbackStringContainer.innerText = feebackString;
+  }
   function updateTests(testList) {
+    if (testList.length < 0) {
+      emptyState.removeAttribute("hidden");
+    } else {
+      emptyState.setAttribute("hidden", "");
+    }
     console.log(testList);
     const tree = document.getElementById("actions-example");
 
@@ -167,6 +185,11 @@ import {
     setTreeListener(tree);
   }
   function addTests(testList) {
+    if (testList.length < 0) {
+      emptyState.removeAttribute("hidden");
+    } else {
+      emptyState.setAttribute("hidden", "");
+    }
     console.log(testList, "---");
     const tree = document.getElementById("actions-example");
     const icons = {
@@ -242,11 +265,22 @@ import {
   document.getElementById("btn-refresh").addEventListener("vsc-click", () => {
     vscode.postMessage({ type: "reload" });
   });
+  fixButton.addEventListener("vsc-click", () => {
+    fixButton.setAttribute("disabled", "");
+    fixButton.innerHTML = `<vscode-icon name="loading" spin spin-duration="1"></vscode-icon> Getting feedback from TestBuddy`;
+    console.log("feedback");
+    let error = codeErrorElement.innerText;
+    let fileName = atob(codeErrorElement.getAttribute("data-file"));
+    vscode.postMessage({
+      type: "feedback",
+      value: { error: error, fileName: fileName },
+    });
+  });
 
   const showError = (testName, testTitle, error) => {
     labelErrorTest.innerText =
       testName + testTitle === "all" ? "all" : testTitle;
-
+    codeErrorElement.setAttribute("data-file", btoa(testName));
     errorLogSpan.removeAttribute("hidden");
     errorLogSpan.scrollIntoView(true);
     codeErrorElement.innerText = error;

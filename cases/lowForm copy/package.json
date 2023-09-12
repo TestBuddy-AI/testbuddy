@@ -1,0 +1,65 @@
+{
+  "name": "low-form",
+  "version": "0.2.0",
+  "description": "An experiment to create the simplest React form API",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test:list": "jest --listTests",
+    "test": "jest",
+    "build": "rollup -c",
+    "prepack": "npm run build",
+    "testbuddy": "jest --json",
+    "testbuddy:list": "jest --listTests --json > ./testbuddy/testList.json"
+  },
+  "keywords": [
+    "React",
+    "form"
+  ],
+  "type": "module",
+  "author": "Paul Richard <heythisispaul@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heythisispaul/low-form.git"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom"
+  },
+  "dependencies": {
+    "jest-editor-support": "^31.1.1",
+    "react": "^17.0.2",
+    "yup": "^0.32.9"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.0.0",
+    "@testing-library/react-hooks": "^7.0.0",
+    "@types/jest": "^26.0.23",
+    "@types/react": "^17.0.11",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
+    "@typescript-eslint/parser": "^4.28.0",
+    "eslint": "^7.29.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "jest": "^27.0.5",
+    "react-dom": "^17.0.2",
+    "rollup": "^2.52.3",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "ts-jest": "^27.0.3",
+    "tslib": "^2.3.0",
+    "typescript": "^4.3.4"
+  }
+}

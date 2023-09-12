@@ -23,6 +23,8 @@ export const getTestListHtml = (
   );
   //@ts-ignore
   html = html.replace("{{gifURL}}", videoUri);
+  //@ts-ignore
+  html = html.replace("{{gifURL2}}", videoUri);
   const scriptUri2 = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media", "bendera", "bundled.js")
   );

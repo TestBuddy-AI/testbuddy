@@ -1,0 +1,213 @@
+{
+    "numFailedTestSuites": 0,
+    "numFailedTests": 0,
+    "numPassedTestSuites": 2,
+    "numPassedTests": 15,
+    "numPendingTestSuites": 0,
+    "numPendingTests": 0,
+    "numRuntimeErrorTestSuites": 0,
+    "numTodoTests": 0,
+    "numTotalTestSuites": 2,
+    "numTotalTests": 15,
+    "openHandles": [],
+    "snapshot": {
+        "added": 0,
+        "didUpdate": false,
+        "failure": false,
+        "filesAdded": 0,
+        "filesRemoved": 0,
+        "filesRemovedList": [],
+        "filesUnmatched": 0,
+        "filesUpdated": 0,
+        "matched": 0,
+        "total": 0,
+        "unchecked": 0,
+        "uncheckedKeysByFile": [],
+        "unmatched": 0,
+        "updated": 0
+    },
+    "startTime": 1692410607282,
+    "success": true,
+    "testResults": [
+        {
+            "assertionResults": [
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm returns the necessary functions handlers",
+                    "location": null,
+                    "status": "passed",
+                    "title": "returns the necessary functions handlers"
+                },
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm creates a key in the form data value for each registered element",
+                    "location": null,
+                    "status": "passed",
+                    "title": "creates a key in the form data value for each registered element"
+                },
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm sets the default value or default checked attribute as the value at initialization",
+                    "location": null,
+                    "status": "passed",
+                    "title": "sets the default value or default checked attribute as the value at initialization"
+                },
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm prevents the default submit event behavior",
+                    "location": null,
+                    "status": "passed",
+                    "title": "prevents the default submit event behavior"
+                },
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm sets the isFormInvalid state property to true if one or more validations fail",
+                    "location": null,
+                    "status": "passed",
+                    "title": "sets the isFormInvalid state property to true if one or more validations fail"
+                },
+                {
+                    "ancestorTitles": [
+                        "useLowForm"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "useLowForm sets the fieldErrors key to the yup messages on failure",
+                    "location": null,
+                    "status": "passed",
+                    "title": "sets the fieldErrors key to the yup messages on failure"
+                }
+            ],
+            "endTime": 1692410608906,
+            "message": "",
+            "name": "/Users/camilo.salinas/Documents/Personal/Github/testbuddy/cases/lowForm/tests/useLowForm.test.ts",
+            "startTime": 1692410607614,
+            "status": "passed",
+            "summary": ""
+        },
+        {
+            "assertionResults": [
+                {
+                    "ancestorTitles": [
+                        "LowForm Component",
+                        "handles children"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "LowForm Component handles children renders its children",
+                    "location": null,
+                    "status": "passed",
+                    "title": "renders its children"
+                },
+                {
+                    "ancestorTitles": [
+                        "LowForm Component",
+                        "handles children"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "LowForm Component handles children registers inputs with IDs",
+                    "location": null,
+                    "status": "passed",
+                    "title": "registers inputs with IDs"
+                },
+                {
+                    "ancestorTitles": [
+                        "LowForm Component",
+                        "disables elements"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "LowForm Component disables elements disables all inputs if isDisabled is true",
+                    "location": null,
+                    "status": "passed",
+                    "title": "disables all inputs if isDisabled is true"
+                },
+                {
+                    "ancestorTitles": [
+                        "LowForm Component",
+                        "disables elements"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "LowForm Component disables elements disables buttons if isDisabled is true",
+                    "location": null,
+                    "status": "passed",
+                    "title": "disables buttons if isDisabled is true"
+                },
+                {
+                    "ancestorTitles": [
+                        "LowForm Component",
+                        "runs validation"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "LowForm Component runs validation does not submit if the inputs do not pass the schema",
+                    "location": null,
+                    "status": "passed",
+                    "title": "does not submit if the inputs do not pass the schema"
+                },
+                {
+                    "ancestorTitles": [
+                        "LowForm Component",
+                        "runs validation"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "LowForm Component runs validation still fires the stateHandler even if submission is not successful",
+                    "location": null,
+                    "status": "passed",
+                    "title": "still fires the stateHandler even if submission is not successful"
+                },
+                {
+                    "ancestorTitles": [
+                        "LowForm Component",
+                        "runs validation"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "LowForm Component runs validation renders the Error component with the correct message if an input is invalid",
+                    "location": null,
+                    "status": "passed",
+                    "title": "renders the Error component with the correct message if an input is invalid"
+                },
+                {
+                    "ancestorTitles": [
+                        "LowForm Component",
+                        "generates labels"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "LowForm Component generates labels generates and maps labels for inputs with aria-labelledby",
+                    "location": null,
+                    "status": "passed",
+                    "title": "generates and maps labels for inputs with aria-labelledby"
+                },
+                {
+                    "ancestorTitles": [
+                        "LowForm Component",
+                        "generates labels"
+                    ],
+                    "failureMessages": [],
+                    "fullName": "LowForm Component generates labels does not generate labels if the skip prop is passed",
+                    "location": null,
+                    "status": "passed",
+                    "title": "does not generate labels if the skip prop is passed"
+                }
+            ],
+            "endTime": 1692410608976,
+            "message": "",
+            "name": "/Users/camilo.salinas/Documents/Personal/Github/testbuddy/cases/lowForm/tests/Form.test.tsx",
+            "startTime": 1692410607615,
+            "status": "passed",
+            "summary": ""
+        }
+    ],
+    "wasInterrupted": false
+}

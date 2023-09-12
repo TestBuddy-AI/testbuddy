@@ -6,7 +6,7 @@ import * as fs from "fs";
 import path = require("path");
 import { loadCurrentTests, loadScripts } from "../../commands/commands";
 import { showError } from "../../utils/toast";
-import { generateTestsRequest } from "../../utils/useAxios";
+import { generateTestsRequest, getFeedback } from "../../utils/useAxios";
 import { testRunnerUtil } from "../../utils/testRunner";
 import { IRunnerOptions } from "../../types/IRunnerOptions";
 import { showSource } from "../../utils/showSource";
@@ -149,6 +149,17 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
       }
       case "reload": {
         await this.initialize();
+        break;
+      }
+      case "feedback": {
+        const { fileName, error } = data.value;
+        console.log("feedback");
+        let feedbackResponse = await getFeedback(fileName, error);
+        console.log(feedbackResponse);
+        this._view?.webview.postMessage({
+          type: "feedbackResult",
+          content: { feedback: feedbackResponse.data.message },
+        });
         break;
       }
       case "goToFile": {
