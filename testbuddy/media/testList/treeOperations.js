@@ -246,6 +246,11 @@ export function updateNode(node, idToUpdate, isLoading, result) {
             node.message = result.failureMessages.join(" ");
             node.failureMeesages = result.failureMessages;
             node.actions = actionsError;
+            if (node.subItems && node.subItems.length > 0) {
+              node.subItems.forEach((children) => {
+                updateNode(children, children.id, isLoading, result);
+              });
+            }
           }
 
           break;

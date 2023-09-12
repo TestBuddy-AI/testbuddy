@@ -120,6 +120,7 @@ export const saveGeneratedTest = async (
       encoder.encode(fileContents as string)
     );
   } catch (err) {
+    console.log(err);
     showError("Error Saving the test, please try again");
   }
 };

@@ -91,14 +91,21 @@ import {
         resultArray.forEach((resultObject) => {
           let fileName = resultObject.name;
           let assertions = resultObject.assertionResults;
-
-          assertions.forEach((assertion) => {
+          if (assertions.length > 0) {
+            assertions.forEach((assertion) => {
+              updateNodeInArray(
+                createId(assertion.title === "all", fileName, assertion.title),
+                false,
+                assertion
+              );
+            });
+          } else {
             updateNodeInArray(
-              createId(assertion.title === "all", fileName, assertion.title),
+              createId(el.test === "all", el.file, el.test),
               false,
-              assertion
+              { status: "failed", failureMessages: [resultObject.message] }
             );
-          });
+          }
         });
         treeHTMLElement.data.forEach((el) => {
           let nodeStatus = updateParentStatus(el);
@@ -107,6 +114,10 @@ import {
         });
 
         vscode.setState({ tests: treeHTMLElement.data });
+        break;
+      }
+      case "errorExecuting": {
+        console.log("llegue aca");
         break;
       }
     }

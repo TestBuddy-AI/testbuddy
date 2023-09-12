@@ -77,9 +77,9 @@ export async function regenerateTest(
     let { shared } = await readSessionIdFile();
 
     console.log("ejecutando");
-    let rSendFile = await sendFile(buffer, fileName);
+    // let rSendFile = await sendFile(buffer, fileName);
 
-    console.log(rSendFile.status, "<---- Status Sendfile");
+    // console.log(rSendFile.status, "<---- Status Sendfile");
     let generator = getRegeneratedTestSuite(fileName, shared);
     if (testName) {
       generator = getRegeneratedTestSingle(fileName, shared, testName);
@@ -106,9 +106,9 @@ export async function modifyTest(
     let { shared } = await readSessionIdFile();
 
     console.log("ejecutando");
-    let rSendFile = await sendFile(buffer, fileName);
+    // let rSendFile = await sendFile(buffer, fileName);
 
-    console.log(rSendFile.status, "<---- Status Sendfile");
+    // console.log(rSendFile.status, "<---- Status Sendfile");
     let generator = getModifiedTestSuite(fileName, shared, userPrompt);
     if (testName) {
       generator = getModifiedTestSingle(fileName, shared, testName, userPrompt);
@@ -172,7 +172,7 @@ const getRegeneratedTestSingle = (
   session: string,
   testName: string
 ) => {
-  return axios.post(`${BASE_URL}/regenerate-test`, {
+  return axios.post(`${BASE_URL}/regenerate-single-test`, {
     sessionId: session,
     filePath: removeUserDirectory(fileName),
     test: testName,
@@ -196,7 +196,7 @@ const getModifiedTestSingle = (
   testName: string,
   userInput: string
 ) => {
-  return axios.post(`${BASE_URL}/modify-test`, {
+  return axios.post(`${BASE_URL}/modify-single-test`, {
     sessionId: session,
     filePath: removeUserDirectory(fileName),
     test: testName,

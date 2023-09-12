@@ -3,7 +3,7 @@ import { EditorWebViewViewProvider } from "./providers/editorView/editorProvider
 import { TestListWebViewViewProvider } from "./providers/testlist/testListProvider";
 import { WelcomeWebViewViewProvider } from "./providers/welcomeView/welcomeProvider";
 import { error } from "console";
-import { checkNpm } from "./utils/checkEnv";
+import { checkNpm, checkPython, checkPython3 } from "./utils/checkEnv";
 import { commandGenerateTestHandler } from "./utils/testCreator";
 import { readSessionIdFile } from "./utils/useAxios";
 
@@ -24,8 +24,8 @@ export function activate(context: vscode.ExtensionContext) {
   console.log("Debug2");
   context.subscriptions.push(
     vscode.commands.registerCommand("testBuddy.selectLanguage", () => {
-      selectTestingLanguage(context).then((testingLanguage) => {
-        initializeApp(context, testingLanguage);
+      selectTestingLanguage(context).then(({ lang, pythonCommand }) => {
+        initializeApp(context, lang!, pythonCommand!);
       });
     })
   );
@@ -62,37 +62,72 @@ const selectTestingLanguage = async (_context: vscode.ExtensionContext) => {
 
   const input = await vscode.window.showQuickPick(list);
   let lang;
+  let pythonCommand;
   if (!input) {
     throw error("Selecciona una opcion");
   }
   switch (input.label) {
     case "$(testbuddy-js) Javascript": {
       lang = "javascript";
+      let npmExists = await checkNpm();
+      if (!npmExists) {
+        vscode.window
+          .showErrorMessage(
+            "Please install Node & NPM to use this test environment",
+            "Change test environment",
+            "Cancel"
+          )
+          .then((el) => {
+            if (el === "Change test environment") {
+              vscode.commands.executeCommand("testBuddy.selectLanguage");
+            }
+          });
+        throw error("Instala lo apropiado");
+      }
       break;
     }
     case "$(testbuddy-ts) Typescript": {
       lang = "typescript";
+      let npmExists = await checkNpm();
+      if (!npmExists) {
+        vscode.window
+          .showErrorMessage(
+            "Please install Node & NPM to use this test environment",
+            "Change test environment",
+            "Cancel"
+          )
+          .then((el) => {
+            if (el === "Change test environment") {
+              vscode.commands.executeCommand("testBuddy.selectLanguage");
+            }
+          });
+        throw error("Install the correct things");
+      }
       break;
     }
     case "$(testbuddy-python) Python": {
       lang = "python";
+      let pythonExists = await checkPython();
+      let python3Exists = await checkPython3();
+
+      if (!(python3Exists || pythonExists)) {
+        vscode.window
+          .showErrorMessage(
+            "Please install python to use this test environment",
+            "Change test environment",
+            "Cancel"
+          )
+          .then((el) => {
+            if (el === "Change test environment") {
+              vscode.commands.executeCommand("testBuddy.selectLanguage");
+            }
+          });
+        throw error("Install the correct things");
+      }
+      pythonCommand = pythonExists ? "python" : python3Exists ? "python3" : "";
+
       break;
     }
-  }
-  let npmExists = await checkNpm();
-  if (!npmExists) {
-    vscode.window
-      .showErrorMessage(
-        "Please install Node & NPM to use this test suite",
-        "Change test environment",
-        "Cancel"
-      )
-      .then((el) => {
-        if (el === "Change test environment") {
-          vscode.commands.executeCommand("testBuddy.selectLanguage");
-        }
-      });
-    throw error("Instala lo apropiado");
   }
 
   // vscode.window.showInformationMessage("Holaaa", input?.label || "Adios");
@@ -101,12 +136,13 @@ const selectTestingLanguage = async (_context: vscode.ExtensionContext) => {
     0
   );
 
-  return lang;
+  return { lang, pythonCommand };
 };
 
 const initializeApp = (
   context: vscode.ExtensionContext,
-  testingLanguage: string
+  testingLanguage: string,
+  pythonCommand?: string
 ) => {
   vscode.commands.executeCommand(
     "setContext",
@@ -117,7 +153,8 @@ const initializeApp = (
   const editorProvider = new EditorWebViewViewProvider(context);
   const testListprovider = new TestListWebViewViewProvider(
     context,
-    testingLanguage
+    testingLanguage,
+    pythonCommand
   );
   //Checks For changes on Test Files
   let watcher = vscode.workspace.createFileSystemWatcher(

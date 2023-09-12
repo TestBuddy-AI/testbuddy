@@ -19,7 +19,8 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
 
   constructor(
     private readonly _context: vscode.ExtensionContext,
-    platform: string
+    platform: string,
+    pythonCommand?: string
   ) {}
 
   public resolveWebviewView(
@@ -108,16 +109,20 @@ export class TestListWebViewViewProvider implements vscode.WebviewViewProvider {
     switch (data.type) {
       case "runTest": {
         let testValue: { file: string; test: string } = data.value;
+
+        console.log("ACA ESTOY 1");
         const results = await testRunnerUtil(
           IRunnerOptions.javascript,
           testValue.file,
           testValue.test
         );
+        console.log("ACA ESTOY 2", results);
 
         this._view?.webview.postMessage({
           type: "results",
           content: { results, ...testValue },
         });
+
         //execute shell command for testing
         // execShell(
         //   `cd ${vscode.workspace.workspaceFolders[0].uri.path} && npm run test`

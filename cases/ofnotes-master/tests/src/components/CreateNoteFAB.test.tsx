@@ -1,3 +1,14 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import {
+  makeStyles,
+  createStyles,
+  Fab,
+  useTheme,
+  useMediaQuery,
+} from "@material-ui/core";
+import Icon from "@material-ui/icons/NoteAdd";
+
 it('should return correct styles for root element', () => {
   const theme = {
     spacing: jest.fn().mockReturnValue(4),
