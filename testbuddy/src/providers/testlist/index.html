@@ -17,11 +17,32 @@
     <title>TestBuddy</title>
   </head>
   <body>
+    <vscode-icon
+      title="Run all tests"
+      id="btn-test"
+      name="run-all"
+      action-icon
+    ></vscode-icon>
+    <vscode-icon
+      title="Refresh test state"
+      id="btn-refresh"
+      name="refresh"
+      action-icon
+    ></vscode-icon>
     <vscode-tree id="actions-example"></vscode-tree>
 
     <hr />
+    <br />
 
-    <vscode-button id="btn-generate-tests">Generate Tests</vscode-button>
+    <vscode-label
+      ><span class="normal">Test: </span><span hidden id="test-label"></span
+    ></vscode-label>
+    <pre id="error-wrapper" hidden>
+        <code id="error-container">
+        </code>
+      </pre>
+    <vscode-button id="save-button"> Help me fix it </vscode-button>
+
     <!-- <vscode-textarea
       placeholder="Type something"
       rows="10"
@@ -32,6 +53,7 @@
       <img src="{{gifURL}}" />
     </div>
     <script src="{{jsSource2}}" type="module"></script>
-    <script src="{{jsSource}}"></script>
+
+    <script src="{{jsSource}}" type="module"></script>
   </body>
 </html>

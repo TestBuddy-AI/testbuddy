@@ -1,8 +1,28 @@
-//@ts-check
-
+import { runTests } from "./testRunner.js";
+import {
+  actions,
+  ICONS,
+  getDecorations,
+  TEST_STATUS,
+  updateLoadingIcons,
+  updateResultsIcons,
+  mapNode,
+  getIcons,
+  updateNodeInArray,
+  createId,
+  treeHTMLElement,
+  updateParentStatus,
+} from "./treeOperations.js";
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 (function () {
+  const preErrorElement = document.getElementById("error-wrapper");
+  const codeErrorElement = document.getElementById("error-container");
+  const labelErrorTest = document.getElementById("test-label");
+  const errorContainer = document.getElementById("error-container");
+  const errorLogSpan = document.getElementById("error-log");
+  const errorSuggestionSpan = document.getElementById("error-fix-suggestion");
+
   const vscode = acquireVsCodeApi();
 
   const oldState = vscode.getState() || { tests: [] };
@@ -12,23 +32,43 @@
   const setTreeListener = (tree) => {
     if (tree?.getAttribute("listener") !== "true") {
       tree.addEventListener("vsc-run-action", (ev) => {
-        console.log(ev.detail);
-        vscode.postMessage({
-          type: ev.detail.actionId,
-          value: ev.detail.value,
-        });
+        console.log(ev);
+        const { actionId, item, value, open } = ev.detail;
+        switch (actionId) {
+          case "runTest": {
+            runTests(vscode, ev.detail);
+            break;
+          }
+          case "regenerateTest": {
+            console.log(item);
+            console.log(item.message);
+            vscode.postMessage({
+              type: actionId,
+              value: value,
+            });
+            break;
+          }
+          case "goToFile": {
+            vscode.postMessage({
+              type: actionId,
+              value: { ...value },
+            });
+            break;
+          }
+          case "showError": {
+            showError(value.file, value.test, item.message);
+            break;
+          }
+        }
       });
       tree?.setAttribute("listener", "true");
+      vscode.setState({ tests: treeHTMLElement.data });
     }
   };
 
   if (tests) {
     updateTests(tests);
   }
-  //   document.getElementById("jest").addEventListener("click", () => {
-  //     console.log("Ejecute");
-  //     vscode.postMessage({ type: "test", value: "all" });
-  //   });
 
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
@@ -44,6 +84,42 @@
         setLoader(message.content);
         break;
       }
+      case "results": {
+        const el = message.content;
+
+        const resultArray = el.results.testResults;
+        resultArray.forEach((resultObject) => {
+          let fileName = resultObject.name;
+          let assertions = resultObject.assertionResults;
+          if (assertions.length > 0) {
+            assertions.forEach((assertion) => {
+              updateNodeInArray(
+                createId(assertion.title === "all", fileName, assertion.title),
+                false,
+                assertion
+              );
+            });
+          } else {
+            updateNodeInArray(
+              createId(el.test === "all", el.file, el.test),
+              false,
+              { status: "failed", failureMessages: [resultObject.message] }
+            );
+          }
+        });
+        treeHTMLElement.data.forEach((el) => {
+          let nodeStatus = updateParentStatus(el);
+          console.log(nodeStatus, "++++++++");
+          updateNodeInArray(el.id, false, { status: nodeStatus });
+        });
+
+        vscode.setState({ tests: treeHTMLElement.data });
+        break;
+      }
+      case "errorExecuting": {
+        console.log("llegue aca");
+        break;
+      }
     }
   });
 
@@ -53,30 +129,51 @@
   }
 
   function updateTests(testList) {
+    console.log(testList);
     const tree = document.getElementById("actions-example");
 
     tree.data = testList;
+    const style = document.createElement("style");
+    style.textContent = `
+      .theme-icon[name="${ICONS.PASSED}"]{
+        color: #0f0 !important;
+      }
+      .theme-icon[name="${ICONS.ERROR}"]{
+        color: #f00 !important;
+      }
+      .theme-icon[name="${ICONS.DEFAULT}"]{
+        color: var(--secondary-background) !important;
+      }
+      .theme-icon{
+        color: var(--inactive-selection-icon-foreground) !important;
+      }
+      .theme-icon[name="${ICONS.LOADING}"]{
+        animation-name: spin;
+        animation-duration: 1000ms;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear; 
+      }
+      @keyframes spin {
+        from {
+            transform:rotate(0deg);
+        }
+        to {
+            transform:rotate(360deg);
+        }
+    }
+    `;
+    tree?.shadowRoot?.append(style);
 
     setTreeListener(tree);
   }
   function addTests(testList) {
     console.log(testList, "---");
     const tree = document.getElementById("actions-example");
-
-    const icons = true;
-
-    const actions = [
-      {
-        icon: "run",
-        actionId: "runTest",
-        tooltip: "Run all",
-      },
-      {
-        icon: "refresh",
-        actionId: "regenerateTest",
-        tooltip: "Regenerate tests",
-      },
-    ];
+    const icons = {
+      branch: ICONS.LOADING,
+      leaf: ICONS.ERROR,
+      open: ICONS.PASSED,
+    };
 
     /**
          * {
@@ -110,73 +207,50 @@
             }
         },
          */
-    const data = testList.map((root) => {
-      root.label = getPath(root.file);
-      root.icons = icons;
-      root.actions = actions;
-      root.value = { file: root.file, test: "all" };
-      root.subItems = root.children.map((test) => {
-        test.label = test.name;
-        test.icons = icons;
-        test.actions = actions;
-        test.value = {
-          file: root.file,
-          test: test.name,
-        };
-        return test;
-      });
-      return root;
-    });
-    // const data = [
-    //   {
-    //     label: "vscode-tree",
-    //     icons,
-    //     actions,
-    //     value: "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree",
-    //     subItems: [
-    //       {
-    //         icons,
-    //         actions,
-    //         label: "index.ts",
-    //         value:
-    //           "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\index.ts",
-    //       },
-    //       {
-    //         icons,
-    //         actions,
-    //         label: "vscode-tree.styles.ts",
-    //         value:
-    //           "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\vscode-tree.styles.ts",
-    //       },
-    //       {
-    //         icons,
-    //         actions,
-    //         label: "vscode-tree.test.ts",
-    //         value:
-    //           "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\vscode-tree.test.ts",
-    //       },
-    //       {
-    //         icons,
-    //         actions,
-    //         label: "vscode-tree.ts",
-    //         value:
-    //           "C:\\workspace\\vscode-webview-elements\\src\\vscode-tree\\vscode-tree.ts",
-    //       },
-    //     ],
-    //   },
-    // ];
+    const data = testList.map((root) => mapNode(root, true));
 
     tree.data = data;
-    setTreeListener(tree);
 
-    vscode.setState({ tests: testList });
+    console.log(data);
+    setTreeListener(tree);
+    // updateLoadingIcons();
+    const style = document.createElement("style");
+    style.textContent = `
+      .theme-icon[name="${ICONS.PASSED}"]{
+        color: #0f0 !important;
+      }
+      .theme-icon[name="${ICONS.ERROR}"]{
+        color: #f00 !important;
+      }
+      .theme-icon[name="${ICONS.DEFAULT}"]{
+        color: var(--secondary-background) !important;
+      }
+      .theme-icon{
+        color: var(--inactive-selection-icon-foreground) !important;
+      }
+    `;
+    tree?.shadowRoot?.append(style);
+    console.log(tree);
+    updateResultsIcons();
+    vscode.setState({ tests: data });
   }
 
-  document
-    .getElementById("btn-generate-tests")
-    .addEventListener("vsc-click", (ev) => {
-      vscode.postMessage({ type: "generate", value: {} });
-    });
+  document.getElementById("btn-test").addEventListener("vsc-click", (ev) => {
+    console.log("Hacer Algo");
+    runTests(vscode);
+  });
+  document.getElementById("btn-refresh").addEventListener("vsc-click", () => {
+    vscode.postMessage({ type: "reload" });
+  });
+
+  const showError = (testName, testTitle, error) => {
+    labelErrorTest.innerText =
+      testName + testTitle === "all" ? "all" : testTitle;
+
+    errorLogSpan.removeAttribute("hidden");
+    errorLogSpan.scrollIntoView(true);
+    codeErrorElement.innerText = error;
+  };
 })();
 
 var getPath = function (str) {

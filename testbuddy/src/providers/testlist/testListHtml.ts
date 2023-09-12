@@ -7,13 +7,7 @@ export const getTestListHtml = (
   _context: vscode.ExtensionContext
 ) => {
   const filePath: vscode.Uri = vscode.Uri.file(
-    path.join(
-      _context.extensionPath,
-      "src",
-      "providers",
-      "testlist",
-      "index.html"
-    )
+    path.join(_context.extensionPath, "media/testList", "index.html")
   );
 
   let html = fs.readFileSync(filePath.fsPath, "utf8");
@@ -21,43 +15,46 @@ export const getTestListHtml = (
   const scriptUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media/testList", "index.js")
   );
+  //@ts-ignore
   html = html.replace("{{jsSource}}", scriptUri);
 
   const videoUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media/lottie.gif")
   );
+  //@ts-ignore
   html = html.replace("{{gifURL}}", videoUri);
   const scriptUri2 = webview.asWebviewUri(
-    vscode.Uri.joinPath(
-      _context.extensionUri,
-      "node_modules/@bendera/vscode-webview-elements/dist/bundled.js"
-    )
+    vscode.Uri.joinPath(_context.extensionUri, "media", "bendera", "bundled.js")
   );
+  //@ts-ignore
   html = html.replace("{{jsSource2}}", scriptUri2);
 
   // Do the same for the stylesheet.
   const styleResetUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media", "reset.css")
   );
+  //@ts-ignore
   html = html.replace("{{cssSource1}}", styleResetUri);
   const styleVSCodeUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media", "vscode.css")
   );
+  //@ts-ignore
   html = html.replace("{{cssSource2}}", styleVSCodeUri);
   const styleMainUri = webview.asWebviewUri(
     vscode.Uri.joinPath(_context.extensionUri, "media", "main.css")
   );
+  //@ts-ignore
   html = html.replace("{{cssSource3}}", styleMainUri);
 
   const codiconsUri = webview.asWebviewUri(
     vscode.Uri.joinPath(
       _context.extensionUri,
-      "node_modules",
-      "@vscode/codicons",
-      "dist",
+      "media",
+      "codicons/dist",
       "codicon.css"
     )
   );
+  //@ts-ignore
   html = html.replace("{{cssSource4}}", codiconsUri);
   return html;
 };

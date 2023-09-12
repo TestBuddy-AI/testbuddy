@@ -47,7 +47,8 @@
           "type": "webview",
           "id": "testBuddy.editorWebViewView",
           "name": "TestBuddy - Editor",
-          "when": "testBuddy.loadEditorView == true"
+          "when": "testBuddy.loadEditorView == true",
+          "visibility": "collapsed"
         },
         {
           "type": "webview",
@@ -73,6 +74,15 @@
         "command": "testBuddy.selectLanguage",
         "category": "TestBuddy",
         "title": "Select Project Language"
+      },
+      {
+        "command": "testBuddy.generateTest",
+        "category": "TestBuddy",
+        "title": "🤖 TestBuddy - Generate tests for this file",
+        "icon": {
+          "dark": "./assets/iconwhite.svg",
+          "light": "./assets/icon.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -92,14 +102,35 @@
       ]
     },
     "menus": {
-      "view/title": [
+      "editor/context": [
         {
-          "command": "calicoColors.clearColors",
+          "command": "testBuddy.generateTest",
           "group": "navigation",
-          "when": "view == testBuddy.testBuddyWebViewView"
+          "when": "testBuddy.loadEditorView == true && (resourceLangId =~ /^(typescript|typescriptreact|javascript|javascriptreact|python|)$/i)"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "command": "testBuddy.generateTest",
+          "group": "navigation",
+          "when": "testBuddy.loadEditorView == true && (resourceLangId =~ /^(typescript|typescriptreact|javascript|javascriptreact|python|)$/i)"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "testBuddy.generateTest",
+          "group": "navigation",
+          "when": "testBuddy.loadEditorView == true && (resourceLangId =~ /^(typescript|typescriptreact|javascript|javascriptreact|python|)$/i)"
         }
       ]
-    }
+    },
+    "keybindings": [
+      {
+        "command": "testBuddy.generateTest",
+        "key": "ctrl+alt+t",
+        "when": "testBuddy.loadEditorView == true && (resourceLangId =~ /^(typescript|typescriptreact|javascript|javascriptreact|python|)$/i)"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -118,10 +149,12 @@
     "@types/mocha": "^10.0.1",
     "@types/node": "20.2.5",
     "@types/shelljs": "^0.8.12",
+    "@types/uuid": "^9.0.3",
     "@types/vscode": "^1.81.0",
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "@typescript-eslint/parser": "^5.59.8",
     "@vscode/test-electron": "^2.3.2",
+    "esbuild": "^0.19.2",
     "eslint": "^8.41.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
@@ -139,6 +172,7 @@
     "jest": "^29.6.2",
     "jest-editor-support": "^28.1.0",
     "shelljs": "^0.8.5",
+    "uuid": "^9.0.0",
     "webfont": "^11.2.26"
   }
 }
