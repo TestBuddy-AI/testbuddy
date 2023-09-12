@@ -348,6 +348,84 @@ interface IConversationMessage {
   content: string | undefined;
 }
 
+export async function errorMessageSummarize(error: string[]) {
+  const initial = [
+    {
+      role: ChatCompletionRequestMessageRoleEnum.System,
+      content:
+        "You are a long error message summarizer.  The user will pass you the long error text in different chunks of text. This chunks are part of a an error message. So you need to concatenate all the chunks, understand the error and then summarize in a few words the error in natural language.",
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.User,
+      content: "Start error message interpretation",
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.Assistant,
+      content: "Input the error message chunks",
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.User,
+      content:
+        "Error: Critical failure during application boot sequence.\n\nDetails:\n- Module 'TemplateRenderer': Failed to compile template 'mainLayout'. Detected syntax errors.\n    at TemplateRenderer.compile (/path/to/webapp/modules/TemplateRenderer.js:112:23)\n    at WebAppBootstrapper.loadTemplates (/path/to/webapp/core/WebAppBootstrapper.js:78:29)\n    at WebAppBootstrapper.boot (/path/to/webapp/core/WebAppBootstrapper.js:15:12)\n",
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.User,
+      content:
+        "- Module 'APIGateway': Endpoint configuration mismatch. Detected endpoints without handlers: '/api/users', '/api/orders'.\n    at APIGateway.validateEndpoints (/path/to/webapp/modules/APIGateway.js:185:17)\n    at APIGateway.initialize (/path/to/webapp/modules/APIGateway.js:50:14)\n    at WebAppBootstrapper.setupAPI (/path/to/webapp/core/WebAppBootstrapper.js:92:26)\n    at WebAppBootstrapper.boot (/path/to/webapp/core/WebAppBootstrapper.js:19:14)",
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.User,
+      content:
+        "- Module 'AssetManager': Failed to load critical assets. Missing files: 'main.css', 'logo.svg'.\n    at AssetManager.verifyAssets (/path/to/webapp/modules/AssetManager.js:67:21)\n    at WebAppBootstrapper.loadAssets (/path/to/webapp/core/WebAppBootstrapper.js:106:28)\n    at WebAppBootstrapper.boot (/path/to/webapp/core/WebAppBootstrapper.js:23:10)\n\n- Module 'SessionManager': Redis session store connection failure. Unable to connect to 'redis://localhost:6380'.\n    at SessionManager.connect (/path/to/webapp/modules/SessionManager.js:88:19)\n    at WebAppBootstrapper.initializeSessions (/path/to/webapp/core/WebAppBootstrapper.js:120:24)\n    at WebAppBootstrapper.boot (/path/to/webapp/core/WebAppBootstrapper.js:27:10)",
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.User,
+      content:
+        "- Module 'PaymentGateway': Configuration error. Missing API keys for payment processors: 'Stripe', 'PayPal'.\n    at PaymentGateway.validateConfig (/path/to/webapp/modules/PaymentGateway.js:142:15)\n    at WebAppBootstrapper.setupPayments (/path/to/webapp/core/WebAppBootstrapper.js:134:22)\n    at WebAppBootstrapper.boot (/path/to/webapp/core/WebAppBootstrapper.js:31:10)\n\nCritical boot failure. The web application cannot start due to the above issues. Please address the configuration, asset, and module errors and restart the application.",
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.Assistant,
+      content:
+        "Explanation:\n\nThis error message indicates multiple critical issues that occurred during the boot sequence of a web application:\n\n1. TemplateRenderer Module: The application encountered syntax errors while trying to compile a template named 'mainLayout'.\n\n2. APIGateway Module: There's a configuration mismatch where certain API endpoints are defined but don't have corresponding handlers.\n\n3. AssetManager Module: The application failed to load some critical assets, specifically a CSS file and an SVG logo.\n\n4. SessionManager Module: The application couldn't establish a connection to a Redis session store, which is used for managing user sessions.\n\n5. PaymentGateway Module: There's a configuration error related to missing API keys for payment processors.\n\nThe error message provides a detailed breakdown of each module that encountered an issue, the specific problem, and where in the code the error occurred. This kind of comprehensive error message is designed to help developers quickly identify and resolve multiple issues during the web application's boot sequence.",
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.User,
+      content: "Start error message interpretation",
+    },
+    {
+      role: ChatCompletionRequestMessageRoleEnum.Assistant,
+      content: "Input the error message chunks",
+    },
+  ];
+
+  const messageChunks = error.map((msg) => ({
+    role: ChatCompletionRequestMessageRoleEnum.User,
+    content: msg,
+  }));
+
+  const conversation: IConversationMessage[] = [...initial, ...messageChunks];
+
+  const response = await openAI.createChatCompletion({
+    model: "gpt-3.5-turbo-16k",
+    messages: conversation,
+    temperature: 0.3,
+    max_tokens: 2560,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+  });
+
+  const { id, object, created, model, choices } = response.data;
+
+  return {
+    id,
+    object,
+    created,
+    model,
+    choices,
+  }.choices[0].message?.content;
+}
+
 export async function feedbackUnitTestsPrompt(
   codeLanguage: ICodeLanguage,
   unitTestFunctions: ITestFunction[],

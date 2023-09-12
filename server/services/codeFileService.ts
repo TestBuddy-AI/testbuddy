@@ -145,14 +145,20 @@ export async function storeUnitTests(
 
       if (!existingFunction) {
         await unitTestFunctionService.create(unitTestFunction);
-      } else if (existingFunction?.id && unitTestFunction.unitTests !== existingFunction.unitTests) {
+      } else if (
+        existingFunction?.id &&
+        unitTestFunction.unitTests !== existingFunction.unitTests
+      ) {
         const updatedFunction: ITestFunction = {
           hash: unitTestFunction.hash,
           code: unitTestFunction.code,
           unitTests: unitTestFunction.unitTests,
-          unitTestFileId: unitTestFunction.unitTestFileId
-        }
-        await unitTestFunctionService.update(existingFunction.id, updatedFunction);
+          unitTestFileId: unitTestFunction.unitTestFileId,
+        };
+        await unitTestFunctionService.update(
+          existingFunction.id,
+          updatedFunction
+        );
       }
     });
   } else {
@@ -402,6 +408,16 @@ export async function modifyUnitTestsSuite(
   return { functions: await Promise.all(result), imports: resultFile.imports };
 }
 
+function divideStringByNChars(input: string, n: number): string[] {
+  const result: string[] = [];
+
+  for (let i = 0; i < input.length; i += n) {
+    result.push(input.slice(i, i + n));
+  }
+
+  return result;
+}
+
 export async function feedbackOnFailedTest(
   sessionId: string,
   fileName: string,
@@ -426,10 +442,15 @@ export async function feedbackOnFailedTest(
       `Unit test functions for file ${fileName} with sessionId ${sessionId} were not found!`
     );
 
+  const dividedErrors: string[] = divideStringByNChars(error, 250);
+
+  const summarizedError: string | undefined =
+    await openAIService.errorMessageSummarize(dividedErrors);
+
   return await openAIService.feedbackFunctionUnitTests(
     fileFunctions,
     resultFile.fileLang,
-    error
+    summarizedError || ""
   );
 }
 
